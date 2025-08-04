@@ -24,4 +24,19 @@
   .textarea-field {
     @apply w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8A9A87] focus:border-transparent transition;
   }
+  .section-title {
+    @apply text-[#5C6B68];
+  }
+  .card {
+    @apply bg-white border border-[#F3F0E9] shadow-md transition-all duration-300;
+  }
+  .card:hover {
+    @apply -translate-y-1 shadow-lg;
+  }
+  .soft-bg {
+    @apply bg-[#F9F7F2];
+  }
+  .testimonial-card {
+    @apply bg-[#F9F7F2] border-l-4 border-[#8A9A87];
+  }
 } 

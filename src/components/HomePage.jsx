@@ -1,78 +1,163 @@
 import React from 'react';
 
-const HomePage = ({ onNavigate }) => {
-    const CssIconCheck = () => (
-        <div className="inline-block w-6 h-6 bg-[#8A9A87] rounded-full relative flex-shrink-0">
-            <span className="absolute left-[0.5rem] top-[0.25rem] w-2 h-3.5 border-solid border-white border-r-[3px] border-b-[3px] transform rotate-45"></span>
-        </div>
-    );
+const CssIconCheck = () => (
+  <div className="inline-block w-6 h-6 bg-[#8A9A87] rounded-full relative flex-shrink-0">
+    <span className="absolute left-[0.5rem] top-[0.25rem] w-2 h-3.5 border-solid border-white border-r-[3px] border-b-[3px] transform rotate-45"></span>
+  </div>
+);
 
-    const Logo = () => (
-        <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-[#5C6B68] relative flex items-center justify-center overflow-hidden">
-                <div className="absolute top-2 w-3 h-3 bg-[#FDFCF9] rounded-full"></div>
-                <div className="absolute -bottom-1 w-6 h-6 bg-[#FDFCF9] rounded-t-full"></div>
-                <div className="w-0.5 h-3 bg-[#FDFCF9] absolute right-[0.6rem] bottom-2 transform rotate-[75deg] origin-bottom"></div>
+const Logo = () => (
+  <div className="flex items-center gap-2">
+    <div className="w-10 h-10 rounded-full bg-[#5C6B68] relative flex items-center justify-center overflow-hidden">
+      <div className="absolute top-2 w-3 h-3 bg-[#FDFCF9] rounded-full"></div>
+      <div className="absolute -bottom-1 w-6 h-6 bg-[#FDFCF9] rounded-t-full"></div>
+      <div className="w-0.5 h-3 bg-[#FDFCF9] absolute right-[0.6rem] bottom-2 transform rotate-[75deg] origin-bottom"></div>
+    </div>
+    <span className="text-xl font-bold text-[#5C6B68]">人生快照</span>
+  </div>
+);
+
+const HomePage = ({ onNavigate }) => (
+  <div className="w-full bg-[#FDFCF9] text-[#3D4A4D]">
+    {/* Header */}
+    <header className="py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-200/50">
+      <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }}><Logo /></a>
+      <button onClick={() => onNavigate('transition')} className="hidden md:inline-block px-6 py-2 rounded-full btn-primary text-sm font-semibold">
+        開始我的第一次快照
+      </button>
+    </header>
+
+    {/* Hero Section */}
+    <main className="bg-[#F3F0E9]">
+      <div className="container mx-auto px-6 py-20 md:py-32 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold section-title leading-tight">
+          嘿，有多久沒有好好跟自己說話了？
+        </h1>
+        <p className="mt-6 text-lg md:text-xl max-w-3xl mx-auto text-gray-600">
+          在人生的時間軸上，為此刻的自己，留下一張溫柔的快照。
+          <br className="hidden md:block" />
+          這是一個專屬於你的私密空間，用來傾聽、整理，並看見自己的成長。
+        </p>
+        <button onClick={() => onNavigate('transition')} className="btn-primary mt-10">
+          我想和自己聊聊
+        </button>
+      </div>
+    </main>
+
+    {/* WHO is this for? */}
+    <section className="py-16 md:py-24">
+      <div className="container mx-auto px-6">
+        <h2 className="text-3xl font-bold text-center section-title">你是否也正經歷這些時刻？</h2>
+        <p className="text-center mt-4 text-gray-600 max-w-2xl mx-auto">如果答案為「是」，「人生快照」也許能成為你溫柔的後盾。</p>
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="card p-8 rounded-lg text-center">
+            <div className="text-5xl mb-4">🌪️</div>
+            <h3 className="text-xl font-semibold mb-2">在迷霧中打轉</h3>
+            <p className="text-gray-600">被外界的聲音與期待淹沒，漸漸聽不見自己內心的聲音。</p>
+          </div>
+          <div className="card p-8 rounded-lg text-center">
+            <div className="text-5xl mb-4">🏃‍♀️</div>
+            <h3 className="text-xl font-semibold mb-2">在忙碌中盲目</h3>
+            <p className="text-gray-600">日子一天天過，卻感覺像在原地踏步，忘了最初想去的地方。</p>
+          </div>
+          <div className="card p-8 rounded-lg text-center">
+            <div className="text-5xl mb-4">🌱</div>
+            <h3 className="text-xl font-semibold mb-2">渴望真實成長</h3>
+            <p className="text-gray-600">想要一個地方能安放思緒，記錄點滴，真實地看見自己的蛻變。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* HOW it works? */}
+    <section className="py-16 md:py-24 soft-bg">
+      <div className="container mx-auto px-6">
+        <h2 className="text-3xl font-bold text-center section-title">只需 15 分鐘，開啟一場深度的自我對話</h2>
+        <p className="text-center mt-4 text-gray-600 max-w-2xl mx-auto">泡一杯茶，找個舒服的角落。過程簡單直觀，你的所有紀錄都將被安全珍藏。</p>
+        <div className="mt-12 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 items-start">
+          <div className="text-center p-6">
+            <div className="flex items-center justify-center w-16 h-16 mx-auto bg-white rounded-full shadow-md mb-4 border border-gray-100">
+              <span className="text-3xl font-bold text-[#8A9A87]">1</span>
             </div>
-            <span className="text-xl font-bold text-[#5C6B68]">人生快照</span>
+            <h3 className="text-xl font-semibold mb-2">真誠回答</h3>
+            <p className="text-gray-600">透過精心設計的提問，溫柔地探問你的內心，關於生活、情緒與渴望。</p>
+          </div>
+          <div className="text-center p-6">
+            <div className="flex items-center justify-center w-16 h-16 mx-auto bg-white rounded-full shadow-md mb-4 border border-gray-100">
+              <span className="text-3xl font-bold text-[#8A9A87]">2</span>
+            </div>
+            <h3 className="text-xl font-semibold mb-2">此刻印記</h3>
+            <p className="text-gray-600">上傳一張最能代表當下的照片，為這段記憶留下獨特的視覺標記。</p>
+          </div>
+          <div className="text-center p-6">
+            <div className="flex items-center justify-center w-16 h-16 mx-auto bg-white rounded-full shadow-md mb-4 border border-gray-100">
+              <span className="text-3xl font-bold text-[#8A9A87]">3</span>
+            </div>
+            <h3 className="text-xl font-semibold mb-2">預約未來</h3>
+            <p className="text-gray-600">設定下次快照時間，我們將寄送一封時空信，邀請你回來看看自己走了多遠。</p>
+          </div>
         </div>
-    );
-
-    return (
-        <div className="w-full bg-[#FDFCF9] text-[#3D4A4D]">
-            <header className="py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-200/50">
-                <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('home'); }}><Logo /></a>
-                <button onClick={() => onNavigate('transition')} className="hidden md:inline-block px-6 py-2 rounded-full bg-[#8A9A87] text-white hover:bg-[#738370] transition-all duration-300 ease-in-out transform hover:-translate-y-0.5 shadow-sm hover:shadow-md text-sm font-semibold">
-                    開始我的第一次快照
-                </button>
-            </header>
-
-            <main className="bg-[#F3F0E9]">
-                <div className="container mx-auto px-6 py-20 md:py-32 text-center">
-                    <h1 className="text-4xl md:text-5xl font-bold text-[#5C6B68] leading-tight">嘿，有多久沒有好好跟自己說話了？</h1>
-                    <p className="mt-6 text-lg md:text-xl max-w-3xl mx-auto text-gray-600">
-                        在人生的時間軸上，為此刻的自己，留下一張溫柔的快照。
-                        <br className="hidden md:block" />
-                        這是一個專屬於你的私密空間，用來傾聽、整理，並看見自己的成長。
-                    </p>
-                    <button onClick={() => onNavigate('transition')} className="btn-primary mt-10">
-                        我想和自己聊聊
-                    </button>
-                </div>
-            </main>
-
-            <section className="py-16 md:py-24">
-                <div className="container mx-auto px-6">
-                    <h2 className="text-3xl font-bold text-center text-[#5C6B68]">你是否也正經歷這些時刻？</h2>
-                    <p className="text-center mt-4 text-gray-600 max-w-2xl mx-auto">如果答案為「是」，「人生快照」也許能成為你溫柔的後盾。</p>
-                    <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {/* Cards */}
-                        <div className="bg-white border border-gray-200/50 shadow-sm hover:shadow-lg transition-shadow duration-300 p-8 rounded-lg text-center">
-                            <div className="text-5xl mb-4">🌪️</div>
-                            <h3 className="text-xl font-semibold mb-2">在迷霧中打轉</h3>
-                            <p className="text-gray-600">被外界的聲音與期待淹沒，漸漸聽不見自己內心的聲音。</p>
-                        </div>
-                        <div className="bg-white border border-gray-200/50 shadow-sm hover:shadow-lg transition-shadow duration-300 p-8 rounded-lg text-center">
-                            <div className="text-5xl mb-4">🏃‍♀️</div>
-                            <h3 className="text-xl font-semibold mb-2">在忙碌中盲目</h3>
-                            <p className="text-gray-600">日子一天天過，卻感覺像在原地踏步，忘了最初想去的地方。</p>
-                        </div>
-                        <div className="bg-white border border-gray-200/50 shadow-sm hover:shadow-lg transition-shadow duration-300 p-8 rounded-lg text-center">
-                            <div className="text-5xl mb-4">🌱</div>
-                            <h3 className="text-xl font-semibold mb-2">渴望真實成長</h3>
-                            <p className="text-gray-600">想要一個地方能安放思緒，記錄點滴，真實地看見自己的蛻變。</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <footer className="bg-[#F9F7F2] border-t border-gray-200/80">
-                <div className="container mx-auto px-6 py-8 text-center text-gray-500">
-                    <p>&copy; 2024 人生快照 (Check Point). All Rights Reserved.</p>
-                </div>
-            </footer>
+        <div className="text-center mt-12">
+          <button onClick={() => onNavigate('transition')} className="btn-primary">
+            開始我的第一次快照
+          </button>
+          <p className="mt-4 text-sm text-gray-500">免費註冊，永久保存你的成長軌跡</p>
         </div>
-    );
-};
+      </div>
+    </section>
+
+    {/* Testimonial Section */}
+    <section className="py-16 md:py-24">
+      <div className="container mx-auto px-6">
+        <h2 className="text-3xl font-bold text-center section-title">聽聽他們怎麼說</h2>
+        <div className="mt-12 max-w-2xl mx-auto">
+          <div className="testimonial-card p-8 rounded-lg">
+            <p className="text-lg text-gray-700 italic">"起初只是想找個地方寫寫東西，沒想到每一次的回顧，都讓我看見自己驚人的成長。那些三個月前還在煩惱的事，現在看來都雲淡風輕了。這就像是送給未來自己的一份禮物。"</p>
+            <p className="mt-6 font-semibold text-right text-gray-600">— 曉芬，一位使用半年的上班族</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* WHEN & WHERE to use (Benefits) */}
+    <section className="py-16 md:py-24 soft-bg">
+      <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
+        <div className="md:w-1/2">
+          <img src="https://placehold.co/600x450/F9F7F2/3D4A4D?text=你的私密心靈角落" alt="一個安靜的角落，桌上放著筆記本與一杯熱茶" className="rounded-lg shadow-lg w-full" />
+        </div>
+        <div className="md:w-1/2">
+          <h2 className="text-3xl font-bold section-title">一個讓你安心的角落</h2>
+          <p className="mt-4 text-lg text-gray-600">我們承諾，這裡的一切都專屬於你。你的思緒將被妥善安放，不被打擾。</p>
+          <ul className="mt-6 space-y-4 text-gray-700">
+            <li className="flex items-center gap-4">
+              <CssIconCheck />
+              <span><strong>絕對私密：</strong> 你的所有紀錄都經過加密，除了你，沒有人能看見。</span>
+            </li>
+            <li className="flex items-center gap-4">
+              <CssIconCheck />
+              <span><strong>隨時陪伴：</strong> 手機、平板、電腦，無縫接軌你的思緒，隨時隨地都能回來看看。</span>
+            </li>
+            <li className="flex items-center gap-4">
+              <CssIconCheck />
+              <span><strong>溫柔提醒：</strong> 我們是你與未來的信使，在你設定的時間，溫柔地提醒你回來看看自己。</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    {/* Footer */}
+    <footer className="border-t border-gray-200/80">
+      <div className="container mx-auto px-6 py-8 text-center text-gray-500">
+        <p>&copy; 2024 人生快照 (Check Point). All Rights Reserved.</p>
+        <div className="mt-4 flex justify-center space-x-6">
+          <a href="#" className="hover:text-[#8A9A87] transition-colors">隱私權政策</a>
+          <a href="#" className="hover:text-[#8A9A87] transition-colors">服務條款</a>
+          <a href="#" className="hover:text-[#8A9A87] transition-colors">聯絡我們</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+);
 
 export default HomePage; 
