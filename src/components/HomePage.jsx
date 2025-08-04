@@ -22,9 +22,14 @@ const HomePage = ({ onNavigate }) => (
     {/* Header */}
     <header className="py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-200/50">
       <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }}><Logo /></a>
-      <button onClick={() => onNavigate('transition')} className="hidden md:inline-block px-6 py-2 rounded-full btn-primary text-sm font-semibold">
-        開始我的第一次快照
-      </button>
+      <div className="flex items-center gap-4">
+        <button onClick={() => onNavigate('login')} className="px-4 py-2 rounded-full bg-[#8A9A87] text-white text-sm font-semibold hover:bg-[#7A8A77] transition-colors">
+          登入/註冊
+        </button>
+        <button onClick={() => onNavigate('transition')} className="hidden md:inline-block px-6 py-2 rounded-full btn-primary text-sm font-semibold">
+          開始我的第一次快照
+        </button>
+      </div>
     </header>
 
     {/* Hero Section */}

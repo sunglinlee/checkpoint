@@ -9,6 +9,7 @@
 - 🎨 **現代化 UI**：使用 Tailwind CSS 打造美觀的介面
 - 🔄 **流暢導航**：單頁應用程式，提供流暢的使用體驗
 - 📝 **完整問卷**：涵蓋生活各個面向的深度反思問題
+- 🔐 **用戶認證**：支援 Google 第三方登入和傳統帳號密碼登入
 
 ## 技術棧
 
@@ -16,6 +17,8 @@
 - **Vite** - 建構工具
 - **Tailwind CSS** - 樣式框架
 - **Tone.js** - 音訊處理
+- **@react-oauth/google** - Google OAuth 登入
+- **jwt-decode** - JWT 解碼
 - **Noto Sans TC** - 中文字體
 
 ## 快速開始
@@ -24,6 +27,15 @@
 
 ```bash
 npm install
+```
+
+### 設置 Google OAuth
+
+1. 按照 `GOOGLE_OAUTH_SETUP.md` 中的說明設置 Google OAuth
+2. 創建 `.env` 文件並添加您的 Google Client ID：
+
+```bash
+VITE_GOOGLE_CLIENT_ID=your-google-client-id-here
 ```
 
 ### 開發模式
@@ -54,6 +66,7 @@ src/
 │   ├── Icon.jsx              # 圖標組件
 │   ├── icons.jsx             # 圖標集合
 │   ├── HomePage.jsx          # 首頁組件
+│   ├── LoginPage.jsx         # 登入頁面組件
 │   ├── TransitionPage.jsx    # 過渡頁面組件
 │   └── QuestionnairePage.jsx # 問卷頁面組件
 ├── App.jsx                   # 主要應用組件
@@ -66,7 +79,14 @@ src/
 ### 首頁 (HomePage)
 - 展示專案理念和特色
 - 提供開始問卷的入口
+- 包含登入和註冊按鈕
 - 響應式設計，適配各種螢幕尺寸
+
+### 登入頁面 (LoginPage)
+- 支援 Google 第三方登入
+- 傳統帳號密碼登入/註冊
+- 可在登入和註冊模式間切換
+- 與整體設計風格一致
 
 ### 過渡頁面 (TransitionPage)
 - 提供音樂播放功能
