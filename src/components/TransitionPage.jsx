@@ -56,6 +56,18 @@ const TransitionPage = ({ onNavigate }) => {
 
     return (
         <div className="bg-[#FDFCF9] min-h-screen w-full flex flex-col items-center justify-center p-4 text-[#3D4A4D] text-center">
+            {/* 返回按鈕 */}
+            <div className="absolute top-6 left-6">
+                <button 
+                    onClick={() => onNavigate('home')} 
+                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-colors text-gray-600"
+                >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span>返回首頁</span>
+                </button>
+            </div>
             <div className="w-full max-w-xl mx-auto bg-white rounded-xl shadow-lg p-8 md:p-12 animate-fade-in">
                 <h2 className="text-2xl md:text-3xl font-bold text-[#5C6B68] mb-6">一個與自己獨處的邀請</h2>
                 <div className="text-lg text-gray-700 space-y-4 leading-relaxed">

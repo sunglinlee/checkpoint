@@ -91,7 +91,6 @@ const QuestionnairePage = ({ onNavigate }) => {
                                 <p>你的「人生快照」已經安全地封存。</p>
                                 <p>在你設定的時間，我們會將這份珍貴的紀錄送到你的信箱，邀請你回來看看自己，並開啟下一次的對話。</p>
                                 <p>感謝你願意花時間，溫柔地對待自己。</p>
-                                <button onClick={() => onNavigate('home')} className="btn-secondary mt-4">返回首頁</button>
                             </div>
                         )}
                     </div>
