@@ -244,7 +244,7 @@ const HomePage = ({ onNavigate }) => {
       {/* Footer */}
       <footer className="border-t border-gray-200/80">
         <div className="container mx-auto px-6 py-8 text-center text-gray-500">
-          <p>&copy; 2024 人生快照 (Check Point). All Rights Reserved.</p>
+          <p>&copy; 2025 人生快照 (Check Point). All Rights Reserved.</p>
           <div className="mt-4 flex justify-center space-x-6">
             <a href="#" className="hover:text-[#8A9A87] transition-colors">隱私權政策</a>
             <a href="#" className="hover:text-[#8A9A87] transition-colors">服務條款</a>
