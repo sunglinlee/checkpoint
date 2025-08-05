@@ -100,6 +100,7 @@ const LoginPage = ({ onNavigate }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [formData, setFormData] = useState({
+    nickname: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -189,8 +190,30 @@ const LoginPage = ({ onNavigate }) => {
               </div>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+                         {/* Form */}
+             <form onSubmit={handleSubmit} className="space-y-4">
+               {!isLogin && (
+                 <div>
+                   <label htmlFor="nickname" className="block text-sm font-medium text-gray-700 mb-1">
+                     暱稱
+                   </label>
+                   <input
+                     type="text"
+                     id="nickname"
+                     name="nickname"
+                     value={formData.nickname}
+                     onChange={handleInputChange}
+                     required
+                     maxLength="20"
+                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8A9A87] focus:border-transparent transition-colors"
+                     placeholder="請輸入您的暱稱"
+                   />
+                   <p className={`text-xs mt-1 ${formData.nickname.length > 20 ? 'text-red-500' : 'text-gray-500'}`}>
+                     最多20個字
+                   </p>
+                 </div>
+               )}
+
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                   電子郵件
@@ -218,9 +241,11 @@ const LoginPage = ({ onNavigate }) => {
                   value={formData.password}
                   onChange={handleInputChange}
                   required
+                  minLength="8"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8A9A87] focus:border-transparent transition-colors"
-                  placeholder="請輸入您的密碼"
+                  placeholder="請輸入至少8位密碼"
                 />
+                <p className="text-xs text-gray-500 mt-1">密碼至少需要8位數</p>
               </div>
 
               {!isLogin && (
@@ -235,9 +260,11 @@ const LoginPage = ({ onNavigate }) => {
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     required
+                    minLength="8"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8A9A87] focus:border-transparent transition-colors"
-                    placeholder="請再次輸入密碼"
+                    placeholder="請再次輸入至少8位密碼"
                   />
+                  <p className="text-xs text-gray-500 mt-1">密碼至少需要8位數</p>
                 </div>
               )}
 
