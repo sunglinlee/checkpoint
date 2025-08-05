@@ -14,7 +14,7 @@ const Logo = () => (
 );
 
 
-const HomePage = ({ onNavigate }) => {
+const HomePage = ({ onNavigate, user, onLogout }) => {
   // 评价数据
   const testimonials = [
     {
@@ -95,9 +95,23 @@ const HomePage = ({ onNavigate }) => {
       <header className="py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-200/50">
         <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }}><Logo /></a>
         <div className="flex items-center gap-4">
-          <button onClick={() => onNavigate('login')} className="px-4 py-2 rounded-full bg-[#8A9A87] text-white text-sm font-semibold hover:bg-[#7A8A77] transition-colors">
-            登入/註冊
-          </button>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <span className="text-[#8A9A87] font-semibold">
+                歡迎，{user.nickname || user.name || user.given_name || user.email}
+              </span>
+              <button 
+                onClick={onLogout}
+                className="px-3 py-1.5 rounded-full bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300 transition-colors"
+              >
+                登出
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => onNavigate('login')} className="px-4 py-2 rounded-full bg-[#8A9A87] text-white text-sm font-semibold hover:bg-[#7A8A77] transition-colors">
+              登入/註冊
+            </button>
+          )}
         </div>
       </header>
 

@@ -8,6 +8,7 @@ import LoginPage from './components/LoginPage.jsx';
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState('home');
+    const [user, setUser] = useState(null); // 新增使用者狀態
 
     const handleNavigate = (page) => {
         // Stop music when navigating away from transition page
@@ -20,17 +21,28 @@ export default function App() {
         window.scrollTo(0, 0);
     };
 
+    const handleLogout = () => {
+        setUser(null); // 清除使用者狀態
+        setCurrentPage('home'); // 導航回首頁
+    };
+
+    const updateUserNickname = (nickname) => {
+        if (user) {
+            setUser({ ...user, nickname });
+        }
+    };
+
     const renderPage = () => {
         switch (currentPage) {
             case 'transition':
-                return <TransitionPage onNavigate={handleNavigate} />;
+                return <TransitionPage onNavigate={handleNavigate} user={user} />;
             case 'questionnaire':
-                return <QuestionnairePage onNavigate={handleNavigate} />;
+                return <QuestionnairePage onNavigate={handleNavigate} user={user} />;
             case 'login':
-                return <LoginPage onNavigate={handleNavigate} />;
+                return <LoginPage onNavigate={handleNavigate} setUser={setUser} updateUserNickname={updateUserNickname} />;
             case 'home':
             default:
-                return <HomePage onNavigate={handleNavigate} />;
+                return <HomePage onNavigate={handleNavigate} user={user} onLogout={handleLogout} />;
         }
     };
 

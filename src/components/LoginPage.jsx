@@ -9,7 +9,6 @@ const Logo = () => (
   </div>
 );
 
-
 // 忘記密碼模態框組件
 const ForgotPasswordModal = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
@@ -96,9 +95,88 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
   );
 };
 
-const LoginPage = ({ onNavigate }) => {
+// 暱稱輸入模態框組件
+const NicknameModal = ({ isOpen, onClose, onSubmit, googleUser }) => {
+  const [nickname, setNickname] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (nickname.trim()) {
+      onSubmit(nickname.trim());
+    } else {
+      onSubmit(null); // 沒有輸入暱稱
+    }
+    setNickname('');
+    onClose();
+  };
+
+  const handleSkip = () => {
+    onSubmit(null); // 跳過暱稱設定
+    setNickname('');
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-[#3D4A4D] mb-2">
+            歡迎加入！
+          </h2>
+          <p className="text-gray-600">
+            為自己設定一個暱稱，讓你的快照更有個人特色
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="nickname" className="block text-sm font-medium text-gray-700 mb-2">
+              暱稱（選填）
+            </label>
+            <input
+              type="text"
+              id="nickname"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              maxLength="20"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8A9A87] focus:border-transparent transition-colors"
+              placeholder="請輸入您的暱稱"
+            />
+            {nickname.length === 20 && (
+              <p className="text-xs mt-1 text-red-500">
+                暱稱不能超過20個字
+              </p>
+            )}
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={handleSkip}
+              className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              跳過
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-3 bg-[#8A9A87] text-white rounded-lg hover:bg-[#7A8A77] transition-colors"
+            >
+              確定
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showNicknameModal, setShowNicknameModal] = useState(false);
+  const [googleUserData, setGoogleUserData] = useState(null);
   const [formData, setFormData] = useState({
     nickname: '',
     email: '',
@@ -127,8 +205,8 @@ const LoginPage = ({ onNavigate }) => {
     try {
       const decoded = jwtDecode(credentialResponse.credential);
       console.log('Google登入成功:', decoded);
-      // 這裡可以添加實際的Google登入處理邏輯
-      onNavigate('home'); // 登入成功後導航到首頁
+      setGoogleUserData(decoded);
+      setShowNicknameModal(true); // 顯示暱稱輸入模態框
     } catch (error) {
       console.error('Google登入失敗:', error);
     }
@@ -136,6 +214,14 @@ const LoginPage = ({ onNavigate }) => {
 
   const handleGoogleError = () => {
     console.error('Google登入失敗');
+  };
+
+  const handleNicknameSubmit = (nickname) => {
+    if (googleUserData) {
+      const userWithNickname = { ...googleUserData, nickname };
+      setUser(userWithNickname);
+      onNavigate('home');
+    }
   };
 
   return (
@@ -314,6 +400,14 @@ const LoginPage = ({ onNavigate }) => {
           </div>
         </div>
       </main>
+
+      {/* Nickname Modal */}
+      <NicknameModal
+        isOpen={showNicknameModal}
+        onClose={() => setShowNicknameModal(false)}
+        onSubmit={handleNicknameSubmit}
+        googleUser={googleUserData}
+      />
 
       {/* 忘記密碼模態框 */}
       <ForgotPasswordModal
