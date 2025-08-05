@@ -8,14 +8,11 @@ const CssIconCheck = () => (
 
 const Logo = () => (
   <div className="flex items-center gap-2">
-    <div className="w-10 h-10 rounded-full bg-[#5C6B68] relative flex items-center justify-center overflow-hidden">
-      <div className="absolute top-2 w-3 h-3 bg-[#FDFCF9] rounded-full"></div>
-      <div className="absolute -bottom-1 w-6 h-6 bg-[#FDFCF9] rounded-t-full"></div>
-      <div className="w-0.5 h-3 bg-[#FDFCF9] absolute right-[0.6rem] bottom-2 transform rotate-[75deg] origin-bottom"></div>
-    </div>
-    <span className="text-xl font-bold text-[#5C6B68]">人生快照</span>
+    <img src="/logo/LOGO.png" alt="Check Point Logo" className="h-10 w-auto" />
+    <img src="/logo/LOGO_H1.png" alt="Company Name" className="h-8 w-auto" />
   </div>
 );
+
 
 const HomePage = ({ onNavigate }) => {
   // 评价数据
