@@ -208,9 +208,11 @@ const LoginPage = ({ onNavigate }) => {
                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8A9A87] focus:border-transparent transition-colors"
                      placeholder="請輸入您的暱稱"
                    />
-                   <p className={`text-xs mt-1 ${formData.nickname.length > 20 ? 'text-red-500' : 'text-gray-500'}`}>
-                     最多20個字
-                   </p>
+                                       {formData.nickname.length === 20 && (
+                     <p className="text-xs mt-1 text-red-500">
+                       暱稱不能超過20個字
+                     </p>
+                   )}
                  </div>
                )}
 
@@ -245,7 +247,7 @@ const LoginPage = ({ onNavigate }) => {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8A9A87] focus:border-transparent transition-colors"
                   placeholder="請輸入至少8位密碼"
                 />
-                <p className="text-xs text-gray-500 mt-1">密碼至少需要8位數</p>
+                
               </div>
 
               {!isLogin && (
@@ -264,7 +266,7 @@ const LoginPage = ({ onNavigate }) => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8A9A87] focus:border-transparent transition-colors"
                     placeholder="請再次輸入至少8位密碼"
                   />
-                  <p className="text-xs text-gray-500 mt-1">密碼至少需要8位數</p>
+                  
                 </div>
               )}
 
