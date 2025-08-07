@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import HomePageVideo from "./HomePageVideo";
 
 const CssIconCheck = () => (
   <div className="inline-block w-6 h-6 bg-[#8A9A87] rounded-full relative flex-shrink-0">
@@ -172,6 +173,9 @@ const HomePage = ({ onNavigate, user, onLogout }) => {
           </div>
         </div>
       </section>
+
+      {/* YouTube Playlist Section */}
+      <HomePageVideo />
 
       {/* HOW it works? */}
       <section className="py-16 md:py-24 soft-bg">
