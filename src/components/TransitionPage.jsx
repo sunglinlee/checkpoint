@@ -1,57 +1,46 @@
 import React, { useState, useEffect, useRef } from 'react';
-import * as Tone from 'tone';
 import { icons } from './icons.jsx';
 
 const TransitionPage = ({ onNavigate }) => {
     const [isPlaying, setIsPlaying] = useState(false);
-    const synth = useRef(null);
-    const loop = useRef(null);
+    const audioRef = useRef(null);
 
     useEffect(() => {
-        // Initialize synth and effects
-        synth.current = new Tone.PolySynth(Tone.Synth, {
-            oscillator: { type: 'fmsine' },
-            envelope: { attack: 0.1, decay: 0.2, sustain: 0.5, release: 1.5 },
-        }).toDestination();
-        
-        const reverb = new Tone.Reverb({ decay: 8, wet: 0.4 }).toDestination();
-        synth.current.connect(reverb);
+        // 初始化音頻
+        audioRef.current = new Audio('/素材/SpaceTimeThought.mp3');
+        audioRef.current.volume = 0.2; // 設定預設音量為20%
+        audioRef.current.loop = true; // 設定循環播放
 
-        // Define the melody
-        const melody = [
-            ['C4', '8n'], ['E4', '8n'], ['G4', '8n'], ['C5', '8n'],
-            ['E5', '4n'], ['G4', '4n'],
-            ['D4', '8n'], ['F4', '8n'], ['A4', '8n'], ['D5', '8n'],
-            ['F5', '4n'], ['A4', '4n']
-        ];
-        
-        let step = 0;
-        loop.current = new Tone.Loop(time => {
-            const [note, duration] = melody[step % melody.length];
-            synth.current.triggerAttackRelease(note, duration, time);
-            step++;
-        }, '2n').start(0);
+        // 自動播放音樂
+        const autoPlayMusic = async () => {
+            try {
+                await audioRef.current.play();
+                setIsPlaying(true);
+            } catch (error) {
+                console.log('自動播放失敗，需要用戶互動才能播放音樂');
+            }
+        };
 
-        // Cleanup on unmount
+        autoPlayMusic();
+
+        // 清理函數
         return () => {
-            Tone.Transport.stop();
-            Tone.Transport.cancel();
-            if (synth.current) synth.current.dispose();
-            if (reverb) reverb.dispose();
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current = null;
+            }
         };
     }, []);
 
-    const toggleMusic = async () => {
-        if (Tone.context.state !== 'running') {
-            await Tone.start();
+    const toggleMusic = () => {
+        if (audioRef.current) {
+            if (isPlaying) {
+                audioRef.current.pause();
+            } else {
+                audioRef.current.play();
+            }
+            setIsPlaying(!isPlaying);
         }
-
-        if (isPlaying) {
-            Tone.Transport.pause();
-        } else {
-            Tone.Transport.start();
-        }
-        setIsPlaying(!isPlaying);
     };
 
     return (
