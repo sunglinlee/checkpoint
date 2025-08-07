@@ -10,6 +10,8 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.12.2",
+    "jwt-decode": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tone": "^14.7.77"
@@ -27,7 +29,12 @@
     "tailwindcss": "^3.3.6",
     "vite": "^5.0.8"
   },
-  "keywords": ["react", "life-snapshot", "self-reflection", "questionnaire"],
+  "keywords": [
+    "react",
+    "life-snapshot",
+    "self-reflection",
+    "questionnaire"
+  ],
   "author": "人生快照團隊",
   "license": "MIT"
-} 
+}

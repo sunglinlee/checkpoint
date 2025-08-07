@@ -31,7 +31,14 @@ const QuestionnairePage = ({ onNavigate }) => {
         }
     };
     
-    const handleNext = () => currentStep < questions.length - 1 ? setCurrentStep(currentStep + 1) : console.log('Final Answers:', answers);
+    const handleNext = () => {
+        if (currentStep < questions.length - 1) {
+            setCurrentStep(currentStep + 1);
+        } else {
+            // 跳轉到首頁
+            onNavigate && onNavigate('home');
+        }
+    };
     const handlePrev = () => currentStep > 0 && setCurrentStep(currentStep - 1);
 
     const progress = ((currentStep + 1) / questions.length) * 100;
