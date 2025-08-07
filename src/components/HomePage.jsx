@@ -8,8 +8,8 @@ const CssIconCheck = () => (
 
 const Logo = () => (
   <div className="flex items-center gap-2">
-    <img src="/logo/LOGO.png" alt="Check Point Logo" className="h-10 w-auto" />
-    <img src="/logo/LOGO_H1.png" alt="Company Name" className="h-8 w-auto" />
+    <img src="/logo/LOGO.png" alt="Check Point Logo" className="h-12 w-auto" />
+    <img src="/logo/LOGO_H1.png" alt="Company Name" className="h-10 w-auto" />
   </div>
 );
 
@@ -66,7 +66,13 @@ const HomePage = ({ onNavigate, user, onLogout }) => {
       id: 10,
       text: "永遠不會給你上\n永遠不會給你下\n永遠不會讓你跑來跑去拋棄你",
       author: "瑞克·艾斯里"
-    }
+    },
+    {
+      id: 11,
+      text: "朋友也許會背叛你，但數學不會，數學不會就是不會",
+      author: "摩根·費里曼·梅友獎鍋"
+    },
+    {}
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -116,8 +122,13 @@ const HomePage = ({ onNavigate, user, onLogout }) => {
       </header>
 
       {/* Hero Section */}
-      <main className="bg-[#F3F0E9]">
-        <div className="container mx-auto px-6 py-20 md:py-32 text-center">
+      <main className="bg-[#F3F0E9] relative overflow-hidden">
+        {/* 背景圖與漸層遮罩 */}
+        <div className="absolute inset-0 w-full h-full z-0">
+          <video src="/素材/top_15.mp4" autoPlay muted loop className="w-full h-full object-cover object-center" />
+          <div className="absolute inset-0 w-full h-full pointer-events-none" style={{background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.8) 100%)'}}></div>
+        </div>
+        <div className="container mx-auto px-6 py-20 md:py-32 text-center relative z-10">
           <h1 className="text-4xl md:text-5xl font-bold section-title leading-tight">
             嘿，有多久沒有好好跟自己說話了？
           </h1>
@@ -232,7 +243,7 @@ const HomePage = ({ onNavigate, user, onLogout }) => {
       <section className="py-16 md:py-24 soft-bg">
         <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2">
-            <img src="https://placehold.co/600x450/F9F7F2/3D4A4D?text=你的私密心靈角落" alt="一個安靜的角落，桌上放著筆記本與一杯熱茶" className="rounded-lg shadow-lg w-full" />
+            <video src="/素材/chill_corner.mp4" autoPlay muted loop className="rounded-lg shadow-lg w-full" />
           </div>
           <div className="md:w-1/2">
             <h2 className="text-3xl font-bold section-title">一個讓你安心的角落</h2>
