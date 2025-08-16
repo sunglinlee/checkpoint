@@ -7,7 +7,6 @@ const QuestionnairePage = ({ onNavigate }) => {
     const [imagePreview, setImagePreview] = useState(null);
 
     const questions = useMemo(() => [
-        { id: 'info', icon: icons.user, title: '首先，讓我們認識你', fields: [{ id: 'name', type: 'text', label: '你希望我們怎麼稱呼你？' }] },
         { id: 'satisfaction', icon: icons.satisfaction, title: '關於現在的生活', fields: [{ id: 'rating', type: 'scale', label: '您覺得當前的生活方式，有符合你想要活成的樣子嗎？ (1-10分)', options: { min: 1, max: 10, minLabel: '相差甚遠', maxLabel: '非常滿意' } }, { id: 'reason', type: 'textarea', label: '如果可以，也請記錄下給予這個分數的理由。' }] },
         { id: 'gratitude', icon: icons.gratitude, title: '感受美好的瞬間', fields: [{ id: 'grateful_events', type: 'textarea', label: '請快速記下最近發生的三件讓你心存感激/開心的小事，無論多麼微不足道。' }, { id: 'share_with', type: 'text', label: '關於這些開心的事情，會想要與誰分享呢？' }, { id: 'inspiration', type: 'textarea', label: '這些事情給你哪些影響或是啟發?' }] },
         { id: 'focus', icon: icons.focus, title: '你所關注的世界', fields: [{ id: 'current_events', type: 'textarea', label: '最近所關注的事件或是消息?' }, { id: 'feelings', type: 'textarea', label: '這些事件或消息讓你感覺如何?' }, { id: 'actions', type: 'textarea', label: '它會促使你執行哪些行動嗎?' }] },
