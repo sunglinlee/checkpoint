@@ -22,6 +22,9 @@ steps:
       - 'dist/' # 您的 React build 輸出目錄
       - 'gs://${_BUCKET_NAME}' # 您的 Cloud Storage 儲存桶名稱
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 # 定義替代變數
 substitutions:
   _BUCKET_NAME: checkpoint_frontend # 替換成您的 Cloud Storage 儲存桶名稱
