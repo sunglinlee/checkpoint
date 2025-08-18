@@ -1,0 +1,27 @@
+steps:
+  # 步驟 1: 使用 node 映像檔安裝專案依賴套件
+  - name: 'node:18' # 根據您的專案選擇合適的 Node.js 版本
+    entrypoint: 'npm'
+    args: ['install']
+
+  # 步驟 2: 執行 build 指令，產生靜態檔案
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['run', 'build']
+
+  # 步驟 3: 將 build/ 目錄下的所有檔案同步到 Cloud Storage
+  # -d 選項會刪除目標儲存桶中不存在於來源目錄的檔案
+  # -r 選項代表遞迴複製整個目錄
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gsutil'
+    args:
+      - '-m'
+      - 'rsync'
+      - '-d'
+      - '-r'
+      - 'dist/' # 您的 React build 輸出目錄
+      - 'gs://${_BUCKET_NAME}' # 您的 Cloud Storage 儲存桶名稱
+
+# 定義替代變數
+substitutions:
+  _BUCKET_NAME: checkpoint_frontend # 替換成您的 Cloud Storage 儲存桶名稱
