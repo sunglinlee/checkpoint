@@ -22,7 +22,7 @@ const ReviewPage = ({ onNavigate, user }) => {
           date: '2024-12-15',
           title: '年末的反思',
           mood: '平靜',
-          image: '/素材/chill_corner.mp4', // 使用現有的影片作為預覽
+          image: '/assets/chill_corner.png', // 使用圖片替代影片
           content: '今年過得很快，有很多收穫也有很多挑戰。最重要的是學會了與自己和解。',
           tags: ['成長', '反思', '平靜'],
           weather: '晴天'
@@ -32,7 +32,7 @@ const ReviewPage = ({ onNavigate, user }) => {
           date: '2024-11-20',
           title: '轉職的決定',
           mood: '焦慮但充滿希望',
-          image: '/素材/top_15.mp4',
+          image: '/assets/1.png',
           content: '決定要轉職了，雖然有些不安，但我相信這是正確的選擇。新的開始總是令人期待的。',
           tags: ['轉職', '決定', '希望'],
           weather: '多雲'
@@ -42,7 +42,7 @@ const ReviewPage = ({ onNavigate, user }) => {
           date: '2024-10-08',
           title: '秋天的午後',
           mood: '溫暖',
-          image: '/素材/chill_corner.mp4',
+          image: '/assets/top_15.png',
           content: '今天和朋友喝咖啡聊天，聊到了很多過去的回憶。友情真的是人生中最珍貴的財富之一。',
           tags: ['友情', '回憶', '溫暖'],
           weather: '微風'
@@ -144,12 +144,10 @@ const ReviewPage = ({ onNavigate, user }) => {
                 onClick={() => setSelectedSnapshot(snapshot)}
               >
                 <div className="h-48 bg-gray-200 relative overflow-hidden">
-                  <video 
+                  <img 
                     src={snapshot.image} 
+                    alt={snapshot.title}
                     className="w-full h-full object-cover"
-                    muted
-                    onMouseEnter={(e) => e.target.play()}
-                    onMouseLeave={(e) => e.target.pause()}
                   />
                   <div className="absolute top-3 right-3">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getMoodColor(snapshot.mood)}`}>
@@ -192,10 +190,10 @@ const ReviewPage = ({ onNavigate, user }) => {
             </div>
             <div className="p-6">
               <div className="mb-4">
-                <video 
+                <img 
                   src={selectedSnapshot.image} 
+                  alt={selectedSnapshot.title}
                   className="w-full h-64 object-cover rounded-lg"
-                  controls
                 />
               </div>
               <div className="mb-4">
