@@ -52,7 +52,7 @@ const ReviewPage = ({ onNavigate, user }) => {
           date: '2025-08-18',
           title: '35年後的我',
           mood: '興奮',
-          image: '/素材/Rick.png',
+          image: '/assets/Rick.png',
           content: '今天和自己喝咖啡聊天，聊到了很多過去的回憶。Never Gonna Give You Up真的是人生中最珍貴的財富之一。',
           tags: ['Rick Roll', '回憶', '瑞克搖'],
           weather: '爆幹熱的晴天'
