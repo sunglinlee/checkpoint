@@ -5,6 +5,7 @@ import HomePage from './components/HomePage.jsx';
 import TransitionPage from './components/TransitionPage.jsx';
 import QuestionnairePage from './components/QuestionnairePage.jsx';
 import LoginPage from './components/LoginPage.jsx';
+import ReviewPage from './components/ReviewPage.jsx';
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState('home');
@@ -40,9 +41,11 @@ export default function App() {
                 return <QuestionnairePage onNavigate={handleNavigate} user={user} />;
             case 'login':
                 return <LoginPage onNavigate={handleNavigate} setUser={setUser} updateUserNickname={updateUserNickname} />;
+            case 'review':
+                return <ReviewPage onNavigate={handleNavigate} user={user} />;
             case 'home':
             default:
-                return <HomePage onNavigate={handleNavigate} user={user} onLogout={handleLogout} />;
+                return <HomePage onNavigate={handleNavigate} user={user} onLogout={handleLogout} updateUserNickname={updateUserNickname} />;
         }
     };
 

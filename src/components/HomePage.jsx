@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import HomePageVideo from "./HomePageVideo";
 
 const CssIconCheck = () => (
@@ -15,7 +15,7 @@ const Logo = () => (
 );
 
 
-const HomePage = ({ onNavigate, user, onLogout }) => {
+const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
   // 评价数据
   const testimonials = [
     {
@@ -77,6 +77,10 @@ const HomePage = ({ onNavigate, user, onLogout }) => {
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
+  const [newNickname, setNewNickname] = useState('');
+  const dropdownRef = useRef(null);
 
   // 每8秒轮动一次
   useEffect(() => {
@@ -88,6 +92,40 @@ const HomePage = ({ onNavigate, user, onLogout }) => {
 
     return () => clearInterval(interval);
   }, [testimonials.length]);
+
+  // 點擊外部關閉下拉選單
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // 處理暱稱修改
+  const handleNicknameChange = () => {
+    setNewNickname(user.nickname || user.name || user.given_name || '');
+    setIsNicknameModalOpen(true);
+    setIsDropdownOpen(false);
+  };
+
+  const handleSaveNickname = () => {
+    if (newNickname.trim()) {
+      updateUserNickname(newNickname.trim());
+      setIsNicknameModalOpen(false);
+      setNewNickname('');
+    }
+  };
+
+  const handleCancelNickname = () => {
+    setIsNicknameModalOpen(false);
+    setNewNickname('');
+  };
 
   // 获取当前显示的两个评价
   const getCurrentTestimonials = () => {
@@ -103,16 +141,62 @@ const HomePage = ({ onNavigate, user, onLogout }) => {
         <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }}><Logo /></a>
         <div className="flex items-center gap-4">
           {user ? (
-            <div className="flex items-center gap-3">
-              <span className="text-[#8A9A87] font-semibold">
-                歡迎，{user.nickname || user.name || user.given_name || user.email}
-              </span>
-              <button 
-                onClick={onLogout}
-                className="px-3 py-1.5 rounded-full bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300 transition-colors"
-              >
-                登出
-              </button>
+            <div className="relative" ref={dropdownRef}>
+              <div className="flex items-center gap-3">
+                <span className="text-[#8A9A87] font-semibold">
+                  歡迎，{user.nickname || user.name || user.given_name || user.email}
+                </span>
+                <button 
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="px-3 py-1.5 rounded-full bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300 transition-colors flex items-center gap-1"
+                >
+                  選單
+                  <svg className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+              
+              {/* 下拉選單 */}
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
+                  <button
+                    onClick={handleNicknameChange}
+                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                    </svg>
+                    暱稱修改
+                  </button>
+                  <button
+                    onClick={() => {
+                      onNavigate('review');
+                      setIsDropdownOpen(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    回顧快照
+                  </button>
+                  <hr className="my-1 border-gray-200" />
+                  <button
+                    onClick={() => {
+                      onLogout();
+                      setIsDropdownOpen(false);
+                    }}
+                    className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    登出
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <button onClick={() => onNavigate('login')} className="px-4 py-2 rounded-full bg-[#8A9A87] text-white text-sm font-semibold hover:bg-[#7A8A77] transition-colors">
@@ -281,6 +365,43 @@ const HomePage = ({ onNavigate, user, onLogout }) => {
           </div>
         </div>
       </footer>
+
+      {/* 暱稱修改彈出視窗 */}
+      {isNicknameModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">修改暱稱</h3>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                新暱稱
+              </label>
+              <input
+                type="text"
+                value={newNickname}
+                onChange={(e) => setNewNickname(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8A9A87] focus:border-transparent"
+                placeholder="請輸入新的暱稱"
+                maxLength={20}
+              />
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={handleCancelNickname}
+                className="px-4 py-2 text-gray-600 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleSaveNickname}
+                disabled={!newNickname.trim()}
+                className="px-4 py-2 bg-[#8A9A87] text-white rounded-md hover:bg-[#7A8A77] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                儲存
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
