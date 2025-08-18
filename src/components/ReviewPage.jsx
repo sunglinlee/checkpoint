@@ -24,8 +24,7 @@ const ReviewPage = ({ onNavigate, user }) => {
           mood: '平靜',
           image: '/assets/chill_corner.png', // 使用圖片替代影片
           content: '今年過得很快，有很多收穫也有很多挑戰。最重要的是學會了與自己和解。',
-          tags: ['成長', '反思', '平靜'],
-          weather: '晴天'
+          tags: ['成長', '反思', '平靜']
         },
         {
           id: 2,
@@ -34,8 +33,7 @@ const ReviewPage = ({ onNavigate, user }) => {
           mood: '焦慮但充滿希望',
           image: '/assets/1.png',
           content: '決定要轉職了，雖然有些不安，但我相信這是正確的選擇。新的開始總是令人期待的。',
-          tags: ['轉職', '決定', '希望'],
-          weather: '多雲'
+          tags: ['轉職', '決定', '希望']
         },
         {
           id: 3,
@@ -44,8 +42,7 @@ const ReviewPage = ({ onNavigate, user }) => {
           mood: '溫暖',
           image: '/assets/top_15.png',
           content: '今天和朋友喝咖啡聊天，聊到了很多過去的回憶。友情真的是人生中最珍貴的財富之一。',
-          tags: ['友情', '回憶', '溫暖'],
-          weather: '微風'
+          tags: ['友情', '回憶', '溫暖']
         },
         {
           id: 4,
@@ -54,8 +51,7 @@ const ReviewPage = ({ onNavigate, user }) => {
           mood: '興奮',
           image: '/assets/Rick.png',
           content: '今天和自己喝咖啡聊天，聊到了很多過去的回憶。Never Gonna Give You Up真的是人生中最珍貴的財富之一。',
-          tags: ['Rick Roll', '回憶', '瑞克搖'],
-          weather: '爆幹熱的晴天'
+          tags: ['Rick Roll', '回憶', '瑞克搖']
         }
       ];
       setSnapshots(mockSnapshots);
@@ -175,8 +171,14 @@ const ReviewPage = ({ onNavigate, user }) => {
 
       {/* 快照詳細檢視彈出視窗 */}
       {selectedSnapshot && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedSnapshot(null)}
+        >
+          <div 
+            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
               <h3 className="text-xl font-semibold">{selectedSnapshot.title}</h3>
               <button 
@@ -199,7 +201,6 @@ const ReviewPage = ({ onNavigate, user }) => {
               <div className="mb-4">
                 <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
                   <span>📅 {formatDate(selectedSnapshot.date)}</span>
-                  <span>🌤️ {selectedSnapshot.weather}</span>
                 </div>
                 <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getMoodColor(selectedSnapshot.mood)}`}>
                   心情：{selectedSnapshot.mood}
@@ -211,12 +212,22 @@ const ReviewPage = ({ onNavigate, user }) => {
               </div>
               <div>
                 <h4 className="font-semibold mb-2">標籤</h4>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 mb-4">
                   {selectedSnapshot.tags.map((tag, index) => (
                     <span key={index} className="px-3 py-1 bg-[#8A9A87] text-white text-sm rounded-full">
                       #{tag}
                     </span>
                   ))}
+                </div>
+                <div className="text-center">
+                  <a 
+                    href="https://youtu.be/xsrVWXm1J64?list=PLTkfvFUbqBfVmOJAqia1taN_URZAXhNXE&t=33" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-block px-4 py-2 text-sm text-[#8A9A87] hover:text-white hover:bg-[#8A9A87] rounded-full transition-all duration-200 border border-[#8A9A87]"
+                  >
+                    完整快照詳情
+                  </a>
                 </div>
               </div>
             </div>
