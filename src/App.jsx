@@ -6,10 +6,11 @@ import TransitionPage from './components/TransitionPage.jsx';
 import QuestionnairePage from './components/QuestionnairePage.jsx';
 import LoginPage from './components/LoginPage.jsx';
 import ReviewPage from './components/ReviewPage.jsx';
+import { loadAuth, clearAuth } from './api/auth';
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState('home');
-    const [user, setUser] = useState(null); // 新增使用者狀態
+    const [user, setUser] = useState(loadAuth().user || null);
 
     const handleNavigate = (page) => {
         // Stop music when navigating away from transition page
@@ -23,8 +24,9 @@ export default function App() {
     };
 
     const handleLogout = () => {
-        setUser(null); // 清除使用者狀態
-        setCurrentPage('home'); // 導航回首頁
+        clearAuth();
+        setUser(null);
+        setCurrentPage('home');
     };
 
     const updateUserNickname = (nickname) => {

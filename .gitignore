@@ -30,3 +30,4 @@ dist-ssr
 .env.test.local
 .env.production.local 
 新增 文字文件.txt
+API.txt
