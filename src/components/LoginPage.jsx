@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
+import { loginUser, registerUser, persistAuth } from '../api/auth';
 
 const Logo = () => (
   <div className="flex items-center gap-2">
@@ -183,6 +184,8 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
     password: '',
     confirmPassword: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleInputChange = (e) => {
     setFormData({
@@ -191,14 +194,42 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMessage('');
     if (!isLogin && formData.password !== formData.confirmPassword) {
-      alert('密碼確認不匹配');
+      setErrorMessage('密碼確認不匹配');
       return;
     }
-    // 這裡可以添加實際的登入/註冊邏輯
-    console.log(`${isLogin ? '登入' : '註冊'}`, formData);
+    try {
+      setIsSubmitting(true);
+      const payload = {
+        email: formData.email.trim(),
+        password: formData.password
+      };
+      if (!isLogin) {
+        payload.nickname = formData.nickname.trim();
+      }
+
+      const response = isLogin
+        ? await loginUser(payload)
+        : await registerUser(payload);
+
+      const token = response.token || response.accessToken || response.data?.token;
+      const user = response.user || response.data?.user || {
+        email: formData.email,
+        nickname: formData.nickname || undefined
+      };
+
+      persistAuth(token, user);
+      setUser(user);
+      onNavigate('home');
+    } catch (error) {
+      const msg = error?.data?.message || error?.message || '操作失敗，請稍後再試';
+      setErrorMessage(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleGoogleSuccess = (credentialResponse) => {
@@ -251,6 +282,12 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
                 {isLogin ? '登入您的帳戶開始記錄人生快照' : '創建帳戶開始您的人生快照之旅'}
               </p>
             </div>
+
+            {errorMessage && (
+              <div className="mb-4 p-3 rounded-md bg-red-50 text-red-600 text-sm">
+                {errorMessage}
+              </div>
+            )}
 
             {/* Google Login Button */}
             <div className="mb-6">
@@ -358,9 +395,10 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
 
               <button
                 type="submit"
-                className="w-full bg-[#8A9A87] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#7A8A77] transition-colors focus:ring-2 focus:ring-[#8A9A87] focus:ring-offset-2"
+                disabled={isSubmitting}
+                className="w-full bg-[#8A9A87] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#7A8A77] transition-colors focus:ring-2 focus:ring-[#8A9A87] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLogin ? '登入' : '註冊'}
+                {isSubmitting ? '處理中...' : (isLogin ? '登入' : '註冊')}
               </button>
             </form>
 
