@@ -130,9 +130,6 @@ src/
 
 使用 Tailwind CSS 類別或修改 `src/index.css` 中的自定義樣式。
 
-### 音訊功能
-
-使用 Tone.js 在 `TransitionPage.jsx` 中實現音樂播放功能。
 
 ## 授權
 
