@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
-import { loginUser, registerUser, persistAuth } from '../api/auth';
+import { loginUser, registerUser, mailLogin, mailRegister, logoutUser, refreshToken, persistAuth } from '../api/auth';
 
 const Logo = () => (
   <div className="flex items-center gap-2">
