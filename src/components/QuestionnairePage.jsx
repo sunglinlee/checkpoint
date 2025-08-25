@@ -16,7 +16,6 @@ const QuestionnairePage = ({ onNavigate }) => {
         { id: 'desire', icon: icons.desire, title: '探索內心的渴望', fields: [{ id: 'dream', type: 'textarea', label: '拋開現實限制，如果你知道自己絕對不會失敗，你最想去嘗試的一件事是什麼？' }, { id: 'goal', type: 'textarea', label: '將它拆解成一個具體的、三個月內可實現的「目標」。這個目標是什麼？完成它的第一步又是什麼？' }] },
         { id: 'reflection', icon: icons.reflection, title: '回望與前行', fields: [{ id: 'forgiveness', type: 'textarea', label: '回顧過去的一個遺憾。如果可以給當時的自己寫一封信，你會選擇原諒自己，並告訴自己從中學到了什麼？' }, { id: 'future_self', type: 'textarea', label: '想對未來的自己說些什麼話?' }] },
         { id: 'mood_and_tags', icon: icons.gratitude, title: '此刻的心情與標記', fields: [{ id: 'current_mood', type: 'options', label: '選擇最符合你此刻心情的狀態', options: ['平靜', '開心', '興奮', '溫暖', '焦慮但充滿希望', '沮喪', '其他'] }, { id: 'current_thoughts', type: 'textarea', label: '關於現在的你，有什麼特別想記錄下來的想法或感受？' }, { id: 'personal_tags', type: 'text', label: '為這個時刻添加 3-5 個標籤，用逗號分隔（例如：成長,反思,希望,轉變）' }] },
-        { id: 'image', icon: icons.image, title: '為此刻留下印記', fields: [{ id: 'snapshot_image', type: 'image', label: '請上傳一張最能代表你現況的圖片。' }] },
         { id: 'schedule', icon: icons.schedule, title: '預約下一封時空信', fields: [{ id: 'reminder_period', type: 'options', label: '希望多久之後收到這份紀錄，並重新填寫呢？', options: ['1 個月', '3 個月', '6 個月'] }] },
         { id: 'complete', icon: icons.complete, title: '完成了，真棒！', fields: [] }
     ], []);

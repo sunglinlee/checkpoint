@@ -6,6 +6,7 @@ import TransitionPage from './components/TransitionPage.jsx';
 import QuestionnairePage from './components/QuestionnairePage.jsx';
 import LoginPage from './components/LoginPage.jsx';
 import ReviewPage from './components/ReviewPage.jsx';
+import CheckReviewPage from './components/CheckReviewPage.jsx';
 import { loadAuth, clearAuth } from './api/auth';
 
 export default function App() {
@@ -45,6 +46,8 @@ export default function App() {
                 return <LoginPage onNavigate={handleNavigate} setUser={setUser} updateUserNickname={updateUserNickname} />;
             case 'review':
                 return <ReviewPage onNavigate={handleNavigate} user={user} />;
+            case 'checkreview':
+                return <CheckReviewPage onNavigate={handleNavigate} user={user} />;
             case 'home':
             default:
                 return <HomePage onNavigate={handleNavigate} user={user} onLogout={handleLogout} updateUserNickname={updateUserNickname} />;

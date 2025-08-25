@@ -220,14 +220,12 @@ const ReviewPage = ({ onNavigate, user }) => {
                   ))}
                 </div>
                 <div className="text-center">
-                  <a 
-                    href="https://youtu.be/xsrVWXm1J64?list=PLTkfvFUbqBfVmOJAqia1taN_URZAXhNXE&t=33" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
+                  <button 
+                    onClick={() => onNavigate('checkreview')}
                     className="inline-block px-4 py-2 text-sm text-[#8A9A87] hover:text-white hover:bg-[#8A9A87] rounded-full transition-all duration-200 border border-[#8A9A87]"
                   >
                     完整快照詳情
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
