@@ -15,6 +15,7 @@ const QuestionnairePage = ({ onNavigate }) => {
         { id: 'career', icon: icons.career, title: '工作與事業中的你', fields: [{ id: 'challenge', type: 'textarea', label: '請描述一個近期的挑戰。暫時不論結果，請專注於你在應對這個挑戰時，展現出了哪些過去未曾發現的『力量』或『特質』？' }, { id: 'new_understanding', type: 'textarea', label: '這個挑戰如何讓你對自己的能力有了新的認識？' }] },
         { id: 'desire', icon: icons.desire, title: '探索內心的渴望', fields: [{ id: 'dream', type: 'textarea', label: '拋開現實限制，如果你知道自己絕對不會失敗，你最想去嘗試的一件事是什麼？' }, { id: 'goal', type: 'textarea', label: '將它拆解成一個具體的、三個月內可實現的「目標」。這個目標是什麼？完成它的第一步又是什麼？' }] },
         { id: 'reflection', icon: icons.reflection, title: '回望與前行', fields: [{ id: 'forgiveness', type: 'textarea', label: '回顧過去的一個遺憾。如果可以給當時的自己寫一封信，你會選擇原諒自己，並告訴自己從中學到了什麼？' }, { id: 'future_self', type: 'textarea', label: '想對未來的自己說些什麼話?' }] },
+        { id: 'mood_and_tags', icon: icons.gratitude, title: '此刻的心情與標記', fields: [{ id: 'current_mood', type: 'options', label: '選擇最符合你此刻心情的狀態', options: ['平靜', '開心', '興奮', '溫暖', '焦慮但充滿希望', '沮喪', '其他'] }, { id: 'current_thoughts', type: 'textarea', label: '關於現在的你，有什麼特別想記錄下來的想法或感受？' }, { id: 'personal_tags', type: 'text', label: '為這個時刻添加 3-5 個標籤，用逗號分隔（例如：成長,反思,希望,轉變）' }] },
         { id: 'image', icon: icons.image, title: '為此刻留下印記', fields: [{ id: 'snapshot_image', type: 'image', label: '請上傳一張最能代表你現況的圖片。' }] },
         { id: 'schedule', icon: icons.schedule, title: '預約下一封時空信', fields: [{ id: 'reminder_period', type: 'options', label: '希望多久之後收到這份紀錄，並重新填寫呢？', options: ['1 個月', '3 個月', '6 個月'] }] },
         { id: 'complete', icon: icons.complete, title: '完成了，真棒！', fields: [] }
@@ -85,10 +86,44 @@ const QuestionnairePage = ({ onNavigate }) => {
                                     </div>
                                 )}
                                 {field.type === 'options' && (
-                                    <div className="flex flex-col md:flex-row gap-4">
-                                        {field.options.map(opt => (
-                                            <button key={opt} onClick={() => handleAnswerChange(field.id, opt)} className={`flex-1 p-4 border rounded-lg transition text-center ${answers[field.id] === opt ? 'bg-[#8A9A87] text-white border-[#8A9A87]' : 'bg-white hover:bg-gray-50 border-gray-300'}`}>{opt}</button>
-                                        ))}
+                                    <div className={field.id === 'current_mood' ? 'grid grid-cols-2 md:grid-cols-3 gap-3' : 'flex flex-col md:flex-row gap-4'}>
+                                        {field.options.map(opt => {
+                                            if (field.id === 'current_mood') {
+                                                const moodEmojis = {
+                                                    '平靜': '😌',
+                                                    '開心': '😊',
+                                                    '興奮': '🤩',
+                                                    '溫暖': '🥰',
+                                                    '焦慮但充滿希望': '😰',
+                                                    '沮喪': '😔',
+                                                    '其他': '🤔'
+                                                };
+                                                const moodColors = {
+                                                    '平靜': 'bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-800',
+                                                    '開心': 'bg-green-50 border-green-200 hover:bg-green-100 text-green-800',
+                                                    '興奮': 'bg-pink-50 border-pink-200 hover:bg-pink-100 text-pink-800',
+                                                    '溫暖': 'bg-orange-50 border-orange-200 hover:bg-orange-100 text-orange-800',
+                                                    '焦慮但充滿希望': 'bg-yellow-50 border-yellow-200 hover:bg-yellow-100 text-yellow-800',
+                                                    '沮喪': 'bg-gray-50 border-gray-200 hover:bg-gray-100 text-gray-800',
+                                                    '其他': 'bg-purple-50 border-purple-200 hover:bg-purple-100 text-purple-800'
+                                                };
+                                                const selectedStyle = answers[field.id] === opt ? 'bg-[#8A9A87] text-white border-[#8A9A87] shadow-md transform scale-105' : moodColors[opt];
+                                                return (
+                                                    <button 
+                                                        key={opt} 
+                                                        onClick={() => handleAnswerChange(field.id, opt)} 
+                                                        className={`p-4 border-2 rounded-xl transition-all duration-200 text-center flex flex-col items-center gap-2 ${selectedStyle}`}
+                                                    >
+                                                        <span className="text-2xl">{moodEmojis[opt]}</span>
+                                                        <span className="text-sm font-medium">{opt}</span>
+                                                    </button>
+                                                );
+                                            } else {
+                                                return (
+                                                    <button key={opt} onClick={() => handleAnswerChange(field.id, opt)} className={`flex-1 p-4 border rounded-lg transition text-center ${answers[field.id] === opt ? 'bg-[#8A9A87] text-white border-[#8A9A87]' : 'bg-white hover:bg-gray-50 border-gray-300'}`}>{opt}</button>
+                                                );
+                                            }
+                                        })}
                                     </div>
                                 )}
                             </div>
