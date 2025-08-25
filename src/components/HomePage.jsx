@@ -290,7 +290,13 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
             </div>
           </div>
           <div className="text-center mt-12">
-            <button onClick={() => onNavigate('transition')} className="btn-primary">
+            <button onClick={() => {
+              if (user) {
+                onNavigate('transition');
+              } else {
+                onNavigate('login');
+              }
+            }} className="btn-primary">
               開始我的快照
             </button>
             <p className="mt-4 text-sm text-gray-500">免費註冊，永久保存你的成長軌跡</p>
