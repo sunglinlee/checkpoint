@@ -8,12 +8,49 @@ export async function registerUser({ nickname, email, password }) {
     });
 }
 
-export async function mailRegister({ nickname, email, password }) {
-    // 信箱註冊 API - 將 nickname 對應到後端的 name 欄位
-    return apiRequest('/user/mailRegister', {
-        method: 'POST',
-        body: { name: nickname, email, password }
-    });
+export async function mailRegister(googleToken) {
+    // Google 第三方登入 API - 從 Google token 中獲取用戶資訊
+    try {
+        // 從 Google token 中解析用戶資訊
+        const userInfo = await getGoogleUserInfo(googleToken);
+        
+        return apiRequest('/user/mailRegister', {
+            method: 'POST',
+            body: { 
+                name: userInfo.nickname, 
+                email: userInfo.email, 
+                googleToken: googleToken 
+            }
+        });
+    } catch (error) {
+        console.error('Google 登入失敗:', error);
+        throw error;
+    }
+}
+
+// 從 Google token 獲取用戶資訊的輔助函數
+async function getGoogleUserInfo(googleToken) {
+    try {
+        const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+            headers: {
+                'Authorization': `Bearer ${googleToken}`
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('無法獲取 Google 用戶資訊');
+        }
+        
+        const userData = await response.json();
+        
+        return {
+            nickname: userData.name || userData.given_name || 'Google User',
+            email: userData.email
+        };
+    } catch (error) {
+        console.error('獲取 Google 用戶資訊失敗:', error);
+        throw error;
+    }
 }
 
 export async function loginUser({ email, password }) {
