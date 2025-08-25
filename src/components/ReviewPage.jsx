@@ -31,7 +31,7 @@ const ReviewPage = ({ onNavigate, user }) => {
           date: '2024-11-20',
           title: '轉職的決定',
           mood: '焦慮但充滿希望',
-          image: '/assets/1.png',
+          image: '/素材/焦慮但充滿希望1.jpg',
           content: '決定要轉職了，雖然有些不安，但我相信這是正確的選擇。新的開始總是令人期待的。',
           tags: ['轉職', '決定', '希望']
         },
