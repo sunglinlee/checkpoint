@@ -205,6 +205,25 @@ VITE_GOOGLE_CLIENT_ID=your-google-client-id-here
 
 ## 問卷與快照相關 API
 
+### 圖片分配邏輯說明
+
+每個快照會根據用戶的心情自動分配一張預設圖片，儲存在 `assigned_image` 欄位中：
+
+**心情與圖片對應關係**:
+- `平靜`: 平靜1.png, 平靜2.png, 平靜3.png
+- `開心`: 開心1.jpg, 開心2.jpg, 開心3.jpg  
+- `興奮`: 興奮1.jpg, 興奮2.jpg, 興奮3.jpg
+- `溫暖`: 溫暖1.jpg, 溫暖2.jpg, 溫暖3.jpg
+- `焦慮但充滿希望`: 焦慮但充滿希望1.jpg, 焦慮但充滿希望2.jpg, 焦慮但充滿希望3.jpg
+- `沮喪`: 沮喪1.jpg, 沮喪2.jpg, 沮喪3.jpg
+- `其他`: 預設使用平靜系列圖片
+
+**分配規則**:
+1. 系統會為每個用戶維護一個圖片使用記錄
+2. 優先選擇該心情下未使用過的圖片
+3. 如果該心情的所有圖片都已使用，則重置記錄並重新隨機分配
+4. 圖片路徑格式: `/素材/{圖片檔名}`
+
 ### 1. 提交問卷答案 (QuestionnairePage)
 ```javascript
 import { apiRequest } from '../api/client';
@@ -345,6 +364,7 @@ const getUserSnapshots = async (options = {}) => {
                 "date": "2024-12-15T10:30:00Z",
                 "mood": "平靜",
                 "image_url": "https://storage.../image.jpg",  // 如果有上傳圖片
+                "assigned_image": "/素材/平靜1.png",          // 根據心情隨機分配的預設圖片
                 "content": "感覺自己正在慢慢成長...",        // 來自問卷的 current_thoughts 欄位
                 "tags": ["成長", "反思", "平靜"]
             }
@@ -401,7 +421,8 @@ const getSnapshotDetail = async (snapshotId) => {
             "mood": "平靜",                            // 來自 current_mood
             "tags": ["成長", "反思", "平靜"],           // 來自 personal_tags (逗號分隔轉陣列)
             "content": "感覺自己正在慢慢成長...",        // 來自 current_thoughts
-            "image_url": "https://storage.../image.jpg",
+            "image_url": "https://storage.../image.jpg",  // 用戶上傳的圖片
+            "assigned_image": "/素材/平靜1.png",          // 根據心情隨機分配的預設圖片
             "reminder_period": "3 個月",
             "next_reminder": "2025-03-15T10:30:00Z"
         }

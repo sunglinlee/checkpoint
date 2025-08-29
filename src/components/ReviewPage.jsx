@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getSnapshotDisplayImage } from '../utils/imageAssignment';
 
 const Logo = () => (
   <div className="flex items-center gap-2">
@@ -13,45 +14,7 @@ const ReviewPage = ({ onNavigate, user }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editingTitle, setEditingTitle] = useState('');
-  const [usedImages, setUsedImages] = useState({});
 
-  // 根據心情分配圖片的函數（不依賴狀態的版本）
-  const assignImageByMood = (mood, usedImagesRef) => {
-    const moodImageMap = {
-      '平靜': ['平靜1.png', '平靜2.png', '平靜3.png'],
-      '開心': ['開心1.jpg', '開心2.jpg', '開心3.jpg'],
-      '興奮': ['興奮1.jpg', '興奮2.jpg', '興奮3.jpg'],
-      '溫暖': ['溫暖1.jpg', '溫暖2.jpg', '溫暖3.jpg'],
-      '焦慮但充滿希望': ['焦慮但充滿希望1.jpg', '焦慮但充滿希望2.jpg', '焦慮但充滿希望3.jpg'],
-      '沮喪': ['沮喪1.jpg', '沮喪2.jpg', '沮喪3.jpg'],
-      '其他': ['平靜1.png', '平靜2.png', '平靜3.png'] // 預設使用平靜圖片
-    };
-
-    const availableImages = moodImageMap[mood] || moodImageMap['其他'];
-    
-    // 取得該心情已使用的圖片
-    const usedForMood = usedImagesRef[mood] || [];
-    
-    // 找出未使用的圖片
-    const unusedImages = availableImages.filter(img => !usedForMood.includes(img));
-    
-    let selectedImage;
-    if (unusedImages.length > 0) {
-      // 如果有未使用的圖片，隨機選擇一張
-      selectedImage = unusedImages[Math.floor(Math.random() * unusedImages.length)];
-    } else {
-      // 如果所有圖片都用過了，重置並隨機選擇
-      selectedImage = availableImages[Math.floor(Math.random() * availableImages.length)];
-      // 重置該心情的使用記錄
-      usedImagesRef[mood] = [selectedImage];
-      return `/素材/${selectedImage}`;
-    }
-    
-    // 更新使用記錄
-    usedImagesRef[mood] = [...(usedImagesRef[mood] || []), selectedImage];
-    
-    return `/素材/${selectedImage}`;
-  };
 
   // 模擬快照數據 - 實際應用中這裡會從後端API獲取
   useEffect(() => {
@@ -64,7 +27,8 @@ const ReviewPage = ({ onNavigate, user }) => {
           title: '年末的反思時光', // 與 CheckReviewPage 的 snapshot_title 一致
           mood: '平靜',
           content: '感覺自己正在慢慢成長，雖然路還很長，但每一步都很珍貴', // 與 CheckReviewPage 的 current_thoughts 一致
-          tags: ['成長', '反思', '希望', '平靜', '感恩'] // 與 CheckReviewPage 的 personal_tags 一致
+          tags: ['成長', '反思', '希望', '平靜', '感恩'], // 與 CheckReviewPage 的 personal_tags 一致
+          assigned_image: '/素材/平靜2.png' // 資料庫中儲存的隨機分配圖片
         },
         {
           id: 2,
@@ -72,7 +36,8 @@ const ReviewPage = ({ onNavigate, user }) => {
           title: '轉職的決定',
           mood: '焦慮但充滿希望',
           content: '決定要轉職了，雖然有些不安，但我相信這是正確的選擇。新的開始總是令人期待的，希望能在新的環境中找到更適合自己的發展方向。',
-          tags: ['轉職', '決定', '希望']
+          tags: ['轉職', '決定', '希望'],
+          assigned_image: '/素材/焦慮但充滿希望1.jpg'
         },
         {
           id: 3,
@@ -80,7 +45,8 @@ const ReviewPage = ({ onNavigate, user }) => {
           title: '秋天的午後',
           mood: '溫暖',
           content: '今天和朋友喝咖啡聊天，聊到了很多過去的回憶。友情真的是人生中最珍貴的財富之一，感謝有這些陪伴我走過人生各個階段的朋友們。',
-          tags: ['友情', '回憶', '溫暖']
+          tags: ['友情', '回憶', '溫暖'],
+          assigned_image: '/素材/溫暖3.jpg'
         },
         {
           id: 4,
@@ -88,7 +54,8 @@ const ReviewPage = ({ onNavigate, user }) => {
           title: '35年後的我',
           mood: '興奮',
           content: '今天和自己喝咖啡聊天，聊到了很多過去的回憶。Never Gonna Give You Up真的是人生中最珍貴的財富之一，這首歌陪伴了我這麼多年。',
-          tags: ['Rick Roll', '回憶', '瑞克搖']
+          tags: ['Rick Roll', '回憶', '瑞克搖'],
+          assigned_image: '/素材/興奮2.jpg'
         },
         {
           id: 5,
@@ -96,7 +63,8 @@ const ReviewPage = ({ onNavigate, user }) => {
           title: '週末的小確幸',
           mood: '開心',
           content: '今天做了最愛的料理，陽光很好，心情也很好。生活中的小確幸總是讓人感到幸福。',
-          tags: ['料理', '陽光', '小確幸']
+          tags: ['料理', '陽光', '小確幸'],
+          assigned_image: '/素材/開心1.jpg'
         },
         {
           id: 6,
@@ -104,7 +72,8 @@ const ReviewPage = ({ onNavigate, user }) => {
           title: '低潮中的反思',
           mood: '沮喪',
           content: '最近工作壓力很大，感覺有些迷失方向。但我知道這只是暫時的，會慢慢好起來的。',
-          tags: ['工作', '壓力', '迷失']
+          tags: ['工作', '壓力', '迷失'],
+          assigned_image: '/素材/沮喪2.jpg'
         },
         {
           id: 7,
@@ -112,7 +81,8 @@ const ReviewPage = ({ onNavigate, user }) => {
           title: '家人的溫暖擁抱',
           mood: '溫暖',
           content: '今天回家時媽媽給了我一個大大的擁抱，那一刻感受到滿滿的愛與溫暖。家人的愛總是最珍貴的。',
-          tags: ['家人', '愛', '擁抱', '溫暖']
+          tags: ['家人', '愛', '擁抱', '溫暖'],
+          assigned_image: '/素材/溫暖1.jpg'
         },
         {
           id: 8,
@@ -120,7 +90,8 @@ const ReviewPage = ({ onNavigate, user }) => {
           title: '新挑戰的開始',
           mood: '焦慮但充滿希望',
           content: '即將開始一個全新的專案，雖然有些緊張和不安，但內心充滿期待。相信自己能夠克服困難。',
-          tags: ['挑戰', '專案', '期待', '成長']
+          tags: ['挑戰', '專案', '期待', '成長'],
+          assigned_image: '/素材/焦慮但充滿希望3.jpg'
         },
         {
           id: 9,
@@ -128,22 +99,13 @@ const ReviewPage = ({ onNavigate, user }) => {
           title: '生日驚喜派對',
           mood: '興奮',
           content: '朋友們為我準備了驚喜生日派對！看到大家的用心準備，真的太感動了。這個生日會是我永遠的美好回憶。',
-          tags: ['生日', '驚喜', '朋友', '感動']
+          tags: ['生日', '驚喜', '朋友', '感動'],
+          assigned_image: '/素材/興奮1.jpg'
         }
       ];
 
-      // 建立臨時的使用記錄物件
-      const tempUsedImages = {};
-      
-      // 為每個快照分配圖片
-      const snapshotsWithImages = mockSnapshots.map(snapshot => ({
-        ...snapshot,
-        image: assignImageByMood(snapshot.mood, tempUsedImages)
-      }));
-      
-      // 更新狀態
-      setUsedImages(tempUsedImages);
-      setSnapshots(snapshotsWithImages);
+      // 直接設置快照數據，圖片已經在資料庫中分配好了
+      setSnapshots(mockSnapshots);
       setIsLoading(false);
     }, 1000);
   }, []);
@@ -205,49 +167,6 @@ const ReviewPage = ({ onNavigate, user }) => {
     setEditingTitle('');
   };
 
-  // 根據心情分配圖片的函數
-  const getImageByMood = (mood, snapshotId) => {
-    const moodImageMap = {
-      '平靜': ['平靜1.png', '平靜2.png', '平靜3.png'],
-      '開心': ['開心1.jpg', '開心2.jpg', '開心3.jpg'],
-      '興奮': ['興奮1.jpg', '興奮2.jpg', '興奮3.jpg'],
-      '溫暖': ['溫暖1.jpg', '溫暖2.jpg', '溫暖3.jpg'],
-      '焦慮但充滿希望': ['焦慮但充滿希望1.jpg', '焦慮但充滿希望2.jpg', '焦慮但充滿希望3.jpg'],
-      '沮喪': ['沮喪1.jpg', '沮喪2.jpg', '沮喪3.jpg'],
-      '其他': ['平靜1.png', '平靜2.png', '平靜3.png'] // 預設使用平靜圖片
-    };
-
-    const availableImages = moodImageMap[mood] || moodImageMap['其他'];
-    
-    // 取得該心情已使用的圖片
-    const usedForMood = usedImages[mood] || [];
-    
-    // 找出未使用的圖片
-    const unusedImages = availableImages.filter(img => !usedForMood.includes(img));
-    
-    let selectedImage;
-    if (unusedImages.length > 0) {
-      // 如果有未使用的圖片，隨機選擇一張
-      selectedImage = unusedImages[Math.floor(Math.random() * unusedImages.length)];
-    } else {
-      // 如果所有圖片都用過了，重置並隨機選擇
-      selectedImage = availableImages[Math.floor(Math.random() * availableImages.length)];
-      // 重置該心情的使用記錄
-      setUsedImages(prev => ({
-        ...prev,
-        [mood]: [selectedImage]
-      }));
-      return `/素材/${selectedImage}`;
-    }
-    
-    // 更新使用記錄
-    setUsedImages(prev => ({
-      ...prev,
-      [mood]: [...(prev[mood] || []), selectedImage]
-    }));
-    
-    return `/素材/${selectedImage}`;
-  };
 
   if (isLoading) {
     return (
@@ -310,7 +229,7 @@ const ReviewPage = ({ onNavigate, user }) => {
               >
                 <div className="h-48 bg-gray-200 relative overflow-hidden">
                   <img 
-                    src={snapshot.image} 
+                    src={getSnapshotDisplayImage(snapshot)} 
                     alt={snapshot.title}
                     className="w-full h-full object-cover"
                   />
@@ -413,7 +332,7 @@ const ReviewPage = ({ onNavigate, user }) => {
             <div className="p-6">
               <div className="mb-4">
                 <img 
-                  src={selectedSnapshot.image} 
+                  src={getSnapshotDisplayImage(selectedSnapshot)} 
                   alt={selectedSnapshot.title}
                   className="w-full h-64 object-cover rounded-lg"
                 />
