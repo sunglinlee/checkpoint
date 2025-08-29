@@ -346,8 +346,7 @@ const getUserSnapshots = async (options = {}) => {
                 "mood": "平靜",
                 "image_url": "https://storage.../image.jpg",  // 如果有上傳圖片
                 "content": "感覺自己正在慢慢成長...",        // 來自問卷的 current_thoughts 欄位
-                "tags": ["成長", "反思", "平靜"],
-                "preview": "感覺自己正在慢慢成長..."          // content 的前 100 字
+                "tags": ["成長", "反思", "平靜"]
             }
         ],
         "total": 15,
