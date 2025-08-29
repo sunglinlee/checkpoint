@@ -189,6 +189,371 @@ VITE_GOOGLE_CLIENT_ID=your-google-client-id-here
 5. **CORS**: 後端需要設定適當的 CORS 政策以允許前端存取
 6. **欄位對應**: 前端 `nickname` 會自動轉換為後端 `name` 欄位
 
+## 問卷與快照相關 API
+
+### 1. 提交問卷答案 (QuestionnairePage)
+```javascript
+import { apiRequest } from '../api/client';
+
+const submitQuestionnaire = async (questionnaireData) => {
+    return await apiRequest('/questionnaire/submit', {
+        method: 'POST',
+        body: questionnaireData
+    });
+};
+```
+
+**端點**: `POST /questionnaire/submit`
+**需要認證**: 是
+**參數**:
+```javascript
+{
+    // 生活滿意度
+    "satisfaction": {
+        "rating": 7,                    // number (1-10)
+        "reason": "整體來說還算滿意..."   // string
+    },
+    
+    // 感受美好的瞬間
+    "gratitude": {
+        "grateful_events": "1. 今天早上看到陽光...",  // string
+        "share_with": "我的家人和最好的朋友",        // string
+        "inspiration": "這些小事提醒我要珍惜當下..."  // string
+    },
+    
+    // 你所關注的世界
+    "focus": {
+        "current_events": "最近關注氣候變遷...",     // string
+        "feelings": "有些擔憂但也充滿希望...",       // string
+        "actions": "開始減少使用一次性用品..."       // string
+    },
+    
+    // 與情緒溫柔對話
+    "emotion": {
+        "emotion_event": "上週工作上的一個誤解...",  // string
+        "emotion_name": "小灰",                    // string
+        "unmet_needs": "需要更多的理解和支持..."    // string
+    },
+    
+    // 你與身邊的連結
+    "relations": {
+        "family": "家人是我最重要的支柱...",        // string
+        "friends": "朋友讓我的生活更豐富多彩...",   // string
+        "love": "正在學習如何更好地愛自己..."       // string
+    },
+    
+    // 工作與事業中的你
+    "career": {
+        "challenge": "最近負責一個跨部門的專案...",           // string
+        "new_understanding": "發現自己比想像中更有耐心..."    // string
+    },
+    
+    // 探索內心的渴望
+    "desire": {
+        "dream": "想要開一間結合咖啡和書店的小店...",  // string
+        "goal": "三個月內完成商業計劃書..."           // string
+    },
+    
+    // 回望與前行
+    "reflection": {
+        "forgiveness": "親愛的過去的自己...",         // string
+        "future_self": "希望你能保持現在的熱情..."     // string
+    },
+    
+    // 此刻的心情與標記
+    "mood_and_tags": {
+        "snapshot_title": "年末的反思時光",           // string
+        "current_mood": "平靜",                      // string (enum: 平靜,開心,興奮,溫暖,焦慮但充滿希望,沮喪,其他)
+        "current_thoughts": "感覺自己正在慢慢成長...", // string
+        "personal_tags": "成長,反思,希望,平靜,感恩"    // string (comma-separated)
+    },
+    
+    // 預約下一封時空信
+    "schedule": {
+        "reminder_period": "3 個月"                  // string (enum: 1 個月,3 個月,6 個月)
+    },
+    
+    // 可選：快照圖片
+    "snapshot_image": File,                          // File object (optional)
+    
+    // 系統資訊
+    "created_at": "2024-12-15T10:30:00Z",           // ISO 8601 timestamp
+    "user_id": "user123"                            // string (自動從認證 token 取得)
+}
+```
+
+**回應**:
+```javascript
+{
+    "success": true,
+    "message": "問卷提交成功",
+    "data": {
+        "snapshot_id": "snapshot_123",
+        "created_at": "2024-12-15T10:30:00Z",
+        "reminder_scheduled": true,
+        "reminder_date": "2025-03-15T10:30:00Z"
+    }
+}
+```
+
+### 2. 獲取用戶快照列表 (ReviewPage)
+```javascript
+import { apiRequest } from '../api/client';
+
+const getUserSnapshots = async (options = {}) => {
+    const queryParams = new URLSearchParams();
+    if (options.limit) queryParams.append('limit', options.limit);
+    if (options.offset) queryParams.append('offset', options.offset);
+    if (options.sort) queryParams.append('sort', options.sort);
+    
+    return await apiRequest(`/snapshots${queryParams.toString() ? '?' + queryParams.toString() : ''}`, {
+        method: 'GET'
+    });
+};
+```
+
+**端點**: `GET /snapshots`
+**需要認證**: 是
+**查詢參數**:
+- `limit` (number, optional): 每頁返回的快照數量，預設 20
+- `offset` (number, optional): 分頁偏移量，預設 0
+- `sort` (string, optional): 排序方式，可選值：`created_at_desc`(預設), `created_at_asc`
+
+**回應**:
+```javascript
+{
+    "success": true,
+    "data": {
+        "snapshots": [
+            {
+                "id": "snapshot_123",
+                "title": "年末的反思",                    // 從 current_thoughts 或自動生成
+                "date": "2024-12-15T10:30:00Z",
+                "mood": "平靜",
+                "image_url": "https://storage.../image.jpg",  // 如果有上傳圖片
+                "content": "今年過得很快，有很多收穫...",      // current_thoughts 的摘要
+                "tags": ["成長", "反思", "平靜"],
+                "preview": "感覺自己正在慢慢成長..."          // content 的前 100 字
+            }
+        ],
+        "total": 15,
+        "has_more": true,
+        "next_offset": 20
+    }
+}
+```
+
+### 3. 獲取特定快照詳細資料 (CheckReviewPage)
+```javascript
+import { apiRequest } from '../api/client';
+
+const getSnapshotDetail = async (snapshotId) => {
+    return await apiRequest(`/snapshots/${snapshotId}`, {
+        method: 'GET'
+    });
+};
+```
+
+**端點**: `GET /snapshots/{snapshot_id}`
+**需要認證**: 是
+**路徑參數**:
+- `snapshot_id` (string): 快照的唯一識別碼
+
+**回應**:
+```javascript
+{
+    "success": true,
+    "data": {
+        "id": "snapshot_123",
+        "created_at": "2024-12-15T10:30:00Z",
+        "user_id": "user123",
+        
+        // 完整的問卷答案
+        "questionnaire_data": {
+            "satisfaction": {
+                "rating": 7,
+                "reason": "整體來說還算滿意..."
+            },
+            "gratitude": {
+                "grateful_events": "1. 今天早上看到陽光...",
+                "share_with": "我的家人和最好的朋友",
+                "inspiration": "這些小事提醒我要珍惜當下..."
+            },
+            // ... 其他所有問卷資料
+        },
+        
+        // 快照元資料
+        "metadata": {
+            "title": "年末的反思",
+            "mood": "平靜",
+            "tags": ["成長", "反思", "平靜"],
+            "image_url": "https://storage.../image.jpg",
+            "reminder_period": "3 個月",
+            "next_reminder": "2025-03-15T10:30:00Z"
+        }
+    }
+}
+```
+
+### 4. 上傳快照圖片
+```javascript
+import { apiRequest } from '../api/client';
+
+const uploadSnapshotImage = async (imageFile) => {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    
+    return await apiRequest('/snapshots/upload-image', {
+        method: 'POST',
+        headers: {}, // 不設定 Content-Type，讓瀏覽器自動設定 multipart/form-data
+        body: formData
+    });
+};
+```
+
+**端點**: `POST /snapshots/upload-image`
+**需要認證**: 是
+**參數**: 
+- `image` (File): 圖片檔案 (multipart/form-data)
+
+**回應**:
+```javascript
+{
+    "success": true,
+    "data": {
+        "image_url": "https://storage.../uploaded-image.jpg",
+        "image_id": "img_123"
+    }
+}
+```
+
+### 5. 刪除快照
+```javascript
+import { apiRequest } from '../api/client';
+
+const deleteSnapshot = async (snapshotId) => {
+    return await apiRequest(`/snapshots/${snapshotId}`, {
+        method: 'DELETE'
+    });
+};
+```
+
+**端點**: `DELETE /snapshots/{snapshot_id}`
+**需要認證**: 是
+**路徑參數**:
+- `snapshot_id` (string): 快照的唯一識別碼
+
+**回應**:
+```javascript
+{
+    "success": true,
+    "message": "快照已成功刪除"
+}
+```
+
+### 6. 更新快照標題
+```javascript
+import { apiRequest } from '../api/client';
+
+const updateSnapshotTitle = async (snapshotId, newTitle) => {
+    return await apiRequest(`/snapshots/${snapshotId}/title`, {
+        method: 'PUT',
+        body: {
+            title: newTitle
+        }
+    });
+};
+```
+
+**端點**: `PUT /snapshots/{snapshot_id}/title`
+**需要認證**: 是
+**參數**:
+```javascript
+{
+    "title": "新的快照標題"  // string (required, max length: 500)
+}
+```
+
+**回應**:
+```javascript
+{
+    "success": true,
+    "message": "快照標題更新成功",
+    "data": {
+        "id": "snapshot_123",
+        "title": "新的快照標題",
+        "updated_at": "2024-12-15T10:30:00Z"
+    }
+}
+```
+
+### 7. 更新快照提醒設定
+```javascript
+import { apiRequest } from '../api/client';
+
+const updateSnapshotReminder = async (snapshotId, reminderPeriod) => {
+    return await apiRequest(`/snapshots/${snapshotId}/reminder`, {
+        method: 'PUT',
+        body: {
+            reminder_period: reminderPeriod
+        }
+    });
+};
+```
+
+**端點**: `PUT /snapshots/{snapshot_id}/reminder`
+**需要認證**: 是
+**參數**:
+```javascript
+{
+    "reminder_period": "3 個月"  // string (enum: 1 個月,3 個月,6 個月)
+}
+```
+
+**回應**:
+```javascript
+{
+    "success": true,
+    "data": {
+        "next_reminder": "2025-03-15T10:30:00Z"
+    }
+}
+```
+
+## 資料庫結構建議
+
+### snapshots 表
+```sql
+CREATE TABLE snapshots (
+    id VARCHAR(255) PRIMARY KEY,
+    user_id VARCHAR(255) NOT NULL,
+    title VARCHAR(500),
+    questionnaire_data JSON NOT NULL,
+    image_url VARCHAR(1000),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    reminder_period VARCHAR(50),
+    next_reminder TIMESTAMP,
+    
+    INDEX idx_user_created (user_id, created_at),
+    INDEX idx_next_reminder (next_reminder),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+```
+
+### snapshot_tags 表 (如果需要標籤搜尋功能)
+```sql
+CREATE TABLE snapshot_tags (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    snapshot_id VARCHAR(255) NOT NULL,
+    tag VARCHAR(100) NOT NULL,
+    
+    INDEX idx_snapshot_tag (snapshot_id, tag),
+    INDEX idx_tag (tag),
+    FOREIGN KEY (snapshot_id) REFERENCES snapshots(id) ON DELETE CASCADE
+);
+```
+
 ## 常見問題
 
 ### Q: 為什麼註冊時會出現 "Column 'NAME' cannot be null" 錯誤？
@@ -196,4 +561,13 @@ A: 這是因為後端資料庫的 `NAME` 欄位不能為 null，但前端傳送�
 
 ### Q: 前端是否還需要使用 nickname 欄位？
 A: 是的，前端仍然使用 `nickname` 欄位，API 層會自動將其轉換為後端期望的 `name` 欄位。
+
+### Q: 問卷資料如何儲存？
+A: 問卷資料以 JSON 格式儲存在 `snapshots` 表的 `questionnaire_data` 欄位中，這樣可以保持資料結構的彈性。
+
+### Q: 圖片如何處理？
+A: 圖片先上傳到雲端儲存服務（如 Google Cloud Storage），然後將 URL 儲存在資料庫中。建議實作圖片壓縮和格式轉換。
+
+### Q: 提醒功能如何實作？
+A: 可以使用定時任務（cron job）定期檢查 `next_reminder` 欄位，發送郵件提醒用戶填寫新的問卷。
 

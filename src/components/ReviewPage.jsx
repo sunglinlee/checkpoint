@@ -11,6 +11,8 @@ const ReviewPage = ({ onNavigate, user }) => {
   const [snapshots, setSnapshots] = useState([]);
   const [selectedSnapshot, setSelectedSnapshot] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editingTitle, setEditingTitle] = useState('');
 
   // 模擬快照數據 - 實際應用中這裡會從後端API獲取
   useEffect(() => {
@@ -78,6 +80,42 @@ const ReviewPage = ({ onNavigate, user }) => {
       '興奮': 'bg-pink-100 text-pink-800'
     };
     return moodColors[mood] || 'bg-gray-100 text-gray-800';
+  };
+
+  const handleEditTitle = () => {
+    setEditingTitle(selectedSnapshot.title);
+    setIsEditingTitle(true);
+  };
+
+  const handleSaveTitle = async () => {
+    if (editingTitle.trim() === '') {
+      alert('快照名稱不能為空');
+      return;
+    }
+
+    try {
+      // 這裡應該呼叫 API 更新快照標題
+      // await updateSnapshotTitle(selectedSnapshot.id, editingTitle.trim());
+      
+      // 更新本地狀態
+      const updatedSnapshots = snapshots.map(snapshot => 
+        snapshot.id === selectedSnapshot.id 
+          ? { ...snapshot, title: editingTitle.trim() }
+          : snapshot
+      );
+      setSnapshots(updatedSnapshots);
+      setSelectedSnapshot({ ...selectedSnapshot, title: editingTitle.trim() });
+      setIsEditingTitle(false);
+      setEditingTitle('');
+    } catch (error) {
+      console.error('更新快照標題失敗:', error);
+      alert('更新失敗，請稍後再試');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingTitle(false);
+    setEditingTitle('');
   };
 
   if (isLoading) {
@@ -180,10 +218,61 @@ const ReviewPage = ({ onNavigate, user }) => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-              <h3 className="text-xl font-semibold">{selectedSnapshot.title}</h3>
+              <div className="flex items-center gap-3 flex-1">
+                {isEditingTitle ? (
+                  <div className="flex items-center gap-2 flex-1">
+                    <input
+                      type="text"
+                      value={editingTitle}
+                      onChange={(e) => setEditingTitle(e.target.value)}
+                      className="flex-1 text-xl font-semibold bg-transparent border-b-2 border-[#8A9A87] focus:outline-none focus:border-[#7A8A77] px-1"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveTitle();
+                        if (e.key === 'Escape') handleCancelEdit();
+                      }}
+                    />
+                    <button
+                      onClick={handleSaveTitle}
+                      className="p-1 text-green-600 hover:text-green-700 transition-colors"
+                      title="儲存"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={handleCancelEdit}
+                      className="p-1 text-gray-500 hover:text-gray-700 transition-colors"
+                      title="取消"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 flex-1">
+                    <h3 className="text-xl font-semibold">{selectedSnapshot.title}</h3>
+                    <button
+                      onClick={handleEditTitle}
+                      className="p-1 text-gray-400 hover:text-[#8A9A87] transition-colors"
+                      title="編輯快照標題"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+              </div>
               <button 
-                onClick={() => setSelectedSnapshot(null)}
-                className="text-gray-500 hover:text-gray-700"
+                onClick={() => {
+                  setSelectedSnapshot(null);
+                  setIsEditingTitle(false);
+                  setEditingTitle('');
+                }}
+                className="text-gray-500 hover:text-gray-700 ml-4"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

@@ -21,7 +21,7 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
     { id: 'career', icon: icons.career, title: '工作與事業中的你', fields: [{ id: 'challenge', type: 'textarea', label: '請描述一個近期的挑戰。暫時不論結果，請專注於你在應對這個挑戰時，展現出了哪些過去未曾發現的『力量』或『特質』？' }, { id: 'new_understanding', type: 'textarea', label: '這個挑戰如何讓你對自己的能力有了新的認識？' }] },
     { id: 'desire', icon: icons.desire, title: '探索內心的渴望', fields: [{ id: 'dream', type: 'textarea', label: '拋開現實限制，如果你知道自己絕對不會失敗，你最想去嘗試的一件事是什麼？' }, { id: 'goal', type: 'textarea', label: '將它拆解成一個具體的、三個月內可實現的「目標」。這個目標是什麼？完成它的第一步又是什麼？' }] },
     { id: 'reflection', icon: icons.reflection, title: '回望與前行', fields: [{ id: 'forgiveness', type: 'textarea', label: '回顧過去的一個遺憾。如果可以給當時的自己寫一封信，你會選擇原諒自己，並告訴自己從中學到了什麼？' }, { id: 'future_self', type: 'textarea', label: '想對未來的自己說些什麼話?' }] },
-    { id: 'mood_and_tags', icon: icons.gratitude, title: '此刻的心情與標記', fields: [{ id: 'current_mood', type: 'options', label: '選擇最符合你此刻心情的狀態', options: ['平靜', '開心', '興奮', '溫暖', '焦慮但充滿希望', '沮喪', '其他'] }, { id: 'current_thoughts', type: 'textarea', label: '關於現在的你，有什麼特別想記錄下來的想法或感受？' }, { id: 'personal_tags', type: 'text', label: '為這個時刻添加 3-5 個標籤，用逗號分隔（例如：成長,反思,希望,轉變）' }] }
+    { id: 'mood_and_tags', icon: icons.gratitude, title: '此刻的心情與標記', fields: [{ id: 'snapshot_title', type: 'text', label: '為這個快照取個名字吧' }, { id: 'current_mood', type: 'options', label: '選擇最符合你此刻心情的狀態', options: ['平靜', '開心', '興奮', '溫暖', '焦慮但充滿希望', '沮喪', '其他'] }, { id: 'current_thoughts', type: 'textarea', label: '關於現在的你，有什麼特別想記錄下來的想法或感受？' }, { id: 'personal_tags', type: 'text', label: '為這個時刻添加 3-5 個標籤，用逗號分隔（例如：成長,反思,希望,轉變）' }] }
   ], []);
 
   // 模擬問卷答案數據 - 實際應用中這會從 props 或 API 獲取
@@ -46,6 +46,7 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
     goal: '三個月內完成商業計劃書，第一步是市場調研',
     forgiveness: '親愛的過去的自己，那次的失敗教會了你堅韌，你已經做得很好了',
     future_self: '希望你能保持現在的熱情，記得照顧好自己的身心健康',
+    snapshot_title: '年末的反思時光',
     current_mood: '平靜',
     current_thoughts: '感覺自己正在慢慢成長，雖然路還很長，但每一步都很珍貴',
     personal_tags: '成長,反思,希望,平靜,感恩',
