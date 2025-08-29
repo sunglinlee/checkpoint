@@ -22,11 +22,11 @@ const ReviewPage = ({ onNavigate, user }) => {
         {
           id: 1,
           date: '2024-12-15',
-          title: '年末的反思',
+          title: '年末的反思時光', // 與 CheckReviewPage 的 snapshot_title 一致
           mood: '平靜',
           image: '/assets/chill_corner.png', // 使用圖片替代影片
-          content: '今年過得很快，有很多收穫也有很多挑戰。最重要的是學會了與自己和解。',
-          tags: ['成長', '反思', '平靜']
+          content: '感覺自己正在慢慢成長，雖然路還很長，但每一步都很珍貴', // 與 CheckReviewPage 的 current_thoughts 一致
+          tags: ['成長', '反思', '希望', '平靜', '感恩'] // 與 CheckReviewPage 的 personal_tags 一致
         },
         {
           id: 2,
@@ -34,7 +34,7 @@ const ReviewPage = ({ onNavigate, user }) => {
           title: '轉職的決定',
           mood: '焦慮但充滿希望',
           image: '/素材/焦慮但充滿希望1.jpg',
-          content: '決定要轉職了，雖然有些不安，但我相信這是正確的選擇。新的開始總是令人期待的。',
+          content: '決定要轉職了，雖然有些不安，但我相信這是正確的選擇。新的開始總是令人期待的，希望能在新的環境中找到更適合自己的發展方向。',
           tags: ['轉職', '決定', '希望']
         },
         {
@@ -43,7 +43,7 @@ const ReviewPage = ({ onNavigate, user }) => {
           title: '秋天的午後',
           mood: '溫暖',
           image: '/assets/top_15.png',
-          content: '今天和朋友喝咖啡聊天，聊到了很多過去的回憶。友情真的是人生中最珍貴的財富之一。',
+          content: '今天和朋友喝咖啡聊天，聊到了很多過去的回憶。友情真的是人生中最珍貴的財富之一，感謝有這些陪伴我走過人生各個階段的朋友們。',
           tags: ['友情', '回憶', '溫暖']
         },
         {
@@ -52,7 +52,7 @@ const ReviewPage = ({ onNavigate, user }) => {
           title: '35年後的我',
           mood: '興奮',
           image: '/assets/Rick.png',
-          content: '今天和自己喝咖啡聊天，聊到了很多過去的回憶。Never Gonna Give You Up真的是人生中最珍貴的財富之一。',
+          content: '今天和自己喝咖啡聊天，聊到了很多過去的回憶。Never Gonna Give You Up真的是人生中最珍貴的財富之一，這首歌陪伴了我這麼多年。',
           tags: ['Rick Roll', '回憶', '瑞克搖']
         }
       ];

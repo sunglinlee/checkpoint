@@ -21,6 +21,11 @@ Authorization: Bearer {token}
 
 ## 用戶相關 API
 
+### 認證方式說明
+本系統支援兩種認證方式：
+1. **一般註冊/登入**: 使用 email + password
+2. **Google 第三方認證**: 使用 Google OAuth，透過 mailRegister/mailLogin 端點
+
 ### 1. 一般註冊
 ```javascript
 import { registerUser } from '../api/auth';
@@ -43,19 +48,25 @@ const result = await registerUser({
 - `email` (string): 電子郵件
 - `password` (string): 密碼
 
-### 2. 信箱註冊
+### 2. Google 第三方註冊 (mailRegister)
 ```javascript
 import { mailRegister } from '../api/auth';
 
 const result = await mailRegister({
     nickname: '用戶暱稱',  // 前端使用 nickname
     email: 'user@example.com',
-    password: 'password123'
+    googleId: 'google_user_id_123',  // Google 用戶 ID
+    avatar: 'https://lh3.googleusercontent.com/...'  // Google 頭像 URL (optional)
 });
 ```
 
 **端點**: `POST /user/mailRegister`
-**參數**: 與一般註冊相同
+**用途**: Google OAuth 第三方登入註冊
+**參數**:
+- `nickname` (string): 用戶暱稱 (從 Google 資料取得)
+- `email` (string): 電子郵件 (從 Google 資料取得)
+- `googleId` (string): Google 用戶唯一識別碼
+- `avatar` (string, optional): Google 頭像 URL
 
 ### 3. 一般登入
 ```javascript
@@ -72,18 +83,21 @@ const result = await loginUser({
 - `email` (string): 電子郵件
 - `password` (string): 密碼
 
-### 4. 信箱登入
+### 4. Google 第三方登入 (mailLogin)
 ```javascript
 import { mailLogin } from '../api/auth';
 
 const result = await mailLogin({
     email: 'user@example.com',
-    password: 'password123'
+    googleId: 'google_user_id_123'
 });
 ```
 
 **端點**: `POST /user/mailLogin`
-**參數**: 與一般登入相同
+**用途**: Google OAuth 第三方登入
+**參數**:
+- `email` (string): 電子郵件 (從 Google 資料取得)
+- `googleId` (string): Google 用戶唯一識別碼
 
 ### 5. 登出
 ```javascript
@@ -327,11 +341,11 @@ const getUserSnapshots = async (options = {}) => {
         "snapshots": [
             {
                 "id": "snapshot_123",
-                "title": "年末的反思",                    // 從 current_thoughts 或自動生成
+                "title": "年末的反思",                    // 從 snapshot_title 或 current_thoughts 自動生成
                 "date": "2024-12-15T10:30:00Z",
                 "mood": "平靜",
                 "image_url": "https://storage.../image.jpg",  // 如果有上傳圖片
-                "content": "今年過得很快，有很多收穫...",      // current_thoughts 的摘要
+                "content": "感覺自己正在慢慢成長...",        // 來自問卷的 current_thoughts 欄位
                 "tags": ["成長", "反思", "平靜"],
                 "preview": "感覺自己正在慢慢成長..."          // content 的前 100 字
             }
@@ -384,9 +398,10 @@ const getSnapshotDetail = async (snapshotId) => {
         
         // 快照元資料
         "metadata": {
-            "title": "年末的反思",
-            "mood": "平靜",
-            "tags": ["成長", "反思", "平靜"],
+            "title": "年末的反思",                      // 來自 snapshot_title 或 current_thoughts 自動生成
+            "mood": "平靜",                            // 來自 current_mood
+            "tags": ["成長", "反思", "平靜"],           // 來自 personal_tags (逗號分隔轉陣列)
+            "content": "感覺自己正在慢慢成長...",        // 來自 current_thoughts
             "image_url": "https://storage.../image.jpg",
             "reminder_period": "3 個月",
             "next_reminder": "2025-03-15T10:30:00Z"
@@ -562,6 +577,19 @@ A: 這是因為後端資料庫的 `NAME` 欄位不能為 null，但前端傳送�
 ### Q: 前端是否還需要使用 nickname 欄位？
 A: 是的，前端仍然使用 `nickname` 欄位，API 層會自動將其轉換為後端期望的 `name` 欄位。
 
+### Q: mailRegister 和 mailLogin 與一般註冊登入有什麼差別？
+A: mailRegister 和 mailLogin 是專門為 Google OAuth 第三方登入設計的端點。主要差別：
+- **一般註冊/登入**: 使用 email + password
+- **Google 第三方**: 使用 email + googleId，不需要密碼
+- **資料來源**: Google 第三方會從 Google 取得用戶基本資料（暱稱、頭像等）
+
+### Q: 如何整合 Google OAuth？
+A: 前端需要：
+1. 設定 Google OAuth Client ID (環境變數 `VITE_GOOGLE_CLIENT_ID`)
+2. 使用 Google OAuth 取得用戶資料
+3. 將 Google 資料傳送到 mailRegister/mailLogin 端點
+4. 詳細設定請參考 `GOOGLE_OAUTH_SETUP.md`
+
 ### Q: 問卷資料如何儲存？
 A: 問卷資料以 JSON 格式儲存在 `snapshots` 表的 `questionnaire_data` 欄位中，這樣可以保持資料結構的彈性。
 
@@ -570,4 +598,12 @@ A: 圖片先上傳到雲端儲存服務（如 Google Cloud Storage），然後�
 
 ### Q: 提醒功能如何實作？
 A: 可以使用定時任務（cron job）定期檢查 `next_reminder` 欄位，發送郵件提醒用戶填寫新的問卷。
+
+### Q: ReviewPage 中的 content 欄位來自哪裡？
+A: ReviewPage 中顯示的 `content` 欄位實際上來自問卷第9題的 `current_thoughts` 欄位。這是用戶在"關於現在的你，有什麼特別想記錄下來的想法或感受？"這個問題中填寫的內容。
+
+### Q: 快照標題如何生成？
+A: 快照標題有兩個來源：
+1. **優先使用**: 用戶在第9題中填寫的 `snapshot_title`（"為這個快照取個名字吧"）
+2. **自動生成**: 如果用戶沒有填寫標題，系統會從 `current_thoughts` 的前幾個字自動生成標題
 
