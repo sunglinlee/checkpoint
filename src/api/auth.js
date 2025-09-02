@@ -1,5 +1,50 @@
 import { apiRequest } from './client';
 
+// 單例計時器：確保全域僅有一個 refresh 排程
+let refreshTimerId = null;
+const THIRTY_MINUTES_MS = 30 * 60 * 1000;
+
+/**
+ * 啟動 Token 自動刷新排程（每 30 分鐘執行一次）。
+ * 僅在有登入使用者時啟動，且避免重複啟動。
+ */
+export function startTokenRefresh(email) {
+    if (typeof window === 'undefined') return;
+    if (!email) return; // 沒有 email 視為未登入
+    if (refreshTimerId) return; // 已啟動則略過
+
+    const runRefresh = async () => {
+        try {
+            const result = await refreshToken(email);
+            const newToken = result?.token || result?.accessToken || result?.data?.token;
+            const userRaw = window.localStorage.getItem('authUser');
+            const user = userRaw ? JSON.parse(userRaw) : null;
+            if (newToken) {
+                persistAuth(newToken, user);
+            }
+        } catch (error) {
+            // 若刷新失敗（例如 401），可視需求清除登入
+            if (error?.status === 401 || error?.status === 403) {
+                clearAuth();
+                stopTokenRefresh();
+            }
+            // 其他錯誤暫不打斷排程
+        }
+    };
+
+    // 先等滿 30 分鐘再刷新；若希望登入後就立即延長，可先執行一次 runRefresh()
+    refreshTimerId = window.setInterval(runRefresh, THIRTY_MINUTES_MS);
+}
+
+/** 停止 Token 自動刷新排程 */
+export function stopTokenRefresh() {
+    if (typeof window === 'undefined') return;
+    if (refreshTimerId) {
+        window.clearInterval(refreshTimerId);
+        refreshTimerId = null;
+    }
+}
+
 export async function registerUser({ nickname, email, password }) {
     // 一般註冊 API - 將 nickname 對應到後端的 name 欄位
     return apiRequest('/user/register', {

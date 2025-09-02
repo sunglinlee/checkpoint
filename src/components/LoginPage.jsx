@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
-import { loginUser, registerUser, mailLogin, logoutUser, refreshToken, persistAuth } from '../api/auth';
+import { loginUser, registerUser, mailLogin, logoutUser, refreshToken, persistAuth, startTokenRefresh, stopTokenRefresh } from '../api/auth';
 
 const Logo = () => (
   <div className="flex items-center gap-2">
@@ -151,6 +151,11 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
       };
 
       persistAuth(token, user);
+      // 啟動背景 refresh（每 30 分鐘）
+      if (user?.email) {
+        stopTokenRefresh();
+        startTokenRefresh(user.email);
+      }
       setUser(user);
       onNavigate('home');
     } catch (error) {
@@ -204,6 +209,11 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
       };
 
       persistAuth(token, user);
+      // 啟動背景 refresh（每 30 分鐘）
+      if (user?.email) {
+        stopTokenRefresh();
+        startTokenRefresh(user.email);
+      }
       setUser(user);
       onNavigate('home');
     } catch (error) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Tone from 'tone';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import HomePage from './components/HomePage.jsx';
@@ -7,7 +7,7 @@ import QuestionnairePage from './components/QuestionnairePage.jsx';
 import LoginPage from './components/LoginPage.jsx';
 import ReviewPage from './components/ReviewPage.jsx';
 import CheckReviewPage from './components/CheckReviewPage.jsx';
-import { loadAuth, clearAuth } from './api/auth';
+import { loadAuth, clearAuth, startTokenRefresh, stopTokenRefresh } from './api/auth';
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState('home');
@@ -26,6 +26,7 @@ export default function App() {
 
     const handleLogout = () => {
         clearAuth();
+        stopTokenRefresh();
         setUser(null);
         setCurrentPage('home');
     };
@@ -53,6 +54,17 @@ export default function App() {
                 return <HomePage onNavigate={handleNavigate} user={user} onLogout={handleLogout} updateUserNickname={updateUserNickname} />;
         }
     };
+
+    // App 載入後，如已有登入狀態則啟動 refresh 排程
+    useEffect(() => {
+        const { user } = loadAuth();
+        if (user?.email) {
+            stopTokenRefresh();
+            startTokenRefresh(user.email);
+        } else {
+            stopTokenRefresh();
+        }
+    }, []);
 
     return (
         <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "1032893971305-nqrk0r231cmb010bjmkbvsnlgqfnq129.apps.googleusercontent.com"}>
