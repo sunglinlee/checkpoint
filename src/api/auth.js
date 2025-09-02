@@ -8,49 +8,17 @@ export async function registerUser({ nickname, email, password }) {
     });
 }
 
-export async function mailRegister(googleToken) {
-    // Google 第三方登入 API - 從 Google token 中獲取用戶資訊
-    try {
-        // 從 Google token 中解析用戶資訊
-        const userInfo = await getGoogleUserInfo(googleToken);
-        
-        return apiRequest('/user/mailRegister', {
-            method: 'POST',
-            body: { 
-                name: userInfo.nickname, 
-                email: userInfo.email, 
-                googleToken: googleToken 
-            }
-        });
-    } catch (error) {
-        console.error('Google 登入失敗:', error);
-        throw error;
-    }
-}
-
-// 從 Google token 獲取用戶資訊的輔助函數
-async function getGoogleUserInfo(googleToken) {
-    try {
-        const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-            headers: {
-                'Authorization': `Bearer ${googleToken}`
-            }
-        });
-        
-        if (!response.ok) {
-            throw new Error('無法獲取 Google 用戶資訊');
+export async function mailRegister({ nickname, email, googleId, avatar }) {
+    // Google 第三方註冊 API - 直接傳入 Google 基本資料
+    return apiRequest('/user/mailRegister', {
+        method: 'POST',
+        body: {
+            name: nickname, // 後端期望 name 欄位
+            email,
+            googleId,
+            avatar
         }
-        
-        const userData = await response.json();
-        
-        return {
-            nickname: userData.name || userData.given_name || 'Google User',
-            email: userData.email
-        };
-    } catch (error) {
-        console.error('獲取 Google 用戶資訊失敗:', error);
-        throw error;
-    }
+    });
 }
 
 export async function loginUser({ email, password }) {
@@ -61,11 +29,16 @@ export async function loginUser({ email, password }) {
     });
 }
 
-export async function mailLogin({ email, password }) {
-    // 信箱登入 API
+export async function mailLogin({ email, googleId, name, avatar }) {
+    // Google 第三方登入（若無帳號則自動建立）
     return apiRequest('/user/mailLogin', {
         method: 'POST',
-        body: { email, password }
+        body: {
+            email,
+            googleId,
+            name,
+            avatar
+        }
     });
 }
 
