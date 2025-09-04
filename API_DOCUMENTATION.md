@@ -297,59 +297,62 @@ const submitQuestionnaire = async (questionnaireData) => {
 **參數**:
 ```javascript
 {
-    // 生活滿意度
-    "satisfaction": {
-        "rating": 7,                    // number (1-10)
-        "reason": "整體來說還算滿意..."   // string
+    // 將主要問卷內容包裝在 qa 物件中
+    "qa": {
+        // 生活滿意度
+        "satisfaction": {
+            "rating": 7,                    // number (1-10)
+            "reason": "整體來說還算滿意..."   // string
+        },
+        
+        // 感受美好的瞬間
+        "gratitude": {
+            "grateful_events": "1. 今天早上看到陽光...",  // string
+            "share_with": "我的家人和最好的朋友",        // string
+            "inspiration": "這些小事提醒我要珍惜當下..."  // string
+        },
+        
+        // 你所關注的世界
+        "focus": {
+            "current_events": "最近關注氣候變遷...",     // string
+            "feelings": "有些擔憂但也充滿希望...",       // string
+            "actions": "開始減少使用一次性用品..."       // string
+        },
+        
+        // 與情緒溫柔對話
+        "emotion": {
+            "emotion_event": "上週工作上的一個誤解...",  // string
+            "emotion_name": "小灰",                    // string
+            "unmet_needs": "需要更多的理解和支持..."    // string
+        },
+        
+        // 你與身邊的連結
+        "relations": {
+            "family": "家人是我最重要的支柱...",        // string
+            "friends": "朋友讓我的生活更豐富多彩...",   // string
+            "love": "正在學習如何更好地愛自己..."       // string
+        },
+        
+        // 工作與事業中的你
+        "career": {
+            "challenge": "最近負責一個跨部門的專案...",           // string
+            "new_understanding": "發現自己比想像中更有耐心..."    // string
+        },
+        
+        // 探索內心的渴望
+        "desire": {
+            "dream": "想要開一間結合咖啡和書店的小店...",  // string
+            "goal": "三個月內完成商業計劃書..."           // string
+        },
+        
+        // 回望與前行
+        "reflection": {
+            "forgiveness": "親愛的過去的自己...",         // string
+            "future_self": "希望你能保持現在的熱情..."     // string
+        }
     },
     
-    // 感受美好的瞬間
-    "gratitude": {
-        "grateful_events": "1. 今天早上看到陽光...",  // string
-        "share_with": "我的家人和最好的朋友",        // string
-        "inspiration": "這些小事提醒我要珍惜當下..."  // string
-    },
-    
-    // 你所關注的世界
-    "focus": {
-        "current_events": "最近關注氣候變遷...",     // string
-        "feelings": "有些擔憂但也充滿希望...",       // string
-        "actions": "開始減少使用一次性用品..."       // string
-    },
-    
-    // 與情緒溫柔對話
-    "emotion": {
-        "emotion_event": "上週工作上的一個誤解...",  // string
-        "emotion_name": "小灰",                    // string
-        "unmet_needs": "需要更多的理解和支持..."    // string
-    },
-    
-    // 你與身邊的連結
-    "relations": {
-        "family": "家人是我最重要的支柱...",        // string
-        "friends": "朋友讓我的生活更豐富多彩...",   // string
-        "love": "正在學習如何更好地愛自己..."       // string
-    },
-    
-    // 工作與事業中的你
-    "career": {
-        "challenge": "最近負責一個跨部門的專案...",           // string
-        "new_understanding": "發現自己比想像中更有耐心..."    // string
-    },
-    
-    // 探索內心的渴望
-    "desire": {
-        "dream": "想要開一間結合咖啡和書店的小店...",  // string
-        "goal": "三個月內完成商業計劃書..."           // string
-    },
-    
-    // 回望與前行
-    "reflection": {
-        "forgiveness": "親愛的過去的自己...",         // string
-        "future_self": "希望你能保持現在的熱情..."     // string
-    },
-    
-    // 此刻的心情與標記
+    // 此刻的心情與標記（保留在頂層）
     "mood_and_tags": {
         "snapshot_title": "年末的反思時光",           // string
         "current_mood": "平靜",                      // string (enum: 平靜,開心,興奮,溫暖,焦慮但充滿希望,沮喪,其他)
@@ -357,15 +360,15 @@ const submitQuestionnaire = async (questionnaireData) => {
         "personal_tags": "成長,反思,希望,平靜,感恩"    // string (comma-separated)
     },
     
-    // 預約下一封時空信
+    // 預約下一封時空信（保留在頂層）
     "schedule": {
         "reminder_period": "3 個月"                  // string (enum: 1 個月,3 個月,6 個月)
     },
     
-    // 可選：快照圖片
+    // 可選：快照圖片（保留在頂層）
     "snapshot_image": File,                          // File object (optional)
     
-    // 系統資訊
+    // 系統資訊（保留在頂層）
     "created_at": "2024-12-15T10:30:00Z",           // ISO 8601 timestamp
     "user_id": "user123"                            // string (自動從認證 token 取得)
 }

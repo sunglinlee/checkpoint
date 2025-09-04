@@ -241,10 +241,16 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
       }
 
       const token = response.token || response.accessToken || response.data?.token;
-      const user = response.user || response.data?.user || {
-        email,
-        nickname: data.nickname,
-        avatar
+      const responseUser = response.user || response.data?.user || {};
+      const resolvedEmail = responseUser.email || email;
+      const backendName = responseUser.name || responseUser.nickname || '';
+      const finalName = backendName && String(backendName).trim() ? backendName : data.nickname;
+      const finalAvatar = responseUser.avatar || avatar;
+      const user = {
+        email: resolvedEmail,
+        name: finalName,
+        nickname: finalName,
+        avatar: finalAvatar
       };
 
       persistAuth(token, user);

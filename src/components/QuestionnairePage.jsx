@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { buildQaPayload } from '../utils/buildQaPayload';
 import { icons } from './icons.jsx';
 
 const QuestionnairePage = ({ onNavigate }) => {
@@ -34,6 +35,16 @@ const QuestionnairePage = ({ onNavigate }) => {
         if (currentStep < questions.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
+            // 組裝 qa 結構並暫存
+            try {
+                const payload = buildQaPayload(answers);
+                if (typeof window !== 'undefined') {
+                    window.localStorage.setItem('lastQaPayload', JSON.stringify(payload));
+                }
+                // 供開發偵錯
+                // eslint-disable-next-line no-console
+                console.log('QA payload:', payload);
+            } catch {}
             // 跳轉到首頁
             onNavigate && onNavigate('home');
         }
