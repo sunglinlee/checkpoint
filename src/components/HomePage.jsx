@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import HomePageVideo from "./HomePageVideo";
+import { changePassword, updateNickname } from '../api/auth';
 
 const CssIconCheck = () => (
   <div className="inline-block w-6 h-6 bg-[#8A9A87] rounded-full relative flex-shrink-0">
@@ -79,7 +80,13 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [newNickname, setNewNickname] = useState('');
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
   const dropdownRef = useRef(null);
 
   // 每8秒轮动一次
@@ -114,17 +121,176 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
     setIsDropdownOpen(false);
   };
 
-  const handleSaveNickname = () => {
-    if (newNickname.trim()) {
+  const handleSaveNickname = async () => {
+    if (!newNickname.trim()) {
+      alert('請輸入暱稱');
+      return;
+    }
+
+    if (newNickname.trim().length > 20) {
+      alert('暱稱不能超過20個字元');
+      return;
+    }
+
+    try {
+      // 呼叫暱稱修改 API
+      const response = await updateNickname({
+        email: user.email,
+        nickname: newNickname.trim()
+      });
+
+      // 檢查後端回傳的狀態碼
+      const statusCode = response?.statusCode || response?.data?.statusCode || response?.code;
+      
+      // 只有狀態碼 "0000" 才表示成功
+      if (statusCode !== '0000') {
+        let errorMsg = '暱稱修改失敗';
+        switch (statusCode) {
+          case '1004':
+            errorMsg = '暱稱已被使用';
+            break;
+          case '1005':
+            errorMsg = '暱稱格式不正確';
+            break;
+          default:
+            errorMsg = '暱稱修改失敗，請稍後再試';
+        }
+        alert(errorMsg);
+        return;
+      }
+
+      // API 成功後更新本地狀態
       updateUserNickname(newNickname.trim());
+      alert('暱稱修改成功');
       setIsNicknameModalOpen(false);
       setNewNickname('');
+    } catch (error) {
+      console.error('暱稱修改失敗:', error);
+      
+      // 處理 HTTP 錯誤或其他異常
+      const statusCode = error?.data?.statusCode || error?.data?.code;
+      if (statusCode) {
+        let errorMsg = '暱稱修改失敗';
+        switch (statusCode) {
+          case '1004':
+            errorMsg = '暱稱已被使用';
+            break;
+          case '1005':
+            errorMsg = '暱稱格式不正確';
+            break;
+          default:
+            errorMsg = '暱稱修改失敗，請稍後再試';
+        }
+        alert(errorMsg);
+      } else {
+        const msg = error?.data?.message || error?.message || '暱稱修改失敗，請稍後再試';
+        alert(msg);
+      }
     }
   };
 
   const handleCancelNickname = () => {
     setIsNicknameModalOpen(false);
     setNewNickname('');
+  };
+
+  // 判斷是否為 Google 登入用戶
+  const isGoogleUser = user ? (user.googleId || user.sub) : false;
+
+  // 處理密碼修改
+  const handlePasswordChange = () => {
+    setPasswordData({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
+    setIsPasswordModalOpen(true);
+    setIsDropdownOpen(false);
+  };
+
+  const handleSavePassword = async () => {
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      alert('請填寫所有欄位');
+      return;
+    }
+    
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      alert('新密碼與確認密碼不匹配');
+      return;
+    }
+    
+    if (passwordData.newPassword.length < 8) {
+      alert('新密碼至少需要8個字元');
+      return;
+    }
+    
+    try {
+      // 呼叫密碼修改 API
+      const response = await changePassword({
+        email: user.email,
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword
+      });
+
+      // 檢查後端回傳的狀態碼
+      const statusCode = response?.statusCode || response?.data?.statusCode || response?.code;
+      
+      // 只有狀態碼 "0000" 才表示成功
+      if (statusCode !== '0000') {
+        let errorMsg = '密碼修改失敗';
+        switch (statusCode) {
+          case '1002':
+            errorMsg = '目前密碼錯誤';
+            break;
+          case '1003':
+            errorMsg = '新密碼格式不正確';
+            break;
+          default:
+            errorMsg = '密碼修改失敗，請稍後再試';
+        }
+        alert(errorMsg);
+        return;
+      }
+
+      alert('密碼修改成功');
+      setIsPasswordModalOpen(false);
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+    } catch (error) {
+      console.error('密碼修改失敗:', error);
+      
+      // 處理 HTTP 錯誤或其他異常
+      const statusCode = error?.data?.statusCode || error?.data?.code;
+      if (statusCode) {
+        let errorMsg = '密碼修改失敗';
+        switch (statusCode) {
+          case '1002':
+            errorMsg = '目前密碼錯誤';
+            break;
+          case '1003':
+            errorMsg = '新密碼格式不正確';
+            break;
+          default:
+            errorMsg = '密碼修改失敗，請稍後再試';
+        }
+        alert(errorMsg);
+      } else {
+        const msg = error?.data?.message || error?.message || '密碼修改失敗，請稍後再試';
+        alert(msg);
+      }
+    }
+  };
+
+  const handleCancelPassword = () => {
+    setIsPasswordModalOpen(false);
+    setPasswordData({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
   };
 
   // 获取当前显示的两个评价
@@ -169,6 +335,18 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
                     </svg>
                     暱稱修改
                   </button>
+                  {/* 只對非 Google 用戶顯示密碼修改選項 */}
+                  {!isGoogleUser && (
+                    <button
+                      onClick={handlePasswordChange}
+                      className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      密碼修改
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       onNavigate('review');
@@ -400,6 +578,70 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
               <button
                 onClick={handleSaveNickname}
                 disabled={!newNickname.trim()}
+                className="px-4 py-2 bg-[#8A9A87] text-white rounded-md hover:bg-[#7A8A77] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                儲存
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 密碼修改彈出視窗 */}
+      {isPasswordModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">修改密碼</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  目前密碼
+                </label>
+                <input
+                  type="password"
+                  value={passwordData.currentPassword}
+                  onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8A9A87] focus:border-transparent"
+                  placeholder="請輸入目前密碼"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  新密碼
+                </label>
+                <input
+                  type="password"
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8A9A87] focus:border-transparent"
+                  placeholder="請輸入新密碼（至少8個字元）"
+                  minLength={8}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  確認新密碼
+                </label>
+                <input
+                  type="password"
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8A9A87] focus:border-transparent"
+                  placeholder="請再次輸入新密碼"
+                  minLength={8}
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 justify-end mt-6">
+              <button
+                onClick={handleCancelPassword}
+                className="px-4 py-2 text-gray-600 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleSavePassword}
+                disabled={!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
                 className="px-4 py-2 bg-[#8A9A87] text-white rounded-md hover:bg-[#7A8A77] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 儲存

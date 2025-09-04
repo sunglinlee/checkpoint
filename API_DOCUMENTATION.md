@@ -125,6 +125,62 @@ const result = await refreshToken('user@example.com');
 **參數**:
 - `email` (query parameter): 電子郵件
 
+### 7. 密碼修改
+```javascript
+import { changePassword } from '../api/auth';
+
+const result = await changePassword({
+    email: 'user@example.com',
+    currentPassword: '目前密碼',
+    newPassword: '新密碼'
+});
+```
+
+**端點**: `POST /user/changePassword`
+**參數**:
+- `email` (string): 電子郵件
+- `currentPassword` (string): 目前密碼
+- `newPassword` (string): 新密碼
+
+**狀態碼**:
+- `0000`: 密碼修改成功
+- `1002`: 目前密碼錯誤
+- `1003`: 新密碼格式不正確
+
+**注意事項**:
+- 新密碼必須至少 8 個字元
+- 只有非 Google 登入用戶才能修改密碼
+- 需要提供正確的目前密碼進行驗證
+
+### 8. 暱稱修改
+```javascript
+import { updateNickname } from '../api/auth';
+
+const result = await updateNickname({
+    email: 'user@example.com',
+    nickname: '新暱稱'
+});
+```
+
+**端點**: `POST /user/updateNickname`
+**前端參數**:
+- `email` (string): 電子郵件
+- `nickname` (string): 新暱稱
+
+**後端接收參數**:
+- `email` (string): 電子郵件
+- `name` (string): 新暱稱 (由 nickname 轉換)
+
+**狀態碼**:
+- `0000`: 暱稱修改成功
+- `1004`: 暱稱已被使用
+- `1005`: 暱稱格式不正確
+
+**注意事項**:
+- 暱稱不能超過 20 個字元
+- 暱稱不能為空
+- 所有用戶（包括 Google 登入用戶）都可以修改暱稱
+
 ## 認證管理
 
 ### 儲存認證

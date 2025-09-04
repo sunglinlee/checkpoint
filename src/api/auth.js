@@ -102,6 +102,22 @@ export async function refreshToken(email) {
     });
 }
 
+export async function changePassword({ email, currentPassword, newPassword }) {
+    // 密碼修改 API
+    return apiRequest('/user/changePassword', {
+        method: 'POST',
+        body: { email, currentPassword, newPassword }
+    });
+}
+
+export async function updateNickname({ email, nickname }) {
+    // 暱稱修改 API
+    return apiRequest('/user/updateNickname', {
+        method: 'POST',
+        body: { email, name: nickname }
+    });
+}
+
 export function persistAuth(token, user) {
     if (typeof window === 'undefined') return;
     if (token) window.localStorage.setItem('authToken', token);
