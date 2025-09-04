@@ -112,10 +112,41 @@ export async function changePassword({ email, currentPassword, newPassword }) {
 
 export async function updateNickname({ email, nickname }) {
     // 暱稱修改 API
-    return apiRequest('/user/updateNickname', {
-        method: 'POST',
-        body: { email, name: nickname }
-    });
+    console.log('嘗試暱稱修改 API 呼叫:', { email, name: nickname });
+    
+    const endpoints = [
+        { method: 'POST', path: '/user/change' },
+        { method: 'PUT', path: '/user/change' },
+        { method: 'PATCH', path: '/user/change' },
+        { method: 'POST', path: '/user/changeName' },
+        { method: 'PUT', path: '/user/changeName' }
+    ];
+    
+    let lastError = null;
+    
+    for (const endpoint of endpoints) {
+        try {
+            console.log(`嘗試 ${endpoint.method} ${endpoint.path}`);
+            const response = await apiRequest(endpoint.path, {
+                method: endpoint.method,
+                body: { email, name: nickname }
+            });
+            console.log(`✅ 成功使用 ${endpoint.method} ${endpoint.path}`);
+            return response;
+        } catch (error) {
+            console.log(`❌ ${endpoint.method} ${endpoint.path} 失敗:`, error.status, error.message);
+            lastError = error;
+            
+            // 如果不是 404 或 405 (Method Not Allowed)，直接拋出錯誤
+            if (error.status !== 404 && error.status !== 405) {
+                throw error;
+            }
+        }
+    }
+    
+    // 所有端點都失敗了
+    console.error('所有端點都失敗了，最後的錯誤:', lastError);
+    throw lastError;
 }
 
 export function persistAuth(token, user) {

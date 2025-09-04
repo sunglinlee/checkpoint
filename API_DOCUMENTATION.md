@@ -162,7 +162,7 @@ const result = await updateNickname({
 });
 ```
 
-**端點**: `POST /user/updateNickname`
+**端點**: `POST /user/change`
 **前端參數**:
 - `email` (string): 電子郵件
 - `nickname` (string): 新暱稱

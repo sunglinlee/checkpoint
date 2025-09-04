@@ -134,10 +134,18 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
 
     try {
       // 呼叫暱稱修改 API
+      console.log('發送暱稱修改請求:', {
+        email: user.email,
+        nickname: newNickname.trim(),
+        endpoint: '/user/change'
+      });
+      
       const response = await updateNickname({
         email: user.email,
         nickname: newNickname.trim()
       });
+
+      console.log('暱稱修改回應:', response);
 
       // 檢查後端回傳的狀態碼
       const statusCode = response?.statusCode || response?.data?.statusCode || response?.code;
@@ -165,7 +173,16 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
       setIsNicknameModalOpen(false);
       setNewNickname('');
     } catch (error) {
-      console.error('暱稱修改失敗:', error);
+      console.error('暱稱修改失敗詳細錯誤:', error);
+      console.error('錯誤狀態碼:', error?.status);
+      console.error('錯誤資料:', error?.data);
+      console.error('完整錯誤物件:', JSON.stringify(error, null, 2));
+      
+      // 特別處理 404 錯誤
+      if (error?.status === 404) {
+        alert('所有暱稱修改 API 端點都不存在 (404)。\n請檢查後端是否已實作相關功能。\n\n嘗試的端點:\n- POST /user/changeName\n- PUT /user/changeName\n- PATCH /user/changeName\n- POST /user/updateName\n- POST /user/updateNickname');
+        return;
+      }
       
       // 處理 HTTP 錯誤或其他異常
       const statusCode = error?.data?.statusCode || error?.data?.code;
@@ -183,8 +200,8 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
         }
         alert(errorMsg);
       } else {
-        const msg = error?.data?.message || error?.message || '暱稱修改失敗，請稍後再試';
-        alert(msg);
+        const msg = error?.data?.message || error?.message || error?.toString() || '暱稱修改失敗，請稍後再試';
+        alert(`暱稱修改失敗: ${msg}\n狀態碼: ${error?.status || 'unknown'}\n\n請檢查 Console 查看詳細錯誤資訊`);
       }
     }
   };
