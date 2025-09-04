@@ -118,6 +118,18 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
     });
   };
 
+  // 狀態碼對應的錯誤訊息
+  const getStatusCodeMessage = (statusCode) => {
+    switch (statusCode) {
+      case '1001':
+        return '此Email重複註冊';
+      case '1002':
+        return '密碼錯誤';
+      default:
+        return '操作失敗，請稍後再試';
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage('');
@@ -139,6 +151,16 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
         ? await loginUser(payload)
         : await registerUser(payload);
 
+      // 檢查後端回傳的狀態碼
+      const statusCode = response?.statusCode || response?.data?.statusCode || response?.code;
+      
+      // 只有狀態碼 "0000" 才允許登入成功
+      if (statusCode !== '0000') {
+        const errorMsg = getStatusCodeMessage(statusCode);
+        setErrorMessage(errorMsg);
+        return;
+      }
+
       const token = response.token || response.accessToken || response.data?.token;
       const responseUser = response.user || response.data?.user || response.data || {};
       const resolvedEmail = responseUser.email || formData.email;
@@ -159,8 +181,15 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
       setUser(user);
       onNavigate('home');
     } catch (error) {
-      const msg = error?.data?.message || error?.message || '操作失敗，請稍後再試';
-      setErrorMessage(msg);
+      // 處理 HTTP 錯誤或其他異常
+      const statusCode = error?.data?.statusCode || error?.data?.code;
+      if (statusCode) {
+        const errorMsg = getStatusCodeMessage(statusCode);
+        setErrorMessage(errorMsg);
+      } else {
+        const msg = error?.data?.message || error?.message || '操作失敗，請稍後再試';
+        setErrorMessage(msg);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -201,6 +230,16 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
       // 傳入 Google 的 name 作為後端的 name 欄位
       const response = await mailLogin({ email, googleId, name: data.nickname, avatar });
 
+      // 檢查後端回傳的狀態碼
+      const statusCode = response?.statusCode || response?.data?.statusCode || response?.code;
+      
+      // 只有狀態碼 "0000" 才允許登入成功
+      if (statusCode !== '0000') {
+        const errorMsg = getStatusCodeMessage(statusCode);
+        setErrorMessage(errorMsg);
+        return;
+      }
+
       const token = response.token || response.accessToken || response.data?.token;
       const user = response.user || response.data?.user || {
         email,
@@ -217,8 +256,15 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
       setUser(user);
       onNavigate('home');
     } catch (error) {
-      const msg = error?.data?.message || error?.message || 'Google 登入失敗，請稍後再試';
-      setErrorMessage(msg);
+      // 處理 HTTP 錯誤或其他異常
+      const statusCode = error?.data?.statusCode || error?.data?.code;
+      if (statusCode) {
+        const errorMsg = getStatusCodeMessage(statusCode);
+        setErrorMessage(errorMsg);
+      } else {
+        const msg = error?.data?.message || error?.message || 'Google 登入失敗，請稍後再試';
+        setErrorMessage(msg);
+      }
     } finally {
       setIsSubmitting(false);
     }
