@@ -250,7 +250,8 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
         email: resolvedEmail,
         name: finalName,
         nickname: finalName,
-        avatar: finalAvatar
+        avatar: finalAvatar,
+        googleId: googleId  // 添加 googleId 字段用於識別 Google 用戶
       };
 
       persistAuth(token, user);
