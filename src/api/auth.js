@@ -1,4 +1,5 @@
 import { apiRequest } from './client';
+import { validateAuthMethod } from './accountValidation';
 
 // 單例計時器：確保全域僅有一個 refresh 排程
 let refreshTimerId = null;
@@ -46,6 +47,12 @@ export function stopTokenRefresh() {
 }
 
 export async function registerUser({ nickname, email, password }) {
+    // 檢查帳號是否已存在且使用不同認證方式
+    const validation = await validateAuthMethod(email, 'regular');
+    if (!validation.allowed) {
+        throw new Error(validation.reason);
+    }
+    
     // 一般註冊 API - 將 nickname 對應到後端的 name 欄位
     return apiRequest('/user/register', {
         method: 'POST',
@@ -54,6 +61,12 @@ export async function registerUser({ nickname, email, password }) {
 }
 
 export async function mailRegister({ nickname, email, googleId, avatar }) {
+    // 檢查帳號是否已存在且使用不同認證方式
+    const validation = await validateAuthMethod(email, 'google');
+    if (!validation.allowed) {
+        throw new Error(validation.reason);
+    }
+    
     // Google 第三方註冊 API - 直接傳入 Google 基本資料
     return apiRequest('/user/mailRegister', {
         method: 'POST',
@@ -75,6 +88,12 @@ export async function loginUser({ email, password }) {
 }
 
 export async function mailLogin({ email, googleId, name, avatar }) {
+    // 檢查帳號是否已存在且使用不同認證方式
+    const validation = await validateAuthMethod(email, 'google');
+    if (!validation.allowed) {
+        throw new Error(validation.reason);
+    }
+    
     // Google 第三方登入（若無帳號則自動建立）
     return apiRequest('/user/mailLogin', {
         method: 'POST',

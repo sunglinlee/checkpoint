@@ -125,6 +125,10 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
         return '此Email重複註冊';
       case '1002':
         return '密碼錯誤';
+      case '1003':
+        return '此電子郵件已使用其他認證方式註冊';
+      case '1004':
+        return '認證方式不匹配';
       default:
         return '操作失敗，請稍後再試';
     }
