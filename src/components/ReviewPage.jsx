@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getSnapshotDisplayImage } from '../utils/imageAssignment';
+import { getUserSnapshots, updateSnapshotTitle as apiUpdateSnapshotTitle } from '../api/snapshots';
+import { deleteSnapshot as apiDeleteSnapshot } from '../api/snapshots';
 
 const Logo = () => (
   <div className="flex items-center gap-2">
@@ -14,100 +16,33 @@ const ReviewPage = ({ onNavigate, user }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editingTitle, setEditingTitle] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
 
-  // 模擬快照數據 - 實際應用中這裡會從後端API獲取
+  // 從後端載入用戶快照
   useEffect(() => {
-    // 模擬載入延遲
-    setTimeout(() => {
-      const mockSnapshots = [
-        {
-          id: 1,
-          date: '2024-12-15',
-          title: '年末的反思時光', // 與 CheckReviewPage 的 snapshot_title 一致
-          mood: '平靜',
-          content: '感覺自己正在慢慢成長，雖然路還很長，但每一步都很珍貴', // 與 CheckReviewPage 的 current_thoughts 一致
-          tags: ['成長', '反思', '希望', '平靜', '感恩'], // 與 CheckReviewPage 的 personal_tags 一致
-          assigned_image: '/素材/平靜2.png' // 資料庫中儲存的隨機分配圖片
-        },
-        {
-          id: 2,
-          date: '2024-11-20',
-          title: '轉職的決定',
-          mood: '焦慮但充滿希望',
-          content: '決定要轉職了，雖然有些不安，但我相信這是正確的選擇。新的開始總是令人期待的，希望能在新的環境中找到更適合自己的發展方向。',
-          tags: ['轉職', '決定', '希望'],
-          assigned_image: '/素材/焦慮但充滿希望1.jpg'
-        },
-        {
-          id: 3,
-          date: '2024-10-08',
-          title: '秋天的午後',
-          mood: '溫暖',
-          content: '今天和朋友喝咖啡聊天，聊到了很多過去的回憶。友情真的是人生中最珍貴的財富之一，感謝有這些陪伴我走過人生各個階段的朋友們。',
-          tags: ['友情', '回憶', '溫暖'],
-          assigned_image: '/素材/溫暖3.jpg'
-        },
-        {
-          id: 4,
-          date: '2025-08-18',
-          title: '35年後的我',
-          mood: '興奮',
-          content: '今天和自己喝咖啡聊天，聊到了很多過去的回憶。Never Gonna Give You Up真的是人生中最珍貴的財富之一，這首歌陪伴了我這麼多年。',
-          tags: ['Rick Roll', '回憶', '瑞克搖'],
-          assigned_image: '/素材/興奮2.jpg'
-        },
-        {
-          id: 5,
-          date: '2024-09-15',
-          title: '週末的小確幸',
-          mood: '開心',
-          content: '今天做了最愛的料理，陽光很好，心情也很好。生活中的小確幸總是讓人感到幸福。',
-          tags: ['料理', '陽光', '小確幸'],
-          assigned_image: '/素材/開心1.jpg'
-        },
-        {
-          id: 6,
-          date: '2024-08-22',
-          title: '低潮中的反思',
-          mood: '沮喪',
-          content: '最近工作壓力很大，感覺有些迷失方向。但我知道這只是暫時的，會慢慢好起來的。',
-          tags: ['工作', '壓力', '迷失'],
-          assigned_image: '/素材/沮喪2.jpg'
-        },
-        {
-          id: 7,
-          date: '2024-07-10',
-          title: '家人的溫暖擁抱',
-          mood: '溫暖',
-          content: '今天回家時媽媽給了我一個大大的擁抱，那一刻感受到滿滿的愛與溫暖。家人的愛總是最珍貴的。',
-          tags: ['家人', '愛', '擁抱', '溫暖'],
-          assigned_image: '/素材/溫暖1.jpg'
-        },
-        {
-          id: 8,
-          date: '2024-06-28',
-          title: '新挑戰的開始',
-          mood: '焦慮但充滿希望',
-          content: '即將開始一個全新的專案，雖然有些緊張和不安，但內心充滿期待。相信自己能夠克服困難。',
-          tags: ['挑戰', '專案', '期待', '成長'],
-          assigned_image: '/素材/焦慮但充滿希望3.jpg'
-        },
-        {
-          id: 9,
-          date: '2024-05-15',
-          title: '生日驚喜派對',
-          mood: '興奮',
-          content: '朋友們為我準備了驚喜生日派對！看到大家的用心準備，真的太感動了。這個生日會是我永遠的美好回憶。',
-          tags: ['生日', '驚喜', '朋友', '感動'],
-          assigned_image: '/素材/興奮1.jpg'
-        }
-      ];
-
-      // 直接設置快照數據，圖片已經在資料庫中分配好了
-      setSnapshots(mockSnapshots);
-      setIsLoading(false);
-    }, 1000);
+    let mounted = true;
+    const loadSnapshots = async () => {
+      try {
+        setIsLoading(true);
+        setErrorMessage('');
+        const email = user?.email || (typeof window !== 'undefined' ? JSON.parse(window.localStorage.getItem('authUser') || '{}')?.email : undefined);
+        const resp = await getUserSnapshots(email);
+        const list = resp?.data?.snapshots || [];
+        if (!mounted) return;
+        setSnapshots(list);
+      } catch (err) {
+        if (!mounted) return;
+        console.error('載入快照失敗:', err);
+        setErrorMessage(err?.message || '載入失敗');
+        setSnapshots([]);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+    loadSnapshots();
+    return () => { mounted = false; };
   }, []);
 
   const formatDate = (dateString) => {
@@ -143,8 +78,7 @@ const ReviewPage = ({ onNavigate, user }) => {
     }
 
     try {
-      // 這裡應該呼叫 API 更新快照標題
-      // await updateSnapshotTitle(selectedSnapshot.id, editingTitle.trim());
+      await apiUpdateSnapshotTitle(selectedSnapshot.id, editingTitle.trim());
       
       // 更新本地狀態
       const updatedSnapshots = snapshots.map(snapshot => 
@@ -165,6 +99,25 @@ const ReviewPage = ({ onNavigate, user }) => {
   const handleCancelEdit = () => {
     setIsEditingTitle(false);
     setEditingTitle('');
+  };
+
+  const handleDeleteSnapshot = async () => {
+    if (!selectedSnapshot?.id) return;
+    const confirmed = window.confirm('確定要刪除此快照嗎？此動作無法復原。');
+    if (!confirmed) return;
+    try {
+      setIsDeleting(true);
+      await apiDeleteSnapshot(selectedSnapshot.id);
+      setSnapshots(prev => prev.filter(s => s.id !== selectedSnapshot.id));
+      setSelectedSnapshot(null);
+      setIsEditingTitle(false);
+      setEditingTitle('');
+    } catch (error) {
+      console.error('刪除快照失敗:', error);
+      alert('刪除失敗，請稍後再試');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
 
@@ -205,6 +158,9 @@ const ReviewPage = ({ onNavigate, user }) => {
           <p className="text-center text-gray-600 max-w-2xl mx-auto">
             這裡收藏著您每一個珍貴的時刻，每一次的成長足跡。讓我們一起回顧這段美好的旅程。
           </p>
+          {errorMessage && (
+            <p className="text-center text-red-500 mt-2">{errorMessage}</p>
+          )}
         </div>
 
         {snapshots.length === 0 ? (
@@ -264,7 +220,7 @@ const ReviewPage = ({ onNavigate, user }) => {
           onClick={() => setSelectedSnapshot(null)}
         >
           <div 
-            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto relative"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
@@ -360,13 +316,34 @@ const ReviewPage = ({ onNavigate, user }) => {
                 </div>
                 <div className="text-center">
                   <button 
-                    onClick={() => onNavigate('checkreview')}
+                    onClick={() => {
+                      try {
+                        if (selectedSnapshot?.id) {
+                          window.sessionStorage.setItem('selectedSnapshotId', String(selectedSnapshot.id));
+                        }
+                      } catch {}
+                      onNavigate('checkreview');
+                    }}
                     className="inline-block px-4 py-2 text-sm text-[#8A9A87] hover:text-white hover:bg-[#8A9A87] rounded-full transition-all duration-200 border border-[#8A9A87]"
                   >
                     完整快照詳情
                   </button>
                 </div>
               </div>
+            </div>
+            {/* 刪除快照按鈕 */}
+            <div className="absolute bottom-4 right-4">
+              <button
+                onClick={handleDeleteSnapshot}
+                disabled={isDeleting}
+                title={isDeleting ? '刪除中...' : '刪除此快照'}
+                className={`flex items-center justify-center w-10 h-10 rounded-full shadow-md transition-colors ${isDeleting ? 'bg-red-300 text-white cursor-not-allowed' : 'bg-red-500 hover:bg-red-600 text-white'}`}
+                aria-label="刪除此快照"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-1-3H10a1 1 0 00-1 1v2h8V5a1 1 0 00-1-1z" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>

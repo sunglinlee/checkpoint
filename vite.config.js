@@ -10,8 +10,10 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'https://checkpoint-backend-357565914560.asia-east1.run.app',
+        //target: 'https://checkpoint-backend-357565914560.asia-east1.run.app/api',
         changeOrigin: true,
         secure: true,
+        // 將前綴 /api 移除，讓 /api/user/login → /user/login
         rewrite: (path) => path.replace(/^\/api/, '')
       }
     }

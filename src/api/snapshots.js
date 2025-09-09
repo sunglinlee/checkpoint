@@ -1,0 +1,74 @@
+import { apiRequest } from './client';
+
+export async function getUserSnapshots(email, options = {}) {
+    const queryParams = new URLSearchParams();
+    if (email) queryParams.append('email', email);
+    if (options.limit) queryParams.append('limit', options.limit);
+    if (options.offset) queryParams.append('offset', options.offset);
+
+    const path = (import.meta.env && import.meta.env.DEV)
+        ? `/api/snapshots${queryParams.toString() ? '?' + queryParams.toString() : ''}`
+        : `/snapshots${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+
+    const raw = await apiRequest(path, {
+        method: 'GET'
+    });
+
+    // Normalize backend response to { data: { snapshots, total, has_more, next_offset } }
+    let inner = raw?.data;
+    if (typeof inner === 'string') {
+        try { inner = JSON.parse(inner); } catch {}
+    }
+
+    const questions = inner?.questions || [];
+    const snapshots = questions.map((q) => ({
+        id: q.id,
+        title: q.title ?? '',
+        date: q.date,
+        mood: q.mood,
+        content: q.content,
+        tags: Array.isArray(q.tags)
+            ? q.tags
+            : (typeof q.tags === 'string'
+                ? q.tags.split(',').map((t) => t.trim()).filter(Boolean)
+                : [])
+    }));
+
+    return {
+        success: raw?.statusCode === '0000' || raw?.success === true,
+        data: {
+            snapshots,
+            total: inner?.total ?? snapshots.length,
+            has_more: inner?.has_more ?? false,
+            next_offset: inner?.next_offset ?? 0
+        }
+    };
+}
+
+export async function getSnapshotDetail(snapshotId) {
+    return await apiRequest(`/snapshots/${snapshotId}`, {
+        method: 'GET'
+    });
+}
+
+export async function updateSnapshotTitle(snapshotId, newTitle) {
+    return await apiRequest(`/snapshots/${snapshotId}/title`, {
+        method: 'PUT',
+        body: { title: newTitle }
+    });
+}
+
+export async function updateSnapshotReminder(snapshotId, reminderPeriod) {
+    return await apiRequest(`/snapshots/${snapshotId}/reminder`, {
+        method: 'PUT',
+        body: { reminder_period: reminderPeriod }
+    });
+}
+
+export async function deleteSnapshot(snapshotId) {
+    return await apiRequest(`/snapshots/${snapshotId}`, {
+        method: 'DELETE'
+    });
+}
+
+
