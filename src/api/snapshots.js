@@ -6,9 +6,8 @@ export async function getUserSnapshots(email, options = {}) {
     if (options.limit) queryParams.append('limit', options.limit);
     if (options.offset) queryParams.append('offset', options.offset);
 
-    const path = (import.meta.env && import.meta.env.DEV)
-        ? `/api/snapshots${queryParams.toString() ? '?' + queryParams.toString() : ''}`
-        : `/snapshots${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+    const basePath = (import.meta.env && import.meta.env.DEV) ? '/api/snapshots' : '/snapshots';
+    const path = `${basePath}${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
 
     const raw = await apiRequest(path, {
         method: 'GET'
@@ -48,27 +47,35 @@ export async function getUserSnapshots(email, options = {}) {
 }
 
 export async function getSnapshotDetail(snapshotId) {
-    return await apiRequest(`/snapshots/${snapshotId}`, {
+    const encodedId = encodeURIComponent(String(snapshotId));
+    const basePath = (import.meta.env && import.meta.env.DEV) ? '/api/snapshots' : '/snapshots';
+    return await apiRequest(`${basePath}/${encodedId}`, {
         method: 'GET'
     });
 }
 
 export async function updateSnapshotTitle(snapshotId, newTitle) {
-    return await apiRequest(`/snapshots/${snapshotId}/title`, {
+    const encodedId = encodeURIComponent(String(snapshotId));
+    const basePath = (import.meta.env && import.meta.env.DEV) ? '/api/snapshots' : '/snapshots';
+    return await apiRequest(`${basePath}/${encodedId}/title`, {
         method: 'PUT',
         body: { title: newTitle }
     });
 }
 
 export async function updateSnapshotReminder(snapshotId, reminderPeriod) {
-    return await apiRequest(`/snapshots/${snapshotId}/reminder`, {
+    const encodedId = encodeURIComponent(String(snapshotId));
+    const basePath = (import.meta.env && import.meta.env.DEV) ? '/api/snapshots' : '/snapshots';
+    return await apiRequest(`${basePath}/${encodedId}/reminder`, {
         method: 'PUT',
         body: { reminder_period: reminderPeriod }
     });
 }
 
 export async function deleteSnapshot(snapshotId) {
-    return await apiRequest(`/snapshots/${snapshotId}`, {
+    const encodedId = encodeURIComponent(String(snapshotId));
+    const basePath = (import.meta.env && import.meta.env.DEV) ? '/api/snapshots' : '/snapshots';
+    return await apiRequest(`${basePath}/${encodedId}`, {
         method: 'DELETE'
     });
 }
