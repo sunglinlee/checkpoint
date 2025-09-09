@@ -10,6 +10,77 @@ const Logo = () => (
   </div>
 );
 
+// 個別快照倒數計時組件
+const SnapshotCountdown = ({ targetDate, onUnlock, snapshotId }) => {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [isUnlocked, setIsUnlocked] = useState(false);
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime();
+      const target = new Date(targetDate).getTime();
+      const difference = target - now;
+
+      if (difference <= 0) {
+        setIsUnlocked(true);
+        onUnlock(snapshotId);
+        return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+      }
+
+      return {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((difference % (1000 * 60)) / 1000)
+      };
+    };
+
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    setTimeLeft(calculateTimeLeft());
+
+    return () => clearInterval(timer);
+  }, [targetDate, onUnlock, snapshotId]);
+
+  if (isUnlocked) return null;
+
+  return (
+    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-amber-500 to-orange-500 text-white p-3 rounded-b-lg">
+      <div className="container mx-auto flex items-center justify-center gap-4">
+        <div className="flex items-center gap-2">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+          </svg>
+          
+        </div>
+        <div className="flex items-center gap-4 text-sm">
+          <span>解鎖倒數：</span>
+          <div className="flex gap-2">
+            <div className="bg-white/20 rounded px-2 py-1 min-w-[40px] text-center">
+              <div className="font-bold">{timeLeft.days}</div>
+              <div className="text-xs">天</div>
+            </div>
+            <div className="bg-white/20 rounded px-2 py-1 min-w-[40px] text-center">
+              <div className="font-bold">{timeLeft.hours}</div>
+              <div className="text-xs">時</div>
+            </div>
+            <div className="bg-white/20 rounded px-2 py-1 min-w-[40px] text-center">
+              <div className="font-bold">{timeLeft.minutes}</div>
+              <div className="text-xs">分</div>
+            </div>
+            <div className="bg-white/20 rounded px-2 py-1 min-w-[40px] text-center">
+              <div className="font-bold">{timeLeft.seconds}</div>
+              <div className="text-xs">秒</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ReviewPage = ({ onNavigate, user }) => {
   const [snapshots, setSnapshots] = useState([]);
   const [selectedSnapshot, setSelectedSnapshot] = useState(null);
@@ -20,12 +91,40 @@ const ReviewPage = ({ onNavigate, user }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [unlockedSnapshots, setUnlockedSnapshots] = useState(new Set());
 
   const showToastCenter = (message, type = 'success') => {
     setToast({ visible: true, message, type });
     setTimeout(() => {
       setToast(prev => ({ ...prev, visible: false }));
     }, 2600);
+  };
+
+  // 檢查快照是否被鎖定
+  const isSnapshotLocked = (snapshot) => {
+    if (!snapshot.reminder_date) return false;
+    if (unlockedSnapshots.has(snapshot.id)) return false;
+    
+    const now = new Date().getTime();
+    const scheduleTime = new Date(snapshot.reminder_date).getTime();
+    return now < scheduleTime;
+  };
+
+  // 解鎖快照
+  const unlockSnapshot = (snapshotId) => {
+    setUnlockedSnapshots(prev => new Set([...prev, snapshotId]));
+    showToastCenter('快照已解鎖！', 'success');
+  };
+
+  // 獲取最早的鎖定時間（用於顯示倒數計時）
+  const getEarliestLockTime = () => {
+    const lockedSnapshots = snapshots.filter(s => isSnapshotLocked(s));
+    if (lockedSnapshots.length === 0) return null;
+    
+    return lockedSnapshots.reduce((earliest, snapshot) => {
+      const snapshotTime = new Date(snapshot.reminder_date).getTime();
+      return snapshotTime < earliest ? snapshotTime : earliest;
+    }, new Date(lockedSnapshots[0].reminder_date).getTime());
   };
 
 
@@ -41,12 +140,33 @@ const ReviewPage = ({ onNavigate, user }) => {
         const list = resp?.data?.snapshots || [];
         // 若後端未提供 assigned_image 或 image_url，前端依據心情隨機指派一張預設圖片
         const usedImagesRef = {};
-        const withAssigned = list.map((s) => {
-          if (!s?.image_url && !s?.assigned_image) {
-            const assigned = assignImageByMood(s?.mood, usedImagesRef);
-            return { ...s, assigned_image: assigned };
+        const withAssigned = list.map((s, index) => {
+          let snapshot = { ...s };
+          
+          if (!snapshot?.image_url && !snapshot?.assigned_image) {
+            const assigned = assignImageByMood(snapshot?.mood, usedImagesRef);
+            snapshot.assigned_image = assigned;
           }
-          return s;
+          
+          // 如果後端沒有提供 reminder_date，我們為演示目的添加一個
+          // 實際應用中這應該來自後端 API
+          if (!snapshot.reminder_date) {
+            // 為前幾個快照添加不同的解鎖時間（用於演示）
+            const now = new Date();
+            if (index === 0) {
+              // 第一個快照：1分鐘後解鎖
+              snapshot.reminder_date = new Date(now.getTime() + 1 * 60 * 1000).toISOString();
+            } else if (index === 1) {
+              // 第二個快照：5分鐘後解鎖
+              snapshot.reminder_date = new Date(now.getTime() + 5 * 60 * 1000).toISOString();
+            } else if (index === 2) {
+              // 第三個快照：1小時後解鎖
+              snapshot.reminder_date = new Date(now.getTime() + 60 * 60 * 1000).toISOString();
+            }
+            // 其他快照不設置 reminder_date，表示已解鎖
+          }
+          
+          return snapshot;
         });
         if (!mounted) return;
         setSnapshots(withAssigned);
@@ -164,6 +284,8 @@ const ReviewPage = ({ onNavigate, user }) => {
     );
   }
 
+  const earliestLockTime = getEarliestLockTime();
+
   return (
     <div className="w-full min-h-screen bg-[#FDFCF9] text-[#3D4A4D]">
       {toast.visible && (
@@ -270,38 +392,88 @@ const ReviewPage = ({ onNavigate, user }) => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {snapshots.map((snapshot) => (
-              <div 
-                key={snapshot.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => setSelectedSnapshot(snapshot)}
-              >
-                <div className="h-48 bg-gray-200 relative overflow-hidden">
-                  <img 
-                    src={getSnapshotDisplayImage(snapshot)} 
-                    alt={snapshot.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-3 right-3">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getMoodColor(snapshot.mood)}`}>
-                      {snapshot.mood}
-                    </span>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <div className="text-sm text-gray-500 mb-2">{formatDate(snapshot.date)}</div>
-                  <h3 className="font-semibold text-lg mb-2">{snapshot.title}</h3>
-                  <p className="text-gray-600 text-sm line-clamp-2 mb-3">{snapshot.content}</p>
-                  <div className="flex flex-wrap gap-1">
-                    {snapshot.tags.map((tag, index) => (
-                      <span key={index} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                        #{tag}
+            {snapshots.map((snapshot) => {
+              const isLocked = isSnapshotLocked(snapshot);
+              return (
+                <div 
+                  key={snapshot.id}
+                  className={`bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 relative ${
+                    isLocked 
+                      ? 'opacity-60 cursor-not-allowed' 
+                      : 'hover:shadow-lg cursor-pointer'
+                  }`}
+                  onClick={() => !isLocked && setSelectedSnapshot(snapshot)}
+                >
+                  {/* 鎖定覆蓋層 */}
+                  {isLocked && (
+                    <div className="absolute inset-0 bg-black/20 z-10 flex items-center justify-center">
+                      <div className="bg-white/90 backdrop-blur-sm rounded-full p-4 shadow-lg">
+                        <svg className="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="h-48 bg-gray-200 relative overflow-hidden">
+                    <img 
+                      src={getSnapshotDisplayImage(snapshot)} 
+                      alt={snapshot.title}
+                      className={`w-full h-full object-cover transition-all duration-300 ${
+                        isLocked ? 'filter blur-sm grayscale' : ''
+                      }`}
+                    />
+                    <div className="absolute top-3 right-3">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getMoodColor(snapshot.mood)}`}>
+                        {snapshot.mood}
                       </span>
-                    ))}
+                    </div>
+                    {isLocked && (
+                      <div className="absolute top-3 left-3">
+                        <div className="bg-amber-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                          </svg>
+                          鎖定中
+                        </div>
+                      </div>
+                    )}
                   </div>
+                  <div className="p-4">
+                    <div className="text-sm text-gray-500 mb-2">{formatDate(snapshot.date)}</div>
+                    <h3 className={`font-semibold text-lg mb-2 ${isLocked ? 'text-gray-400' : ''}`}>
+                      {snapshot.title}
+                    </h3>
+                    <p className={`text-sm line-clamp-2 mb-3 ${isLocked ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {isLocked ? '內容已鎖定，等待解鎖時間到達...' : snapshot.content}
+                    </p>
+                    <div className="flex flex-wrap gap-1">
+                      {snapshot.tags.map((tag, index) => (
+                        <span 
+                          key={index} 
+                          className={`px-2 py-1 text-xs rounded-full ${
+                            isLocked 
+                              ? 'bg-gray-200 text-gray-400' 
+                              : 'bg-gray-100 text-gray-600'
+                          }`}
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* 個別快照倒數計時 */}
+                  {isLocked && snapshot.reminder_date && (
+                    <SnapshotCountdown 
+                      targetDate={snapshot.reminder_date}
+                      onUnlock={unlockSnapshot}
+                      snapshotId={snapshot.id}
+                    />
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>
