@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { buildQaPayload } from '../utils/buildQaPayload';
+import { submitQuestionnaire } from '../api/questionnaire';
 import { icons } from './icons.jsx';
 
 const QuestionnairePage = ({ onNavigate }) => {
@@ -31,7 +32,7 @@ const QuestionnairePage = ({ onNavigate }) => {
         }
     };
     
-    const handleNext = () => {
+    const handleNext = async () => {
         if (currentStep < questions.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
@@ -44,6 +45,15 @@ const QuestionnairePage = ({ onNavigate }) => {
                 // 供開發偵錯
                 // eslint-disable-next-line no-console
                 console.log('QA payload:', payload);
+                // 送出問卷
+                try {
+                    await submitQuestionnaire(payload);
+                    // eslint-disable-next-line no-console
+                    console.log('問卷已送出');
+                } catch (submitError) {
+                    // eslint-disable-next-line no-console
+                    console.error('問卷送出失敗:', submitError);
+                }
             } catch {}
             // 跳轉到首頁
             onNavigate && onNavigate('home');

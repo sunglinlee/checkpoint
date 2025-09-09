@@ -370,7 +370,7 @@ const submitQuestionnaire = async (questionnaireData) => {
     
     // 系統資訊（保留在頂層）
     "created_at": "2024-12-15T10:30:00Z",           // ISO 8601 timestamp
-    "user_id": "user123"                            // string (自動從認證 token 取得)
+    "email": "user@example.com"                     // string (自動從認證 token 取得)
 }
 ```
 

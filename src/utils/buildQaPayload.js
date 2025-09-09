@@ -1,5 +1,15 @@
+import { loadAuth } from '../api/auth';
+
 export function buildQaPayload(answers = {}) {
+  const { user } = loadAuth();
+  const email = (user && (user.email || user.mail || user.userEmail)) || null;
+
   return {
+    // 系統資訊（頂層）
+    created_at: new Date().toISOString(),
+    email, // 只送 email，不送 user_id
+
+    // 問卷主體
     qa: {
       satisfaction: {
         rating: answers.rating ?? null,
@@ -37,7 +47,23 @@ export function buildQaPayload(answers = {}) {
         forgiveness: answers.forgiveness ?? '',
         future_self: answers.future_self ?? ''
       }
-    }
+    },
+
+    // 此刻的心情與標記（頂層）
+    mood_and_tags: {
+      snapshot_title: answers.snapshot_title ?? '',
+      current_mood: answers.current_mood ?? '',
+      current_thoughts: answers.current_thoughts ?? '',
+      personal_tags: answers.personal_tags ?? ''
+    },
+
+    // 預約（頂層）
+    schedule: {
+      reminder_period: answers.reminder_period ?? ''
+    },
+
+    // 可選圖片（頂層）
+    snapshot_image: answers.snapshot_image ?? null
   };
 }
 
