@@ -19,6 +19,7 @@ const ReviewPage = ({ onNavigate, user }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   const showToastCenter = (message, type = 'success') => {
     setToast({ visible: true, message, type });
@@ -127,10 +128,13 @@ const ReviewPage = ({ onNavigate, user }) => {
     setEditingTitle('');
   };
 
-  const handleDeleteSnapshot = async () => {
+  const handleDeleteSnapshot = () => {
     if (!selectedSnapshot?.id) return;
-    const confirmed = window.confirm('確定要刪除此快照嗎？此動作無法復原。');
-    if (!confirmed) return;
+    setConfirmDeleteOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedSnapshot?.id) return;
     try {
       setIsDeleting(true);
       await apiDeleteSnapshot(selectedSnapshot.id);
@@ -144,6 +148,7 @@ const ReviewPage = ({ onNavigate, user }) => {
       showToastCenter('刪除失敗，請稍後再試', 'error');
     } finally {
       setIsDeleting(false);
+      setConfirmDeleteOpen(false);
     }
   };
 
@@ -184,6 +189,40 @@ const ReviewPage = ({ onNavigate, user }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmDeleteOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" onClick={() => setConfirmDeleteOpen(false)} />
+          <div className="relative mx-6 w-full max-w-sm rounded-2xl shadow-2xl transition-all duration-300 bg-white/80 backdrop-blur-md border border-white/60 p-5">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-full bg-red-500">
+                <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="text-base font-semibold text-gray-800">確認刪除</p>
+                <p className="text-sm text-gray-700 mt-1">確定要刪除此快照嗎？此動作無法復原。</p>
+                <div className="mt-4 flex justify-end gap-2">
+                  <button
+                    onClick={() => setConfirmDeleteOpen(false)}
+                    className="px-3 py-1.5 rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors text-sm"
+                  >
+                    取消
+                  </button>
+                  <button
+                    onClick={confirmDelete}
+                    disabled={isDeleting}
+                    className={`px-3 py-1.5 rounded-full text-white text-sm transition-colors ${isDeleting ? 'bg-red-300 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'}`}
+                  >
+                    {isDeleting ? '刪除中...' : '刪除'}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
