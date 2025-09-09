@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { icons } from './icons.jsx';
+import { getSnapshotDetail } from '../api/snapshots';
 
 const Logo = () => (
   <div className="flex items-center gap-2">
@@ -10,6 +11,9 @@ const Logo = () => (
 
 const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
   const [expandedSections, setExpandedSections] = useState({});
+  const [answers, setAnswers] = useState(questionnaireData || null);
+  const [isLoading, setIsLoading] = useState(!questionnaireData);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // 使用與 QuestionnairePage 相同的問題結構
   const questions = useMemo(() => [
@@ -24,37 +28,75 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
     { id: 'mood_and_tags', icon: icons.gratitude, title: '此刻的心情與標記', fields: [{ id: 'snapshot_title', type: 'text', label: '為這個快照取個名字吧' }, { id: 'current_mood', type: 'options', label: '選擇最符合你此刻心情的狀態', options: ['平靜', '開心', '興奮', '溫暖', '焦慮但充滿希望', '沮喪', '其他'] }, { id: 'current_thoughts', type: 'textarea', label: '關於現在的你，有什麼特別想記錄下來的想法或感受？' }, { id: 'personal_tags', type: 'text', label: '為這個時刻添加 3-5 個標籤，用逗號分隔（例如：成長,反思,希望,轉變）' }] }
   ], []);
 
-  // 模擬問卷答案數據 - 實際應用中這會從 props 或 API 獲取
-  const mockAnswers = {
-    rating: 7,
-    reason: '整體來說還算滿意，但還有一些地方需要改進，特別是工作與生活的平衡。',
-    grateful_events: '1. 今天早上看到陽光透過窗戶灑進來，感覺很溫暖\n2. 朋友主動關心我的近況\n3. 完成了一個困難的專案',
-    share_with: '我的家人和最好的朋友',
-    inspiration: '這些小事提醒我要珍惜當下，感恩身邊的人和事。',
-    current_events: '最近關注氣候變遷和永續發展的議題',
-    feelings: '有些擔憂但也充滿希望，覺得每個人都可以為地球盡一份力',
-    actions: '開始減少使用一次性用品，多搭乘大眾運輸工具',
-    emotion_event: '上週工作上的一個誤解讓我感到很沮喪和無力',
-    emotion_name: '小灰',
-    unmet_needs: '需要更多的理解和支持，以及更清楚的溝通',
-    family: '家人是我最重要的支柱，雖然有時會有小摩擦，但愛是永恆的',
-    friends: '朋友讓我的生活更豐富多彩，感謝有他們的陪伴',
-    love: '正在學習如何更好地愛自己，也期待遇到對的人',
-    challenge: '最近負責一個跨部門的專案，需要協調很多不同的意見',
-    new_understanding: '發現自己比想像中更有耐心和溝通能力',
-    dream: '想要開一間結合咖啡和書店的小店，創造一個溫暖的社區空間',
-    goal: '三個月內完成商業計劃書，第一步是市場調研',
-    forgiveness: '親愛的過去的自己，那次的失敗教會了你堅韌，你已經做得很好了',
-    future_self: '希望你能保持現在的熱情，記得照顧好自己的身心健康',
-    snapshot_title: '年末的反思時光',
-    current_mood: '平靜',
-    current_thoughts: '感覺自己正在慢慢成長，雖然路還很長，但每一步都很珍貴',
-    personal_tags: '成長,反思,希望,平靜,感恩',
-    snapshot_image: null,
-    reminder_period: '3 個月'
-  };
+  useEffect(() => {
+    let mounted = true;
 
-  const answers = questionnaireData || mockAnswers;
+    // 若父層已提供資料，直接使用
+    if (questionnaireData) {
+      setAnswers(questionnaireData);
+      setIsLoading(false);
+      setErrorMessage('');
+      return;
+    }
+
+    const loadSnapshot = async () => {
+      try {
+        setIsLoading(true);
+        setErrorMessage('');
+        let snapshotId = null;
+        try {
+          snapshotId = typeof window !== 'undefined' ? window.sessionStorage.getItem('selectedSnapshotId') : null;
+        } catch {}
+        if (!snapshotId) {
+          throw new Error('找不到快照 ID，請從列表重新進入');
+        }
+        const resp = await getSnapshotDetail(snapshotId);
+        const rawData = resp?.data ?? resp; // 兼容不同層包裝
+        let data = rawData;
+        if (typeof data === 'string') {
+          try { data = JSON.parse(data); } catch {}
+        }
+        const qa = data?.questionnaire_data || {};
+        const meta = data?.metadata || {};
+
+        // 將後端的問卷結構與中繼資料攤平成本頁所需的扁平 key
+        const flattened = {};
+        // 1) 攤平成各 section 的欄位
+        Object.keys(qa || {}).forEach((sectionKey) => {
+          const section = qa[sectionKey];
+          if (section && typeof section === 'object') {
+            Object.keys(section).forEach((fieldKey) => {
+              flattened[fieldKey] = section[fieldKey];
+            });
+          }
+        });
+        // 2) 從 metadata 對應到 UI 期待的欄位
+        if (meta.title) flattened.snapshot_title = meta.title;
+        if (meta.mood) flattened.current_mood = meta.mood;
+        if (meta.content) flattened.current_thoughts = meta.content;
+        if (Array.isArray(meta.tags)) {
+          flattened.personal_tags = meta.tags.join(',');
+        } else if (typeof meta.tags === 'string') {
+          flattened.personal_tags = meta.tags;
+        }
+        if (meta.reminder_period) flattened.reminder_period = meta.reminder_period;
+        // snapshot_image: 若有 URL，先保留 URL 供顯示（本頁不強制以 File 呈現）
+        if (meta.image_url) flattened.snapshot_image = meta.image_url;
+
+        if (!mounted) return;
+        setAnswers(flattened);
+      } catch (err) {
+        if (!mounted) return;
+        console.error('載入快照詳情失敗:', err);
+        setErrorMessage(err?.message || '載入失敗');
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+
+    loadSnapshot();
+    return () => { mounted = false; };
+  }, [questionnaireData]);
 
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
@@ -110,11 +152,14 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
         }
         return <span className="px-3 py-1 bg-[#8A9A87] text-white rounded-full text-sm">{answer}</span>;
       case 'image':
-        return answer ? (
+        if (!answer) return <span className="text-gray-400 italic">未上傳圖片</span>;
+        // 支援 File 或 URL 兩種格式
+        const src = typeof answer === 'string' ? answer : URL.createObjectURL(answer);
+        return (
           <div className="w-full max-w-md">
-            <img src={URL.createObjectURL(answer)} alt="上傳的圖片" className="w-full h-auto rounded-lg shadow-md" />
+            <img src={src} alt="上傳的圖片" className="w-full h-auto rounded-lg shadow-md" />
           </div>
-        ) : <span className="text-gray-400 italic">未上傳圖片</span>;
+        );
       default:
         return <span className="text-gray-700">{answer}</span>;
     }
@@ -132,6 +177,17 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
     };
     return moodColors[mood] || 'from-gray-100 to-gray-50';
   };
+
+  if (isLoading) {
+    return (
+      <div className="w-full min-h-screen bg-[#FDFCF9] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8A9A87] mx-auto mb-4"></div>
+          <p className="text-gray-600">載入快照詳情中...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen bg-[#FDFCF9] text-[#3D4A4D]">
@@ -165,12 +221,15 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
           <p className="text-gray-600 max-w-2xl mx-auto leading-relaxed">
             這是您完整的人生快照記錄，每一個答案都是您當時內心的真實寫照。
           </p>
+          {errorMessage && (
+            <p className="text-red-500 mt-4">{errorMessage}</p>
+          )}
         </div>
 
         {/* Questions and Answers */}
         <div className="space-y-6">
           {questions.map((question, index) => {
-            const hasAnswers = question.fields.some(field => answers[field.id] !== undefined && answers[field.id] !== null && answers[field.id] !== '');
+            const hasAnswers = question.fields.some(field => answers && answers[field.id] !== undefined && answers[field.id] !== null && answers[field.id] !== '');
             const isExpanded = expandedSections[question.id] !== false; // 默認展開
             const CurrentIcon = question.icon;
 
@@ -210,7 +269,7 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
                         <div key={field.id} className="space-y-3">
                           <h3 className="text-lg font-medium text-gray-800">{field.label}</h3>
                           <div className="pl-4 border-l-4 border-[#8A9A87]/30">
-                            {renderAnswer(field, answers[field.id])}
+                            {renderAnswer(field, answers ? answers[field.id] : undefined)}
                           </div>
                         </div>
                       ))}
