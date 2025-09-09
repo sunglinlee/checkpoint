@@ -88,6 +88,21 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
     confirmPassword: ''
   });
   const dropdownRef = useRef(null);
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success', position: 'top', variant: 'solid' });
+
+  const showToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type, position: 'top', variant: 'solid' });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, visible: false }));
+    }, 2400);
+  };
+
+  const showToastCenter = (message, type = 'success') => {
+    setToast({ visible: true, message, type, position: 'center', variant: 'glass' });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, visible: false }));
+    }, 2600);
+  };
 
   // 每8秒轮动一次
   useEffect(() => {
@@ -123,12 +138,12 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
 
   const handleSaveNickname = async () => {
     if (!newNickname.trim()) {
-      alert('請輸入暱稱');
+      showToastCenter('請輸入暱稱', 'error');
       return;
     }
 
     if (newNickname.trim().length > 20) {
-      alert('暱稱不能超過20個字元');
+      showToastCenter('暱稱不能超過20個字元', 'error');
       return;
     }
 
@@ -163,13 +178,13 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
           default:
             errorMsg = '暱稱修改失敗，請稍後再試';
         }
-        alert(errorMsg);
+        showToastCenter(errorMsg, 'error');
         return;
       }
 
       // API 成功後更新本地狀態
       updateUserNickname(newNickname.trim());
-      alert('暱稱修改成功');
+      showToastCenter('暱稱修改成功', 'success');
       setIsNicknameModalOpen(false);
       setNewNickname('');
     } catch (error) {
@@ -180,7 +195,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
       
       // 特別處理 404 錯誤
       if (error?.status === 404) {
-        alert('所有暱稱修改 API 端點都不存在 (404)。\n請檢查後端是否已實作相關功能。\n\n嘗試的端點:\n- POST /user/changeName\n- PUT /user/changeName\n- PATCH /user/changeName\n- POST /user/updateName\n- POST /user/updateNickname');
+        showToastCenter('所有暱稱修改 API 端點都不存在 (404)。\n請檢查後端是否已實作相關功能。', 'error');
         return;
       }
       
@@ -198,10 +213,10 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
           default:
             errorMsg = '暱稱修改失敗，請稍後再試';
         }
-        alert(errorMsg);
+        showToastCenter(errorMsg, 'error');
       } else {
         const msg = error?.data?.message || error?.message || error?.toString() || '暱稱修改失敗，請稍後再試';
-        alert(`暱稱修改失敗: ${msg}\n狀態碼: ${error?.status || 'unknown'}\n\n請檢查 Console 查看詳細錯誤資訊`);
+        showToastCenter(`暱稱修改失敗: ${msg}`, 'error');
       }
     }
   };
@@ -227,17 +242,17 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
 
   const handleSavePassword = async () => {
     if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
-      alert('請填寫所有欄位');
+      showToastCenter('請填寫所有欄位', 'error');
       return;
     }
     
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('新密碼與確認密碼不匹配');
+      showToastCenter('新密碼與確認密碼不匹配', 'error');
       return;
     }
     
     if (passwordData.newPassword.length < 8) {
-      alert('新密碼至少需要8個字元');
+      showToastCenter('新密碼至少需要8個字元', 'error');
       return;
     }
     
@@ -265,11 +280,11 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
           default:
             errorMsg = '密碼修改失敗，請稍後再試';
         }
-        alert(errorMsg);
+        showToastCenter(errorMsg, 'error');
         return;
       }
 
-      alert('密碼修改成功');
+      showToastCenter('密碼修改成功', 'success');
       setIsPasswordModalOpen(false);
       setPasswordData({
         currentPassword: '',
@@ -293,10 +308,10 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
           default:
             errorMsg = '密碼修改失敗，請稍後再試';
         }
-        alert(errorMsg);
+        showToastCenter(errorMsg, 'error');
       } else {
         const msg = error?.data?.message || error?.message || '密碼修改失敗，請稍後再試';
-        alert(msg);
+        showToastCenter(msg, 'error');
       }
     }
   };
@@ -319,6 +334,58 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
 
   return (
     <div className="w-full bg-[#FDFCF9] text-[#3D4A4D]">
+      {toast.visible && (
+        toast.position === 'center' ? (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" onClick={() => setToast(prev => ({ ...prev, visible: false }))} />
+            <div className={`relative mx-6 w-full max-w-sm rounded-2xl shadow-2xl transition-all duration-300 ${toast.variant === 'glass' ? 'bg-white/80 backdrop-blur-md border border-white/60' : 'bg-white border border-gray-200'} p-5`}>
+              <div className="flex items-start gap-3">
+                <div className={`mt-0.5 flex h-7 w-7 items-center justify-center rounded-full ${toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}>
+                  <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <p className="text-base font-semibold text-gray-800">{toast.type === 'success' ? '成功' : '錯誤'}</p>
+                  <p className="text-sm text-gray-700 mt-1">{toast.message}</p>
+                </div>
+                <button
+                  onClick={() => setToast(prev => ({ ...prev, visible: false }))}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="Close toast"
+                >
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="fixed top-6 inset-x-0 z-[100] flex justify-center px-4">
+            <div className={`flex items-start gap-3 rounded-lg shadow-lg border px-4 py-3 w-full max-w-md transition-all duration-300 ${toast.type === 'success' ? 'bg-white border-green-200' : 'bg-white border-red-200'}`}>
+              <div className={`mt-0.5 flex h-6 w-6 items-center justify-center rounded-full ${toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}>
+                <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-gray-800">{toast.type === 'success' ? '成功' : '錯誤'}</p>
+                <p className="text-sm text-gray-600 mt-0.5">{toast.message}</p>
+              </div>
+              <button
+                onClick={() => setToast(prev => ({ ...prev, visible: false }))}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Close toast"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )
+      )}
       {/* Header */}
       <header className="py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-200/50">
         <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }}><Logo /></a>

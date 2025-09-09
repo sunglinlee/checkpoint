@@ -18,6 +18,14 @@ const ReviewPage = ({ onNavigate, user }) => {
   const [editingTitle, setEditingTitle] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
+
+  const showToastCenter = (message, type = 'success') => {
+    setToast({ visible: true, message, type });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, visible: false }));
+    }, 2600);
+  };
 
 
   // 從後端載入用戶快照
@@ -90,7 +98,7 @@ const ReviewPage = ({ onNavigate, user }) => {
 
   const handleSaveTitle = async () => {
     if (editingTitle.trim() === '') {
-      alert('快照名稱不能為空');
+      showToastCenter('快照名稱不能為空', 'error');
       return;
     }
 
@@ -107,9 +115,10 @@ const ReviewPage = ({ onNavigate, user }) => {
       setSelectedSnapshot({ ...selectedSnapshot, title: editingTitle.trim() });
       setIsEditingTitle(false);
       setEditingTitle('');
+      showToastCenter('標題已更新', 'success');
     } catch (error) {
       console.error('更新快照標題失敗:', error);
-      alert('更新失敗，請稍後再試');
+      showToastCenter('更新失敗，請稍後再試', 'error');
     }
   };
 
@@ -129,9 +138,10 @@ const ReviewPage = ({ onNavigate, user }) => {
       setSelectedSnapshot(null);
       setIsEditingTitle(false);
       setEditingTitle('');
+      showToastCenter('已刪除快照', 'success');
     } catch (error) {
       console.error('刪除快照失敗:', error);
-      alert('刪除失敗，請稍後再試');
+      showToastCenter('刪除失敗，請稍後再試', 'error');
     } finally {
       setIsDeleting(false);
     }
@@ -151,6 +161,33 @@ const ReviewPage = ({ onNavigate, user }) => {
 
   return (
     <div className="w-full min-h-screen bg-[#FDFCF9] text-[#3D4A4D]">
+      {toast.visible && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" onClick={() => setToast(prev => ({ ...prev, visible: false }))} />
+          <div className={`relative mx-6 w-full max-w-sm rounded-2xl shadow-2xl transition-all duration-300 bg-white/80 backdrop-blur-md border border-white/60 p-5`}>
+            <div className="flex items-start gap-3">
+              <div className={`mt-0.5 flex h-7 w-7 items-center justify-center rounded-full ${toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}>
+                <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="text-base font-semibold text-gray-800">{toast.type === 'success' ? '成功' : '錯誤'}</p>
+                <p className="text-sm text-gray-700 mt-1">{toast.message}</p>
+              </div>
+              <button
+                onClick={() => setToast(prev => ({ ...prev, visible: false }))}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Close toast"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <header className="py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-200/50">
         <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }}>
