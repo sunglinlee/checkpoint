@@ -26,6 +26,8 @@ export async function getUserSnapshots(email, options = {}) {
         title: q.title ?? '',
         date: q.date,
         mood: q.mood,
+        image_url: q.image_url ?? null,
+        assigned_image: q.assigned_image ?? null,
         content: q.content,
         tags: Array.isArray(q.tags)
             ? q.tags

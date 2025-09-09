@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getSnapshotDisplayImage } from '../utils/imageAssignment';
+import { getSnapshotDisplayImage, assignImageByMood } from '../utils/imageAssignment';
 import { getUserSnapshots, updateSnapshotTitle as apiUpdateSnapshotTitle } from '../api/snapshots';
 import { deleteSnapshot as apiDeleteSnapshot } from '../api/snapshots';
 
@@ -30,8 +30,17 @@ const ReviewPage = ({ onNavigate, user }) => {
         const email = user?.email || (typeof window !== 'undefined' ? JSON.parse(window.localStorage.getItem('authUser') || '{}')?.email : undefined);
         const resp = await getUserSnapshots(email);
         const list = resp?.data?.snapshots || [];
+        // 若後端未提供 assigned_image 或 image_url，前端依據心情隨機指派一張預設圖片
+        const usedImagesRef = {};
+        const withAssigned = list.map((s) => {
+          if (!s?.image_url && !s?.assigned_image) {
+            const assigned = assignImageByMood(s?.mood, usedImagesRef);
+            return { ...s, assigned_image: assigned };
+          }
+          return s;
+        });
         if (!mounted) return;
-        setSnapshots(list);
+        setSnapshots(withAssigned);
       } catch (err) {
         if (!mounted) return;
         console.error('載入快照失敗:', err);
@@ -46,7 +55,15 @@ const ReviewPage = ({ onNavigate, user }) => {
   }, []);
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
+    // 後端目前回傳格式可能為 "YYYY-MM-DD HH:mm:ss.S"，需轉成可被 Date 正確解析的 ISO 格式
+    let normalized = dateString;
+    if (typeof dateString === 'string' && /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/.test(dateString)) {
+      normalized = dateString.replace(' ', 'T').replace(/\.\d+$/, '') + 'Z';
+    }
+    const date = new Date(normalized);
+    if (isNaN(date.getTime())) {
+      return dateString || '';
+    }
     return date.toLocaleDateString('zh-TW', {
       year: 'numeric',
       month: 'long',
