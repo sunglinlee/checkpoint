@@ -7,6 +7,7 @@ const QuestionnairePage = ({ onNavigate }) => {
     const [currentStep, setCurrentStep] = useState(0);
     const [answers, setAnswers] = useState({});
     const [imagePreview, setImagePreview] = useState(null);
+    const [errors, setErrors] = useState({});
 
     const questions = useMemo(() => [
         { id: 'satisfaction', icon: icons.satisfaction, title: '關於現在的生活', fields: [{ id: 'rating', type: 'scale', label: '您覺得當前的生活方式，有符合你想要活成的樣子嗎？ (1-10分)', options: { min: 1, max: 10, minLabel: '相差甚遠', maxLabel: '非常滿意' } }, { id: 'reason', type: 'textarea', label: '如果可以，也請記錄下給予這個分數的理由。' }] },
@@ -22,7 +23,10 @@ const QuestionnairePage = ({ onNavigate }) => {
         { id: 'complete', icon: icons.complete, title: '完成了，真棒！', fields: [] }
     ], []);
 
-    const handleAnswerChange = (fieldId, value) => setAnswers(prev => ({ ...prev, [fieldId]: value }));
+    const handleAnswerChange = (fieldId, value) => {
+        setAnswers(prev => ({ ...prev, [fieldId]: value }));
+        setErrors(prev => ({ ...prev, [fieldId]: undefined }));
+    };
     
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
@@ -32,7 +36,28 @@ const QuestionnairePage = ({ onNavigate }) => {
         }
     };
     
+    const validateStep = (stepIndex) => {
+        const step = questions[stepIndex];
+        if (!step || step.id === 'complete') return true;
+        const newErrors = {};
+        (step.fields || []).forEach(field => {
+            const value = answers[field.id];
+            if (field.type === 'text' || field.type === 'textarea') {
+                if (!value || String(value).trim().length === 0) newErrors[field.id] = '此欄位為必填';
+            } else if (field.type === 'scale') {
+                if (value === undefined || value === null || value === '') newErrors[field.id] = '請選擇一個分數';
+            } else if (field.type === 'options') {
+                if (!value) newErrors[field.id] = '請選擇一個日期';
+            } else if (field.type === 'image') {
+                if (!value) newErrors[field.id] = '請上傳圖片';
+            }
+        });
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleNext = async () => {
+        if (!validateStep(currentStep)) return;
         if (currentStep < questions.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
@@ -83,9 +108,9 @@ const QuestionnairePage = ({ onNavigate }) => {
                     <div className="space-y-6">
                         {questions[currentStep].id !== 'complete' ? questions[currentStep].fields.map(field => (
                             <div key={field.id}>
-                                <label className="block text-lg mb-2 text-gray-700">{field.label}</label>
-                                {field.type === 'text' && <input type="text" value={answers[field.id] || ''} onChange={e => handleAnswerChange(field.id, e.target.value)} className="input-field" />}
-                                {field.type === 'textarea' && <textarea rows="5" value={answers[field.id] || ''} onChange={e => handleAnswerChange(field.id, e.target.value)} className="textarea-field" />}
+                                <label className="block text-lg mb-2 text-gray-700">{field.label} <span className="text-red-500">*</span></label>
+                                {field.type === 'text' && <input type="text" value={answers[field.id] || ''} onChange={e => handleAnswerChange(field.id, e.target.value)} className={`input-field ${errors[field.id] ? 'border-red-400 focus:border-red-500' : ''}`} />}
+                                {field.type === 'textarea' && <textarea rows="5" value={answers[field.id] || ''} onChange={e => handleAnswerChange(field.id, e.target.value)} className={`textarea-field ${errors[field.id] ? 'border-red-400 focus:border-red-500' : ''}`} />}
                                 {field.type === 'scale' && (
                                     <div>
                                         <div className="flex justify-between items-center gap-1 md:gap-2 flex-wrap">
@@ -145,6 +170,9 @@ const QuestionnairePage = ({ onNavigate }) => {
                                             }
                                         })}
                                     </div>
+                                )}
+                                {errors[field.id] && (
+                                    <p className="mt-2 text-sm text-red-600">{errors[field.id]}</p>
                                 )}
                             </div>
                         )) : (
