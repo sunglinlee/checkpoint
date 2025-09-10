@@ -472,7 +472,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
       <main className="bg-[#F3F0E9] relative overflow-hidden">
         {/* 背景圖與漸層遮罩 */}
         <div className="absolute inset-0 w-full h-full z-0">
-          <video src="/素材/top_15.mp4" autoPlay muted loop className="w-full h-full object-cover object-center" />
+          <video src="/素材/top_15_1.mp4" autoPlay muted loop className="w-full h-full object-cover object-center" />
           <div className="absolute inset-0 w-full h-full pointer-events-none" style={{background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.8) 100%)'}}></div>
         </div>
         <div className="container mx-auto px-6 py-20 md:py-32 text-center relative z-10">
@@ -599,7 +599,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
       <section className="py-16 md:py-24 soft-bg">
         <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2">
-            <video src="/素材/chill_corner.mp4" autoPlay muted loop className="rounded-lg shadow-lg w-full" />
+            <video src="/素材/chill_corner (2).mp4" autoPlay muted loop className="rounded-lg shadow-lg w-full" />
           </div>
           <div className="md:w-1/2">
             <h2 className="text-3xl font-bold section-title">一個讓你安心的角落</h2>
