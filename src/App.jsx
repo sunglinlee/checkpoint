@@ -33,7 +33,16 @@ export default function App() {
 
     const updateUserNickname = (nickname) => {
         if (user) {
-            setUser({ ...user, nickname });
+            const updatedUser = { 
+                ...user, 
+                nickname: nickname,
+                name: nickname  // 同時更新 name 字段，確保顯示一致性
+            };
+            setUser(updatedUser);
+            // 將更新後的用戶資料持久化到 localStorage
+            if (typeof window !== 'undefined') {
+                window.localStorage.setItem('authUser', JSON.stringify(updatedUser));
+            }
         }
     };
 
