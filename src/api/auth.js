@@ -129,6 +129,14 @@ export async function changePassword({ email, currentPassword, newPassword }) {
     });
 }
 
+export async function forgetPassword({ email }) {
+    // 忘記密碼 API
+    return apiRequest('/user/forgetPassword', {
+        method: 'POST',
+        body: { email }
+    });
+}
+
 export async function updateNickname({ email, nickname }) {
     // 暱稱修改 API
     console.log('嘗試暱稱修改 API 呼叫:', { email, name: nickname });

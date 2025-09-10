@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
-import { loginUser, registerUser, mailLogin, logoutUser, refreshToken, persistAuth, startTokenRefresh, stopTokenRefresh } from '../api/auth';
+import { loginUser, registerUser, mailLogin, logoutUser, refreshToken, persistAuth, startTokenRefresh, stopTokenRefresh, forgetPassword } from '../api/auth';
 
 const Logo = () => (
   <div className="flex items-center gap-2">
@@ -11,27 +11,67 @@ const Logo = () => (
 );
 
 // 忘記密碼模態框組件
-const ForgotPasswordModal = ({ isOpen, onClose }) => {
+const ForgotPasswordModal = ({ isOpen, onClose, showToast }) => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email.trim()) {
-      alert('請輸入您的電子郵件地址');
+      showToast('請輸入您的電子郵件地址', 'error');
       return;
     }
     
     setIsSubmitting(true);
     try {
-      // 這裡可以添加實際的重置密碼邏輯
       console.log('發送重置密碼郵件到:', email);
-      alert('重置密碼郵件已發送到您的信箱，請查收');
+      const response = await forgetPassword({ email: email.trim() });
+      
+      // 檢查後端回傳的狀態碼
+      const statusCode = response?.statusCode || response?.data?.statusCode || response?.code;
+      
+      // 只有狀態碼 "0000" 才表示成功
+      if (statusCode !== '0000') {
+        let errorMsg = '發送失敗，請稍後再試';
+        switch (statusCode) {
+          case '1006':
+            errorMsg = '此電子郵件地址不存在';
+            break;
+          case '1007':
+            errorMsg = '電子郵件格式不正確';
+            break;
+          default:
+            errorMsg = '發送失敗，請稍後再試';
+        }
+        showToast(errorMsg, 'error');
+        return;
+      }
+
+      showToast('重置密碼郵件已發送到您的信箱，請查收', 'success');
       setEmail('');
       onClose();
     } catch (error) {
       console.error('發送重置密碼郵件失敗:', error);
-      alert('發送失敗，請稍後再試');
+      
+      // 處理 HTTP 錯誤或其他異常
+      const statusCode = error?.data?.statusCode || error?.data?.code;
+      if (statusCode) {
+        let errorMsg = '發送失敗，請稍後再試';
+        switch (statusCode) {
+          case '1006':
+            errorMsg = '此電子郵件地址不存在';
+            break;
+          case '1007':
+            errorMsg = '電子郵件格式不正確';
+            break;
+          default:
+            errorMsg = '發送失敗，請稍後再試';
+        }
+        showToast(errorMsg, 'error');
+      } else {
+        const msg = error?.data?.message || error?.message || '發送失敗，請稍後再試';
+        showToast(msg, 'error');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -110,6 +150,14 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success', position: 'center', variant: 'glass' });
+
+  const showToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type, position: 'center', variant: 'glass' });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, visible: false }));
+    }, 2600);
+  };
 
   const handleInputChange = (e) => {
     setFormData({
@@ -283,6 +331,35 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
 
   return (
     <div className="min-h-screen bg-[#FDFCF9] flex flex-col">
+      {/* Toast Notification */}
+      {toast.visible && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" onClick={() => setToast(prev => ({ ...prev, visible: false }))} />
+          <div className={`relative mx-6 w-full max-w-sm rounded-2xl shadow-2xl transition-all duration-300 ${toast.variant === 'glass' ? 'bg-white/80 backdrop-blur-md border border-white/60' : 'bg-white border border-gray-200'} p-5`}>
+            <div className="flex items-start gap-3">
+              <div className={`mt-0.5 flex h-7 w-7 items-center justify-center rounded-full ${toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}>
+                <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="text-base font-semibold text-gray-800">{toast.type === 'success' ? '成功' : '錯誤'}</p>
+                <p className="text-sm text-gray-700 mt-1">{toast.message}</p>
+              </div>
+              <button
+                onClick={() => setToast(prev => ({ ...prev, visible: false }))}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Close toast"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-200/50">
         <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }}>
@@ -471,6 +548,7 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
       <ForgotPasswordModal
         isOpen={showForgotPassword}
         onClose={() => setShowForgotPassword(false)}
+        showToast={showToast}
       />
     </div>
   );
