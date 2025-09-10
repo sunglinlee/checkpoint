@@ -101,13 +101,14 @@ const ReviewPage = ({ onNavigate, user }) => {
   };
 
   // 檢查快照是否被鎖定
+  // 基於後端提供的 reminder_date (SCHEDULE_TIME) 判斷是否鎖定
   const isSnapshotLocked = (snapshot) => {
-    if (!snapshot.reminder_date) return false;
-    if (unlockedSnapshots.has(snapshot.id)) return false;
+    if (!snapshot.reminder_date) return false; // 沒有 reminder_date 表示已解鎖
+    if (unlockedSnapshots.has(snapshot.id)) return false; // 用戶手動解鎖
     
     const now = new Date().getTime();
     const scheduleTime = new Date(snapshot.reminder_date).getTime();
-    return now < scheduleTime;
+    return now < scheduleTime; // 當前時間小於預定解鎖時間則鎖定
   };
 
   // 解鎖快照
@@ -117,6 +118,7 @@ const ReviewPage = ({ onNavigate, user }) => {
   };
 
   // 獲取最早的鎖定時間（用於顯示倒數計時）
+  // 基於後端提供的 reminder_date 找出最早需要解鎖的時間
   const getEarliestLockTime = () => {
     const lockedSnapshots = snapshots.filter(s => isSnapshotLocked(s));
     if (lockedSnapshots.length === 0) return null;
@@ -138,9 +140,10 @@ const ReviewPage = ({ onNavigate, user }) => {
         const email = user?.email || (typeof window !== 'undefined' ? JSON.parse(window.localStorage.getItem('authUser') || '{}')?.email : undefined);
         const resp = await getUserSnapshots(email);
         const list = resp?.data?.snapshots || [];
+        
         // 若後端未提供 assigned_image 或 image_url，前端依據心情隨機指派一張預設圖片
         const usedImagesRef = {};
-        const withAssigned = list.map((s, index) => {
+        const withAssigned = list.map((s) => {
           let snapshot = { ...s };
           
           if (!snapshot?.image_url && !snapshot?.assigned_image) {
@@ -148,26 +151,12 @@ const ReviewPage = ({ onNavigate, user }) => {
             snapshot.assigned_image = assigned;
           }
           
-          // 如果後端沒有提供 reminder_date，我們為演示目的添加一個
-          // 實際應用中這應該來自後端 API
-          if (!snapshot.reminder_date) {
-            // 為前幾個快照添加不同的解鎖時間（用於演示）
-            const now = new Date();
-            if (index === 0) {
-              // 第一個快照：1分鐘後解鎖
-              snapshot.reminder_date = new Date(now.getTime() + 1 * 60 * 1000).toISOString();
-            } else if (index === 1) {
-              // 第二個快照：5分鐘後解鎖
-              snapshot.reminder_date = new Date(now.getTime() + 5 * 60 * 1000).toISOString();
-            } else if (index === 2) {
-              // 第三個快照：1小時後解鎖
-              snapshot.reminder_date = new Date(now.getTime() + 60 * 60 * 1000).toISOString();
-            }
-            // 其他快照不設置 reminder_date，表示已解鎖
-          }
+          // reminder_date 完全依賴後端提供
+          // 如果後端沒有提供 reminder_date，表示該快照已解鎖
           
           return snapshot;
         });
+        
         if (!mounted) return;
         setSnapshots(withAssigned);
       } catch (err) {

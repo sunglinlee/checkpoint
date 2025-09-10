@@ -28,6 +28,7 @@ export async function getUserSnapshots(email, options = {}) {
         image_url: q.image_url ?? null,
         assigned_image: q.assigned_image ?? null,
         content: q.content,
+        reminder_date: q.reminder_date ?? q.schedule_time ?? null,
         tags: Array.isArray(q.tags)
             ? q.tags
             : (typeof q.tags === 'string'
