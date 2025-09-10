@@ -130,6 +130,27 @@ const ReviewPage = ({ onNavigate, user }) => {
   };
 
 
+  // 從 localStorage 獲取已分配的圖片
+  const getStoredImageAssignments = () => {
+    try {
+      const stored = localStorage.getItem('snapshotImageAssignments');
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  };
+
+  // 儲存圖片分配到 localStorage
+  const saveImageAssignment = (snapshotId, imagePath) => {
+    try {
+      const stored = getStoredImageAssignments();
+      stored[snapshotId] = imagePath;
+      localStorage.setItem('snapshotImageAssignments', JSON.stringify(stored));
+    } catch (error) {
+      console.warn('無法儲存圖片分配:', error);
+    }
+  };
+
   // 從後端載入用戶快照
   useEffect(() => {
     let mounted = true;
@@ -141,14 +162,25 @@ const ReviewPage = ({ onNavigate, user }) => {
         const resp = await getUserSnapshots(email);
         const list = resp?.data?.snapshots || [];
         
-        // 若後端未提供 assigned_image 或 image_url，前端依據心情隨機指派一張預設圖片
+        // 獲取已儲存的圖片分配
+        const storedAssignments = getStoredImageAssignments();
+        
+        // 若後端未提供 assigned_image 或 image_url，檢查 localStorage 或重新分配
         const usedImagesRef = {};
         const withAssigned = list.map((s) => {
           let snapshot = { ...s };
           
           if (!snapshot?.image_url && !snapshot?.assigned_image) {
-            const assigned = assignImageByMood(snapshot?.mood, usedImagesRef);
-            snapshot.assigned_image = assigned;
+            // 先檢查是否已有儲存的分配
+            if (storedAssignments[snapshot.id]) {
+              snapshot.assigned_image = storedAssignments[snapshot.id];
+            } else {
+              // 如果沒有儲存的分配，才進行新的隨機分配
+              const assigned = assignImageByMood(snapshot?.mood, usedImagesRef);
+              snapshot.assigned_image = assigned;
+              // 儲存新的分配
+              saveImageAssignment(snapshot.id, assigned);
+            }
           }
           
           // reminder_date 完全依賴後端提供
