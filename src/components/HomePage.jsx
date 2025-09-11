@@ -10,8 +10,8 @@ const CssIconCheck = () => (
 
 const Logo = () => (
   <div className="flex items-center gap-2">
-    <img src="/logo/LOGO.png" alt="Check Point Logo" className="h-12 w-auto" />
-    <img src="/logo/LOGO_H1.png" alt="Company Name" className="h-10 w-auto" />
+    <img src="https://storage.googleapis.com/checkpoint_frontend/logo/LOGO.png" alt="Check Point Logo" className="h-12 w-auto" />
+    <img src="https://storage.googleapis.com/checkpoint_frontend/logo/LOGO_H1.png" alt="Company Name" className="h-10 w-auto" />
   </div>
 );
 
@@ -22,37 +22,37 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
     {
       id: 1,
       text: "起初只是想找個地方寫寫東西，沒想到每一次的回顧，都讓我看見自己驚人的成長。那些三個月前還在煩惱的事，現在看來都雲淡風輕了。這就像是送給未來自己的一份禮物。",
-      author: "曉芬，一位使用半年的上班族"
+      author: "Sandy"
     },
     {
       id: 2,
       text: "身為一個媽媽，我常常忙到忘了照顧自己的內心。這個平台讓我重新找回與自己對話的時間，每一次的記錄都像是一次心靈的洗滌。",
-      author: "雅婷，全職媽媽"
+      author: "Annie"
     },
     {
       id: 3,
       text: "剛開始使用時還有些懷疑，但隨著時間推移，我發現自己變得更加了解自己。那些重複出現的情緒和想法，都透過這個過程得到了梳理。",
-      author: "志明，研究生"
+      author: "Vicky"
     },
     {
       id: 4,
       text: "這不只是記錄，更像是一面鏡子，讓我真實地看見自己的成長軌跡。當我回顧過去的記錄時，總能感受到滿滿的感動和力量。",
-      author: "美玲，設計師"
+      author: "Wendy"
     },
     {
       id: 5,
       text: "在忙碌的生活中，這個平台成了我與自己對話的專屬空間。每一次的記錄都讓我更清楚地認識自己，也更有勇氣面對未來的挑戰。",
-      author: "建華，工程師"
+      author: "Kevin"
     },
     {
       id: 6,
       text: "作為一個容易焦慮的人，這個工具幫助我學會了如何與自己的情緒相處。透過定期的記錄和回顧，我發現自己變得更加平靜和自信。",
-      author: "小雯，護理師"
+      author: "Joyce"
     },
     {
       id: 7,
       text: "小孩愛ㄘ已購買。",
-      author: "阿斯，路人"
+      author: "阿斯"
     },
     {
       id: 8,
@@ -472,7 +472,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
       <main className="bg-[#F3F0E9] relative overflow-hidden">
         {/* 背景圖與漸層遮罩 */}
         <div className="absolute inset-0 w-full h-full z-0">
-          <video src="/素材/top_15_1.mp4" autoPlay muted loop className="w-full h-full object-cover object-center" />
+          <video src="https://storage.googleapis.com/checkpoint_frontend/素材/top_15_1.mp4" autoPlay muted loop className="w-full h-full object-cover object-center" />
           <div className="absolute inset-0 w-full h-full pointer-events-none" style={{background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.8) 100%)'}}></div>
         </div>
         <div className="container mx-auto px-6 py-20 md:py-32 text-center relative z-10">
@@ -599,7 +599,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
       <section className="py-16 md:py-24 soft-bg">
         <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2">
-            <video src="/素材/chill_corner (2).mp4" autoPlay muted loop className="rounded-lg shadow-lg w-full" />
+            <video src="https://storage.googleapis.com/checkpoint_frontend/素材/chill_corner%20(2).mp4" autoPlay muted loop className="rounded-lg shadow-lg w-full" />
           </div>
           <div className="md:w-1/2">
             <h2 className="text-3xl font-bold section-title">一個讓你安心的角落</h2>

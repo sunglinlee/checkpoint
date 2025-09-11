@@ -4,8 +4,8 @@ import { getSnapshotDetail } from '../api/snapshots';
 
 const Logo = () => (
   <div className="flex items-center gap-2">
-    <img src="/logo/LOGO.png" alt="Check Point Logo" className="h-12 w-auto" />
-    <img src="/logo/LOGO_H1.png" alt="Company Name" className="h-10 w-auto" />
+    <img src="https://storage.googleapis.com/checkpoint_frontend/logo/LOGO.png" alt="Check Point Logo" className="h-12 w-auto" />
+    <img src="https://storage.googleapis.com/checkpoint_frontend/logo/LOGO_H1.png" alt="Company Name" className="h-10 w-auto" />
   </div>
 );
 

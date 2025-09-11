@@ -7,7 +7,7 @@ const TransitionPage = ({ onNavigate }) => {
 
     useEffect(() => {
         // 初始化音頻
-        audioRef.current = new Audio('/素材/SpaceTimeThought.mp3');
+        audioRef.current = new Audio('https://storage.googleapis.com/checkpoint_frontend/素材/SpaceTimeThought.mp3');
         audioRef.current.volume = 0.2; // 設定預設音量為20%
         audioRef.current.loop = true; // 設定循環播放
 

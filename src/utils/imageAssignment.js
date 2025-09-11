@@ -38,13 +38,13 @@ export const assignImageByMood = (mood, usedImagesRef) => {
     selectedImage = availableImages[Math.floor(Math.random() * availableImages.length)];
     // 重置該心情的使用記錄
     usedImagesRef[mood] = [selectedImage];
-    return `/素材/${selectedImage}`;
+    return `https://storage.googleapis.com/checkpoint_frontend/素材/${selectedImage}`;
   }
   
   // 更新使用記錄
   usedImagesRef[mood] = [...(usedImagesRef[mood] || []), selectedImage];
   
-  return `/素材/${selectedImage}`;
+  return `https://storage.googleapis.com/checkpoint_frontend/素材/${selectedImage}`;
 };
 
 /**
@@ -67,5 +67,5 @@ export const getSnapshotDisplayImage = (snapshot) => {
   // 如果都沒有，根據心情返回預設圖片
   const availableImages = MOOD_IMAGE_MAP[snapshot.mood] || MOOD_IMAGE_MAP['其他'];
   const defaultImage = availableImages[0];
-  return `/素材/${defaultImage}`;
+  return `https://storage.googleapis.com/checkpoint_frontend/素材/${defaultImage}`;
 };
