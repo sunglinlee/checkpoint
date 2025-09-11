@@ -76,7 +76,8 @@ export default function App() {
     }, []);
 
     return (
-        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "1032893971305-nqrk0r231cmb010bjmkbvsnlgqfnq129.apps.googleusercontent.com"}>
+        //<GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "1032893971305-nqrk0r231cmb010bjmkbvsnlgqfnq129.apps.googleusercontent.com"}>
+        <GoogleOAuthProvider clientId="357565914560-ggnsu1d3pkrrkj0bmedt7sb543k1bdba.apps.googleusercontent.com">
             <div className="font-['Noto_Sans_TC']">
                 {renderPage()}
             </div>
