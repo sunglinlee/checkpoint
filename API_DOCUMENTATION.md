@@ -181,6 +181,54 @@ const result = await updateNickname({
 - 暱稱不能為空
 - 所有用戶（包括 Google 登入用戶）都可以修改暱稱
 
+### 9. 帳號存在與認證方式查詢 (checkAccount)
+```javascript
+import { checkAccountExists } from '../api/accountValidation';
+
+const { exists, authMethod, user } = await checkAccountExists('user@example.com');
+// exists: boolean
+// authMethod: 'regular' | 'google' | null
+// user: { email: string, nickname?: string, avatar?: string } | null
+```
+
+**端點**: `GET /user/checkAccount?email={email}`
+**用途**: 在註冊或登入前，查詢該 Email 是否已存在，以及其既有的認證方式
+**需要認證**: 否
+
+**查詢參數**:
+- `email` (string, required): 要查詢的電子郵件
+
+**回應**:
+```javascript
+{
+    "exists": true,                   // 帳號是否存在
+    "authMethod": "regular",        // 'regular' | 'google' | null
+    "user": {                         // 只回傳安全且必要的基本資訊
+        "email": "user@example.com",
+        "nickname": "小王",          // 若有資料
+        "avatar": "https://..."      // 若有資料
+    }
+}
+```
+
+**狀態碼**:
+- `200`: 查詢成功（不論存在與否）
+- `400`: email 格式不正確
+- `429`: 查詢過於頻繁（節流）
+- `500`: 伺服器錯誤
+
+**安全性說明**:
+- 不回傳任何敏感資料（例如密碼雜湊、完整 googleId 等）。
+- 僅用於使用者流程引導：
+  - 若 `exists === true` 且 `authMethod === 'google'`：提示使用 Google 登入。
+  - 若 `exists === true` 且 `authMethod === 'regular'`：提示使用一般帳密登入或執行忘記密碼。
+  - 若 `exists === false`：可進行新帳號註冊（一般或 Google）。
+
+**前端整合**:
+- 前端使用 `src/api/accountValidation.js` 的 `checkAccountExists(email)` 封裝函式呼叫此端點。
+- 回傳物件結構需包含：`exists`、`authMethod`（'regular' | 'google' | null）、`user`（可為 null）。
+
+
 ## 認證管理
 
 ### 儲存認證

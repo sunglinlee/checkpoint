@@ -1,5 +1,5 @@
 const isDev = import.meta.env.DEV;
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (isDev ? '/api' : 'https://checkpoint-backend-357565914560.asia-east1.run.app/api');
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (isDev ? '/api' : 'https://checkpoint-backend-357565914560.asia-east1.run.app');
 
 function buildHeaders(customHeaders = {}, { includeJsonContentType } = { includeJsonContentType: true }) {
     const defaultHeaders = includeJsonContentType ? { 'Content-Type': 'application/json' } : {};
