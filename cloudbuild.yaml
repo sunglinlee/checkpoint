@@ -19,13 +19,13 @@ steps:
       - '-d'
       - '-r'
       - '-x'
-      - '素材/.*'  # 排除素材資料夾
+      - '素材/.*'  # 排除素材資料夾 好喔
       - '-x' 
       - 'logo/.*' # 排除logo資料夾
       - 'dist/'
       - 'gs://${_BUCKET_NAME}'
 
-  # 步驟 4: 設置 Cloud Storage 的錯誤頁面為 404.html
+  # 步驟 4: 設置 Cloud Storage 的錯誤頁面為 404.html   
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gsutil'
     args: ['web', 'set', '-m', 'index.html', '-e', '404.html', 'gs://${_BUCKET_NAME}']
@@ -35,3 +35,5 @@ options:
 
 substitutions:
   _BUCKET_NAME: checkpoint_frontend
+
+  
