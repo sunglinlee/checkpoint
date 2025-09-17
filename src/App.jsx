@@ -28,6 +28,7 @@ export default function App() {
             url.searchParams.set('page', page);
         } else {
             url.searchParams.delete('page');
+            url.searchParams.delete('snapshot_id'); // 回到首頁時清除 snapshot_id
         }
         window.history.pushState({}, '', url);
         
@@ -102,6 +103,17 @@ export default function App() {
         // 檢查 URL 參數並設置對應的頁面
         const urlParams = new URLSearchParams(window.location.search);
         const pageParam = urlParams.get('page');
+        const snapshotId = urlParams.get('snapshot_id');
+        
+        // 如果有 snapshot_id 參數，將其存到 sessionStorage 供 CheckReviewPage 使用
+        if (snapshotId) {
+            try {
+                window.sessionStorage.setItem('selectedSnapshotId', snapshotId);
+            } catch (error) {
+                console.warn('無法設置 sessionStorage:', error);
+            }
+        }
+        
         if (pageParam) {
             // 支援的頁面列表
             const validPages = ['home', 'transition', 'questionnaire', 'login', 'review', 'checkreview'];

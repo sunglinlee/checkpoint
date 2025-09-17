@@ -606,8 +606,15 @@ const ReviewPage = ({ onNavigate, user }) => {
                       try {
                         if (selectedSnapshot?.id) {
                           window.sessionStorage.setItem('selectedSnapshotId', String(selectedSnapshot.id));
+                          // 同時更新 URL 參數
+                          const url = new URL(window.location);
+                          url.searchParams.set('page', 'checkreview');
+                          url.searchParams.set('snapshot_id', String(selectedSnapshot.id));
+                          window.history.pushState({}, '', url);
                         }
-                      } catch {}
+                      } catch (error) {
+                        console.warn('無法設置參數:', error);
+                      }
                       onNavigate('checkreview');
                     }}
                     className="inline-block px-4 py-2 text-sm text-[#8A9A87] hover:text-white hover:bg-[#8A9A87] rounded-full transition-all duration-200 border border-[#8A9A87]"

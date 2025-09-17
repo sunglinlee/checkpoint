@@ -18,9 +18,17 @@
             const pageName = pathname.replace(/^\//, '').replace(/\/$/, '');
             const validPages = ['checkreview', 'questionnaire', 'review', 'login', 'transition'];
             
+            // 保留 snapshot_id 參數（如果存在）
+            const currentParams = new URLSearchParams(search);
+            const snapshotId = currentParams.get('snapshot_id');
+            
             if (validPages.includes(pageName)) {
                 const params = new URLSearchParams(search);
                 params.set('page', pageName);
+                // 保留 snapshot_id 參數
+                if (snapshotId) {
+                    params.set('snapshot_id', snapshotId);
+                }
                 redirectUrl = '/?' + params.toString();
             } else if (search) {
                 redirectUrl = '/' + search;
