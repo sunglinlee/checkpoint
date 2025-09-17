@@ -21,6 +21,16 @@ export default function App() {
              }
         }
         setCurrentPage(page);
+        
+        // 更新 URL 參數
+        const url = new URL(window.location);
+        if (page !== 'home') {
+            url.searchParams.set('page', page);
+        } else {
+            url.searchParams.delete('page');
+        }
+        window.history.pushState({}, '', url);
+        
         window.scrollTo(0, 0);
     };
 
@@ -87,6 +97,17 @@ export default function App() {
             startTokenRefresh(loadedUser.email);
         } else {
             stopTokenRefresh();
+        }
+
+        // 檢查 URL 參數並設置對應的頁面
+        const urlParams = new URLSearchParams(window.location.search);
+        const pageParam = urlParams.get('page');
+        if (pageParam) {
+            // 支援的頁面列表
+            const validPages = ['home', 'transition', 'questionnaire', 'login', 'review', 'checkreview'];
+            if (validPages.includes(pageParam)) {
+                setCurrentPage(pageParam);
+            }
         }
     }, []); // 空依賴數組，只在組件掛載時執行一次
 
