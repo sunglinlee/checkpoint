@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人生快照 - Check Point</title>
+    <script>
+        // 將所有路由重定向到 index.html，並保留查詢參數
+        const search = window.location.search;
+        const hash = window.location.hash;
+        
+        // 如果 URL 包含路徑信息，將其轉換為查詢參數
+        const pathname = window.location.pathname;
+        let redirectUrl = '/';
+        
+        if (pathname && pathname !== '/' && pathname !== '/404.html') {
+            // 將路徑轉換為 page 參數
+            const pageName = pathname.replace(/^\//, '').replace(/\/$/, '');
+            const validPages = ['checkreview', 'questionnaire', 'review', 'login', 'transition'];
+            
+            if (validPages.includes(pageName)) {
+                const params = new URLSearchParams(search);
+                params.set('page', pageName);
+                redirectUrl = '/?' + params.toString();
+            } else if (search) {
+                redirectUrl = '/' + search;
+            }
+        } else if (search) {
+            redirectUrl = '/' + search;
+        }
+        
+        // 添加 hash 如果存在
+        if (hash) {
+            redirectUrl += hash;
+        }
+        
+        window.location.replace(redirectUrl);
+    </script>
+</head>
+<body>
+    <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+        <h2>正在跳轉...</h2>
+        <p>如果沒有自動跳轉，請<a href="/">點擊這裡</a>返回首頁</p>
+    </div>
+</body>
+</html>

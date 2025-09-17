@@ -25,6 +25,11 @@ steps:
       - 'dist/'
       - 'gs://${_BUCKET_NAME}'
 
+  # 步驟 4: 設置 Cloud Storage 的錯誤頁面為 404.html
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gsutil'
+    args: ['web', 'set', '-m', 'index.html', '-e', '404.html', 'gs://${_BUCKET_NAME}']
+
 options:
   logging: CLOUD_LOGGING_ONLY
 
