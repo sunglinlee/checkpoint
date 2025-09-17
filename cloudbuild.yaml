@@ -1,24 +1,16 @@
 steps:
   # 步驟 1: 安裝專案依賴套件
-  # 這一階段是必要的，因為 npm run build 需要所有依賴套件。
-  - name: 'node:18' # 使用 Node.js 18 環境
+  - name: 'node:18'
     entrypoint: 'npm'
     args: ['install']
 
   # 步驟 2: 執行 build 指令，產生靜態檔案
-  # build 指令會重新生成 dist/ 目錄下的所有檔案。
-  # 這是必要的，因為即使只有一個檔案變動，也可能影響整個專案的建置結果。
   - name: 'node:18'
     entrypoint: 'npm'
     args: ['run', 'build']
 
   # 步驟 3: 將 dist/ 目錄下的檔案同步到 Cloud Storage
-  # 這一步是部署的關鍵。
-  # gsutil rsync (rsync) 是一個非常高效的同步指令。
-  # 它會自動比對來源 (dist/) 和目標 (gs://${_BUCKET_NAME})，只傳輸有變更的檔案。
-  # 因此，這一步只會部署有修改的文件，而不是整個專案。
-  # -d 選項會刪除目標儲存桶中不存在於來源目錄的檔案。
-  # -r 選項代表遞迴複製整個目錄。
+  # 使用 -x 選項排除特定資料夾，避免刪除手動上傳的檔案
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gsutil'
     args:
@@ -26,12 +18,15 @@ steps:
       - 'rsync'
       - '-d'
       - '-r'
-      - 'dist/' # 您的 React build 輸出目錄
-      - 'gs://${_BUCKET_NAME}' # 您的 Cloud Storage 儲存桶名稱
+      - '-x'
+      - '素材/.*'  # 排除素材資料夾
+      - '-x' 
+      - 'logo/.*' # 排除logo資料夾
+      - 'dist/'
+      - 'gs://${_BUCKET_NAME}'
 
 options:
   logging: CLOUD_LOGGING_ONLY
 
-# 定義替代變數
 substitutions:
-  _BUCKET_NAME: checkpoint_frontend # 替換成您的 Cloud Storage 儲存桶名稱
+  _BUCKET_NAME: checkpoint_frontend
