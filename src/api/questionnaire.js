@@ -1,5 +1,10 @@
 import { apiRequest } from './client';
 
+/**
+ * Submit Questionnaire - 提交問卷
+ * @param {Object} questionnairePayload - Questionnaire data
+ * @returns {Promise<{statusCode: string, data: string}>}
+ */
 export async function submitQuestionnaire(questionnairePayload) {
     const hasImageFile = questionnairePayload && questionnairePayload.snapshot_image instanceof File;
 
@@ -11,6 +16,7 @@ export async function submitQuestionnaire(questionnairePayload) {
         formData.append('data', jsonBlob);
         formData.append('snapshot_image', snapshot_image);
 
+        // 按照 Swagger 規格使用 /api/questionnaire/submit
         return apiRequest('/questionnaire/submit', {
             method: 'POST',
             headers: {},
@@ -18,6 +24,7 @@ export async function submitQuestionnaire(questionnairePayload) {
         });
     }
 
+    // 按照 Swagger 規格使用 /api/questionnaire/submit
     return apiRequest('/questionnaire/submit', {
         method: 'POST',
         body: questionnairePayload

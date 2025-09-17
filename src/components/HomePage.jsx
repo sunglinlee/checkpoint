@@ -187,6 +187,9 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
       showToastCenter('暱稱修改成功', 'success');
       setIsNicknameModalOpen(false);
       setNewNickname('');
+      
+      // 強制重新渲染以確保顯示更新
+      console.log('暱稱更新成功，新暱稱:', newNickname.trim());
     } catch (error) {
       console.error('暱稱修改失敗詳細錯誤:', error);
       console.error('錯誤狀態碼:', error?.status);
@@ -394,7 +397,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
             <div className="relative" ref={dropdownRef}>
               <div className="flex items-center gap-3">
                 <span className="text-[#8A9A87] font-semibold">
-                  歡迎，{user.nickname || user.name || user.given_name || user.email}
+                  歡迎，{user.name || user.nickname || user.given_name || user.email}
                 </span>
                 <button 
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}

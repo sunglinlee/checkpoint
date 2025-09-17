@@ -11,7 +11,7 @@ import { loadAuth, clearAuth, startTokenRefresh, stopTokenRefresh } from './api/
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState('home');
-    const [user, setUser] = useState(loadAuth().user || null);
+    const [user, setUser] = useState(null);
 
     const handleNavigate = (page) => {
         // Stop music when navigating away from transition page
@@ -38,10 +38,20 @@ export default function App() {
                 nickname: nickname,
                 name: nickname  // 同時更新 name 字段，確保顯示一致性
             };
+            
+            console.log('更新前的用戶資料:', user);
+            console.log('更新後的用戶資料:', updatedUser);
+            
             setUser(updatedUser);
+            
             // 將更新後的用戶資料持久化到 localStorage
             if (typeof window !== 'undefined') {
                 window.localStorage.setItem('authUser', JSON.stringify(updatedUser));
+                console.log('已保存到 localStorage:', JSON.stringify(updatedUser));
+                
+                // 驗證是否正確保存
+                const saved = window.localStorage.getItem('authUser');
+                console.log('從 localStorage 讀取的資料:', saved);
             }
         }
     };
@@ -64,16 +74,21 @@ export default function App() {
         }
     };
 
-    // App 載入後，如已有登入狀態則啟動 refresh 排程
+    // App 載入後，載入用戶狀態並啟動 refresh 排程
     useEffect(() => {
-        const { user } = loadAuth();
-        if (user?.email) {
+        const { user: loadedUser } = loadAuth();
+        console.log('App 載入時從 localStorage 讀取的用戶資料:', loadedUser);
+        
+        // 設置載入的用戶資料
+        setUser(loadedUser);
+        
+        if (loadedUser?.email) {
             stopTokenRefresh();
-            startTokenRefresh(user.email);
+            startTokenRefresh(loadedUser.email);
         } else {
             stopTokenRefresh();
         }
-    }, []);
+    }, []); // 空依賴數組，只在組件掛載時執行一次
 
     return (
         //<GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "1032893971305-nqrk0r231cmb010bjmkbvsnlgqfnq129.apps.googleusercontent.com"}>

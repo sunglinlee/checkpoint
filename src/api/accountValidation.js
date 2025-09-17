@@ -2,11 +2,13 @@ import { apiRequest } from './client';
 
 /**
  * 檢查帳號是否已存在以及使用的認證方式
+ * 注意: 此 API 端點在 Swagger 文檔中未列出，可能需要後端實現
  * @param {string} email - 要檢查的電子郵件
  * @returns {Promise<{exists: boolean, authMethod: 'regular'|'google'|null, user: object|null}>}
  */
 export async function checkAccountExists(email) {
     try {
+        // 嘗試使用可能的端點路徑
         const response = await apiRequest(`/user/checkAccount?email=${encodeURIComponent(email)}`, {
             method: 'GET'
         });
@@ -18,7 +20,7 @@ export async function checkAccountExists(email) {
         };
     } catch (error) {
         // 如果後端還沒有這個端點，我們可以通過嘗試登入來檢查
-        console.warn('checkAccount API 不存在，使用備用檢查方式');
+        console.warn('checkAccount API 不存在於 Swagger 文檔中，使用備用檢查方式');
         return { exists: false, authMethod: null, user: null };
     }
 }

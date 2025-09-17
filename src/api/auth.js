@@ -46,17 +46,28 @@ export function stopTokenRefresh() {
     }
 }
 
-export async function registerUser({ nickname, email, password }) {
+/**
+ * User Registration - 用戶註冊
+ * @param {Object} userData - User registration data
+ * @param {string} userData.email - User email
+ * @param {string} userData.password - User password
+ * @param {string} userData.name - User name
+ * @returns {Promise<{statusCode: string, data: {email: string, name: string}}>}
+ */
+export async function registerUser({ name, nickname, email, password }) {
+    // Use name if provided, otherwise use nickname
+    const userName = name || nickname;
+    
     // 檢查帳號是否已存在且使用不同認證方式
     const validation = await validateAuthMethod(email, 'regular');
     if (!validation.allowed) {
         throw new Error(validation.reason);
     }
     
-    // 一般註冊 API - 將 nickname 對應到後端的 name 欄位
+    // 一般註冊 API - 按照 Swagger 規格
     return apiRequest('/user/register', {
         method: 'POST',
-        body: { name: nickname, email, password }
+        body: { name: userName, email, password }
     });
 }
 
@@ -79,14 +90,29 @@ export async function mailRegister({ nickname, email, googleId, avatar }) {
     });
 }
 
+/**
+ * User Login - 用戶登入
+ * @param {Object} credentials - User login credentials
+ * @param {string} credentials.email - User email
+ * @param {string} credentials.password - User password
+ * @returns {Promise<{statusCode: string, data: {email: string, name: string}}>}
+ */
 export async function loginUser({ email, password }) {
-    // 一般登入 API
+    // 一般登入 API - 按照 Swagger 規格
     return apiRequest('/user/login', {
         method: 'POST',
         body: { email, password }
     });
 }
 
+/**
+ * Google OAuth Login - Google 登入
+ * @param {Object} googleData - Google login data
+ * @param {string} googleData.email - User email
+ * @param {string} googleData.name - User name
+ * @param {string} googleData.googleId - Google ID
+ * @returns {Promise<{statusCode: string, data: {email: string, name: string}}>}
+ */
 export async function mailLogin({ email, googleId, name, avatar }) {
     // 檢查帳號是否已存在且使用不同認證方式
     const validation = await validateAuthMethod(email, 'google');
@@ -94,20 +120,26 @@ export async function mailLogin({ email, googleId, name, avatar }) {
         throw new Error(validation.reason);
     }
     
-    // Google 第三方登入（若無帳號則自動建立）
+    // Google 第三方登入（若無帳號則自動建立）- 按照 Swagger 規格
     return apiRequest('/user/mailLogin', {
         method: 'POST',
         body: {
             email,
             googleId,
-            name,
-            avatar
+            name
         }
     });
 }
 
+/**
+ * User Logout - 用戶登出
+ * @param {Object} userInfo - User information for logout
+ * @param {string} userInfo.email - User email
+ * @param {string} userInfo.password - User password
+ * @returns {Promise<{statusCode: string, data: string}>}
+ */
 export async function logoutUser({ email, password }) {
-    // 登出 API
+    // 登出 API - 按照 Swagger 規格
     return apiRequest('/user/logout', {
         method: 'POST',
         body: { email, password }
@@ -121,16 +153,44 @@ export async function refreshToken(email) {
     });
 }
 
+/**
+ * Change User Name - 更改用戶名稱
+ * @param {Object} changeData - Name change data
+ * @param {string} changeData.email - User email
+ * @param {string} changeData.name - New name
+ * @returns {Promise<{statusCode: string, data: {email: string, name: string}}>}
+ */
+export async function changeName({ email, name }) {
+    // 更改名稱 API - 按照 Swagger 規格
+    return apiRequest('/user/change', {
+        method: 'POST',
+        body: { email, name }
+    });
+}
+
+/**
+ * Change User Password - 更改密碼
+ * @param {Object} passwordData - Password change data
+ * @param {string} passwordData.email - User email
+ * @param {string} passwordData.currentPassword - Current password
+ * @param {string} passwordData.newPassword - New password
+ * @returns {Promise<{statusCode: string, data: string}>}
+ */
 export async function changePassword({ email, currentPassword, newPassword }) {
-    // 密碼修改 API
+    // 密碼修改 API - 按照 Swagger 規格
     return apiRequest('/user/changePassword', {
         method: 'POST',
         body: { email, currentPassword, newPassword }
     });
 }
 
-export async function forgetPassword({ email }) {
-    // 忘記密碼 API
+/**
+ * Forgot Password - 忘記密碼
+ * @param {string} email - User email
+ * @returns {Promise<{statusCode: string, data: string}>}
+ */
+export async function forgetPassword(email) {
+    // 忘記密碼 API - 按照 Swagger 規格
     return apiRequest('/user/forgetPassword', {
         method: 'POST',
         body: { email }

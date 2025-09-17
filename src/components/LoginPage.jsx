@@ -293,10 +293,27 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
       }
 
       const token = response.token || response.accessToken || response.data?.token;
-      const responseUser = response.user || response.data?.user || {};
+      // 修正：用戶資料在 response.data 中，不是 response.data.user
+      const responseUser = response.user || response.data?.user || response.data || {};
       const resolvedEmail = responseUser.email || email;
-      const backendName = responseUser.name || responseUser.nickname || '';
-      const finalName = backendName && String(backendName).trim() ? backendName : data.nickname;
+      
+      console.log('=== mailLogin API 完整回應分析 ===');
+      console.log('完整 response:', response);
+      console.log('responseUser:', responseUser);
+      console.log('responseUser.name:', responseUser.name);
+      console.log('responseUser.nickname:', responseUser.nickname);
+      console.log('Google 原始名字:', data.nickname);
+      
+      // 強制使用 mailLogin API 回傳的 name 作為暱稱
+      const apiReturnedName = responseUser.name;
+      const finalName = apiReturnedName || data.nickname;  // 如果 API 沒有返回 name，才用 Google 名字
+      
+      console.log('=== 最終暱稱決定 ===');
+      console.log('- API 回傳的 name:', apiReturnedName);
+      console.log('- 是否有有效的 API name:', !!apiReturnedName);
+      console.log('- 最終使用的暱稱:', finalName);
+      console.log('==============================');
+      
       const finalAvatar = responseUser.avatar || avatar;
       const user = {
         email: resolvedEmail,
@@ -306,6 +323,7 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
         googleId: googleId  // 添加 googleId 字段用於識別 Google 用戶
       };
 
+      console.log('Google 登入完成，設置的用戶資料:', user);
       persistAuth(token, user);
       // 啟動背景 refresh（每 30 分鐘）
       if (user?.email) {
