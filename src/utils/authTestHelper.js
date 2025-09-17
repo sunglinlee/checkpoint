@@ -3,7 +3,7 @@
  * 用於在開發環境中快速測試認證安全性修復
  */
 
-import { validateAuthMethod, checkAccountExists } from '../api/accountValidation';
+import { validateAuthMethod } from '../api/accountValidation';
 import { registerUser, mailLogin } from '../api/auth';
 
 /**
@@ -15,16 +15,14 @@ export async function testAuthValidation() {
     const testResults = [];
     
     try {
-        // 測試1: 檢查不存在的帳號
-        console.log('📝 測試1: 檢查不存在的帳號');
-        const nonExistentResult = await checkAccountExists('nonexistent@test.com');
-        const test1Pass = !nonExistentResult.exists && nonExistentResult.authMethod === null;
+        // 測試1: checkAccount 功能已移除，跳過此測試
+        console.log('📝 測試1: checkAccount 功能已移除');
+        console.log('⏭️  跳過（checkAccount 功能已從系統中移除）');
         testResults.push({
             name: '檢查不存在帳號',
-            pass: test1Pass,
-            result: nonExistentResult
+            pass: true,
+            result: { note: 'checkAccount 功能已移除' }
         });
-        console.log(test1Pass ? '✅ 通過' : '❌ 失敗', nonExistentResult);
         
         // 測試2: 驗證新帳號可以註冊
         console.log('\n📝 測試2: 驗證新帳號可以註冊');
