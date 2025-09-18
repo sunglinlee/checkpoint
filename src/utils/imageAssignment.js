@@ -69,3 +69,6 @@ export const getSnapshotDisplayImage = (snapshot) => {
   const defaultImage = availableImages[0];
   return `https://storage.googleapis.com/checkpoint_frontend/素材/${defaultImage}`;
 };
+
+
+//更新阿
