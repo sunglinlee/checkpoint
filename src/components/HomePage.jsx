@@ -480,10 +480,10 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
       <main className="bg-[#F3F0E9] relative w-full flex items-center" style={{ height: '60vh', overflow: 'hidden' }}>
         {/* 背景圖與漸層遮罩 */}
         <div className="absolute top-0 left-0 w-full h-full z-0" style={{ width: '100%', height: '60vh' }}>
-          
-         {/* 原本的影片代碼 - 已註解  
+
+         
           <video 
-            src="https://storage.googleapis.com/checkpoint_frontend/素材/top_15_1.mp4" 
+            src="https://storage.googleapis.com/checkpoint_frontend/素材/top_15_2.mp4" 
             autoPlay 
             muted 
             loop 
@@ -504,7 +504,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
               zIndex: -1
             }}
           />
-          */}
+          
 
           <div className="absolute inset-0 w-full h-full pointer-events-none z-10" style={{background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.8) 100%)'}}></div>
         </div>
