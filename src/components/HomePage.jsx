@@ -12,8 +12,8 @@ const Logo = () => {
   // 固定大小的 Logo，不再動態調整
   return (
     <div className="flex items-center gap-2">
-      <img src="https://storage.googleapis.com/checkpoint_frontend/public/logo/LOGO.png" alt="Check Point Logo" className="h-12 w-auto" />
-      <img src="https://storage.googleapis.com/checkpoint_frontend/public/logo/LOGO_H1.png" alt="Company Name" className="h-10 w-auto" />
+      <img src="https://storage.googleapis.com/checkpoint_frontend/logo/LOGO.png" alt="Check Point Logo" className="h-12 w-auto" />
+      <img src="https://storage.googleapis.com/checkpoint_frontend/logo/LOGO_H1.png" alt="Company Name" className="h-10 w-auto" />
     </div>
   );
 };
@@ -483,7 +483,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
 
          
           <video 
-            src="https://storage.googleapis.com/checkpoint_frontend/public/素材/top_15_2.mp4" 
+            src="https://storage.googleapis.com/checkpoint_frontend/素材/top_15_2.mp4" 
             autoPlay 
             muted 
             loop 
@@ -633,7 +633,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
         <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2">
             <video 
-              src="https://storage.googleapis.com/checkpoint_frontend/public/素材/chill_corner%20(2).mp4" 
+              src="https://storage.googleapis.com/checkpoint_frontend/素材/chill_corner%20(2).mp4" 
               autoPlay 
               muted 
               loop 
