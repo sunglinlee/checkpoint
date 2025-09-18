@@ -8,12 +8,15 @@ const CssIconCheck = () => (
   </div>
 );
 
-const Logo = () => (
-  <div className="flex items-center gap-2">
-    <img src="https://storage.googleapis.com/checkpoint_frontend/logo/LOGO.png" alt="Check Point Logo" className="h-12 w-auto" />
-    <img src="https://storage.googleapis.com/checkpoint_frontend/logo/LOGO_H1.png" alt="Company Name" className="h-10 w-auto" />
-  </div>
-);
+const Logo = () => {
+  // 固定大小的 Logo，不再動態調整
+  return (
+    <div className="flex items-center gap-2">
+      <img src="https://storage.googleapis.com/checkpoint_frontend/logo/LOGO.png" alt="Check Point Logo" className="h-12 w-auto" />
+      <img src="https://storage.googleapis.com/checkpoint_frontend/logo/LOGO_H1.png" alt="Company Name" className="h-10 w-auto" />
+    </div>
+  );
+};
 
 
 const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
@@ -390,13 +393,15 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
         )
       )}
       {/* Header */}
-      <header className="py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-200/50">
-        <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }}><Logo /></a>
-        <div className="flex items-center gap-4">
+      <header className="py-2 md:py-4 px-4 md:px-12 flex flex-col sm:flex-row justify-between items-start sm:items-center sticky top-0 bg-white/80 backdrop-blur-sm z-[9999] border-b border-gray-200/50 gap-2 sm:gap-4">
+        <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }} className="flex-shrink-0">
+          <Logo />
+        </a>
+        <div className="flex items-center gap-2 md:gap-4 w-full sm:w-auto justify-end">
           {user ? (
             <div className="relative" ref={dropdownRef}>
-              <div className="flex items-center gap-3">
-                <span className="text-[#8A9A87] font-semibold">
+              <div className="flex items-center gap-2 md:gap-3">
+                <span className="text-[#8A9A87] font-semibold text-sm md:text-base truncate max-w-[120px] md:max-w-none">
                   歡迎，{user.name || user.nickname || user.given_name || user.email}
                 </span>
                 <button 
@@ -412,7 +417,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
               
               {/* 下拉選單 */}
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-[10000]">
                   <button
                     onClick={handleNicknameChange}
                     className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-2"
@@ -464,7 +469,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
               )}
             </div>
           ) : (
-            <button onClick={() => onNavigate('login')} className="px-4 py-2 rounded-full bg-[#8A9A87] text-white text-sm font-semibold hover:bg-[#7A8A77] transition-colors">
+            <button onClick={() => onNavigate('login')} className="px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-[#8A9A87] text-white text-xs md:text-sm font-semibold hover:bg-[#7A8A77] transition-colors whitespace-nowrap">
               登入/註冊
             </button>
           )}
@@ -472,14 +477,39 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
       </header>
 
       {/* Hero Section */}
-      <main className="bg-[#F3F0E9] relative overflow-hidden">
+      <main className="bg-[#F3F0E9] relative w-full flex items-center" style={{ height: '60vh', overflow: 'hidden' }}>
         {/* 背景圖與漸層遮罩 */}
-        <div className="absolute inset-0 w-full h-full z-0">
-          <video src="https://storage.googleapis.com/checkpoint_frontend/素材/top_15_1.mp4" autoPlay muted loop className="w-full h-full object-cover object-center" />
-          <div className="absolute inset-0 w-full h-full pointer-events-none" style={{background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.8) 100%)'}}></div>
+        <div className="absolute top-0 left-0 w-full h-full z-0" style={{ width: '100%', height: '60vh' }}>
+          
+         {/* 原本的影片代碼 - 已註解  
+          <video 
+            src="https://storage.googleapis.com/checkpoint_frontend/素材/top_15_1.mp4" 
+            autoPlay 
+            muted 
+            loop 
+            playsInline
+            controls={false}
+            disablePictureInPicture
+            className="pointer-events-none"
+            style={{ 
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              minWidth: '100%',
+              minHeight: '100%',
+              width: 'auto',
+              height: 'auto',
+              objectFit: 'cover',
+              zIndex: -1
+            }}
+          />
+          */}
+
+          <div className="absolute inset-0 w-full h-full pointer-events-none z-10" style={{background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.8) 100%)'}}></div>
         </div>
-        <div className="container mx-auto px-6 py-20 md:py-32 text-center relative z-10">
-          <h1 className="text-4xl md:text-5xl font-bold section-title leading-tight">
+        <div className="container mx-auto px-6 py-12 md:py-32 text-center relative z-10 w-full">
+          <h1 className="text-2xl md:text-5xl font-bold section-title leading-tight mt-20 md:mt-0">
             嘿，有多久沒有好好跟自己說話了？
           </h1>
           <p className="mt-6 text-lg md:text-xl max-w-3xl mx-auto text-gray-600">
@@ -602,7 +632,16 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
       <section className="py-16 md:py-24 soft-bg">
         <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
           <div className="md:w-1/2">
-            <video src="https://storage.googleapis.com/checkpoint_frontend/素材/chill_corner%20(2).mp4" autoPlay muted loop className="rounded-lg shadow-lg w-full" />
+            <video 
+              src="https://storage.googleapis.com/checkpoint_frontend/素材/chill_corner%20(2).mp4" 
+              autoPlay 
+              muted 
+              loop 
+              playsInline
+              controls={false}
+              disablePictureInPicture
+              className="rounded-lg shadow-lg w-full pointer-events-none"
+            />
           </div>
           <div className="md:w-1/2">
             <h2 className="text-3xl font-bold section-title">一個讓你安心的角落</h2>

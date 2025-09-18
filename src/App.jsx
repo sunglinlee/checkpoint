@@ -7,6 +7,7 @@ import QuestionnairePage from './components/QuestionnairePage.jsx';
 import LoginPage from './components/LoginPage.jsx';
 import ReviewPage from './components/ReviewPage.jsx';
 import CheckReviewPage from './components/CheckReviewPage.jsx';
+import MobileTestPage from './components/MobileTestPage.jsx';
 import { loadAuth, clearAuth, startTokenRefresh, stopTokenRefresh } from './api/auth';
 
 export default function App() {
@@ -79,6 +80,8 @@ export default function App() {
                 return <ReviewPage onNavigate={handleNavigate} user={user} />;
             case 'checkreview':
                 return <CheckReviewPage onNavigate={handleNavigate} user={user} />;
+            case 'mobiletest':
+                return <MobileTestPage />;
             case 'home':
             default:
                 return <HomePage onNavigate={handleNavigate} user={user} onLogout={handleLogout} updateUserNickname={updateUserNickname} />;
@@ -116,7 +119,7 @@ export default function App() {
         
         if (pageParam) {
             // 支援的頁面列表
-            const validPages = ['home', 'transition', 'questionnaire', 'login', 'review', 'checkreview'];
+            const validPages = ['home', 'transition', 'questionnaire', 'login', 'review', 'checkreview', 'mobiletest'];
             if (validPages.includes(pageParam)) {
                 setCurrentPage(pageParam);
             }

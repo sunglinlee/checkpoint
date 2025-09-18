@@ -10,18 +10,13 @@ steps:
     args: ['run', 'build']
 
   # 步驟 3: 將 dist/ 目錄下的檔案同步到 Cloud Storage
-  # 使用 -x 選項排除特定資料夾，避免刪除手動上傳的檔案
+  # 移除 -d 選項，只同步新檔案，不刪除現有檔案
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gsutil'
     args:
       - '-m'
       - 'rsync'
-      - '-d'
-      - '-r'
-      - '-x'
-      - '素材/.*'  # 排除素材資料夾 好喔
-      - '-x' 
-      - 'logo/.*' # 排除logo資料夾
+      - '-r'  # 移除了 -d 選項
       - 'dist/'
       - 'gs://${_BUCKET_NAME}'
 
