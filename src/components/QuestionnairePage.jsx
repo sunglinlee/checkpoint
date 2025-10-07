@@ -104,6 +104,80 @@ const QuestionnairePage = ({ onNavigate }) => {
                             <CurrentIcon />
                         </div>
                         <h2 className="text-2xl md:text-3xl font-bold text-[#5C6B68]">{questions[currentStep].title}</h2>
+                        
+                        {/* 題目說明文字 */}
+                        {questions[currentStep].id === 'satisfaction' && (
+                            <div className="mt-6">
+                                <div className="max-w-lg mx-auto">
+                                    <p className="text-[#5C6B68] leading-relaxed text-sm italic">
+                                        "這就像是幫自己照照鏡子。別急著評價好壞，只要誠實看看「我現在過得像我想要的樣子嗎？」。誠實地回答，不必苛求完美，因為意識到差距，本身就是成長的第一步。"
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                        {questions[currentStep].id === 'gratitude' && (
+                            <div className="mt-6">
+                                <div className="max-w-lg mx-auto">
+                                    <p className="text-[#5C6B68] leading-relaxed text-sm italic">
+                                        "當我們有意識地記錄生活中的小確幸，它們會逐漸放大，讓生活更有力量。有時候幸福藏在最不起眼的細節裡。這一題是想邀請你停下來，回想那些讓你微笑的瞬間。"
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                        {questions[currentStep].id === 'focus' && (
+                            <div className="mt-6">
+                                <div className="max-w-lg mx-auto">
+                                    <p className="text-[#5C6B68] leading-relaxed text-sm italic">
+                                        "我們所關注的世界事件，往往反映了我們的價值觀與內在需求。可以幫助覺察外在訊息如何影響我們的內心。"
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                        {questions[currentStep].id === 'emotion' && (
+                            <div className="mt-6">
+                                <div className="max-w-lg mx-auto">
+                                    <p className="text-[#5C6B68] leading-relaxed text-sm italic">
+                                        "情緒是來訪的信使，它們不是敵人，有時候，情緒只是想被你聽見。別急著壓下來，請試著理解「它想告訴我什麼」。"
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                        {questions[currentStep].id === 'relations' && (
+                            <div className="mt-6">
+                                <div className="max-w-lg mx-auto">
+                                    <p className="text-[#5C6B68] leading-relaxed text-sm italic">
+                                        "我們的生活品質，往往來自與人際關係的互動。更全面的檢視自己與家庭、朋友、愛情的連結，覺察其中的支持與需求。"
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                        {questions[currentStep].id === 'career' && (
+                            <div className="mt-6">
+                                <div className="max-w-lg mx-auto">
+                                    <p className="text-[#5C6B68] leading-relaxed text-sm italic">
+                                        "挑戰能幫助我們看到自己未曾發現的力量。以不同的視角察覺自己在事業上的成長。"
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                        {questions[currentStep].id === 'desire' && (
+                            <div className="mt-6">
+                                <div className="max-w-lg mx-auto">
+                                    <p className="text-[#5C6B68] leading-relaxed text-sm italic">
+                                        "這一題是給夢想一點空間。先別管現實的限制，純粹想想：「如果我可以，我最想做什麼？」"
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                        {questions[currentStep].id === 'reflection' && (
+                            <div className="mt-6">
+                                <div className="max-w-lg mx-auto">
+                                    <p className="text-[#5C6B68] leading-relaxed text-sm italic">
+                                        "回顧過去能帶來釋懷，展望未來能帶來希望。與過去的自己和解，並給未來的自己鼓勵。"
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                     <div className="space-y-6">
                         {questions[currentStep].id !== 'complete' ? questions[currentStep].fields.map(field => (
