@@ -14,6 +14,7 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
   const [answers, setAnswers] = useState(questionnaireData || null);
   const [isLoading, setIsLoading] = useState(!questionnaireData);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // 使用與 QuestionnairePage 相同的問題結構
   const questions = useMemo(() => [
@@ -105,6 +106,11 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
     }));
   };
 
+  const handleDropdownAction = (action) => {
+    setIsDropdownOpen(false);
+    onNavigate(action);
+  };
+
   const renderAnswer = (field, answer) => {
     if (!answer && answer !== 0) return <span className="text-gray-400 italic">未填寫</span>;
 
@@ -191,29 +197,94 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
 
   return (
     <div className="w-full min-h-screen bg-[#FDFCF9] text-[#3D4A4D]">
-      {/* Header */}
-      <header className="py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 bg-white/90 backdrop-blur-sm z-10 border-b border-gray-200/50">
-        <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }}>
-          <Logo />
-        </a>
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => onNavigate('review')}
-            className="px-4 py-2 rounded-full bg-gray-500 text-white text-sm font-semibold hover:bg-gray-600 transition-colors"
-          >
-            返回快照列表
-          </button>
-          <button 
-            onClick={() => onNavigate('home')}
-            className="px-4 py-2 rounded-full bg-[#8A9A87] text-white text-sm font-semibold hover:bg-[#7A8A77] transition-colors"
-          >
-            返回首頁
-          </button>
+      {/* Header - Mobile Optimized with Dropdown */}
+      <header className="py-3 px-4 md:py-4 md:px-12 sticky top-0 bg-white/90 backdrop-blur-sm z-10 border-b border-gray-200/50">
+        {/* Mobile Layout: Logo left, dropdown menu right */}
+        <div className="md:hidden flex justify-between items-center">
+          <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }}>
+            <Logo />
+          </a>
+          <div className="relative">
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="p-2 rounded-full bg-[#8A9A87] text-white hover:bg-[#7A8A77] transition-colors"
+              aria-label="選單"
+            >
+              <svg 
+                className="w-5 h-5" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            {isDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
+                <button 
+                  onClick={() => handleDropdownAction('home')}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                  返回首頁
+                </button>
+                <button 
+                  onClick={() => handleDropdownAction('review')}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  返回列表
+                </button>
+                <button 
+                  onClick={() => handleDropdownAction('questionnaire')}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  新增快照
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Desktop Layout: Logo left, buttons right */}
+        <div className="hidden md:flex justify-between items-center">
+          <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }}>
+            <Logo />
+          </a>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => onNavigate('review')}
+              className="px-4 py-2 rounded-full bg-gray-500 text-white text-sm font-semibold hover:bg-gray-600 transition-colors"
+            >
+              返回快照列表
+            </button>
+            <button 
+              onClick={() => onNavigate('home')}
+              className="px-4 py-2 rounded-full bg-[#8A9A87] text-white text-sm font-semibold hover:bg-[#7A8A77] transition-colors"
+            >
+              返回首頁
+            </button>
+          </div>
         </div>
       </header>
 
+      {/* Backdrop to close dropdown when clicking outside */}
+      {isDropdownOpen && (
+        <div 
+          className="fixed inset-0 z-10" 
+          onClick={() => setIsDropdownOpen(false)}
+        ></div>
+      )}
+
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8 max-w-4xl">
+      <main className="container mx-auto px-4 md:px-6 py-6 md:py-8 max-w-4xl">
         <div className="mb-8 text-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
             {user?.nickname || user?.name || user?.given_name || '您'}的完整問答回顧
