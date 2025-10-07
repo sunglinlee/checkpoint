@@ -92,6 +92,9 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
   });
   const dropdownRef = useRef(null);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success', position: 'top', variant: 'solid' });
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   const showToast = (message, type = 'success') => {
     setToast({ visible: true, message, type, position: 'top', variant: 'solid' });
@@ -669,9 +672,24 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
         <div className="container mx-auto px-6 py-8 text-center text-gray-500">
           <p>&copy; 2025 人生快照 (Check Point). All Rights Reserved.</p>
           <div className="mt-4 flex justify-center space-x-6">
-            <a href="#" className="hover:text-[#8A9A87] transition-colors">隱私權政策</a>
-            <a href="#" className="hover:text-[#8A9A87] transition-colors">服務條款</a>
-            <a href="#" className="hover:text-[#8A9A87] transition-colors">聯絡我們</a>
+            <button 
+              onClick={() => setIsPrivacyModalOpen(true)} 
+              className="hover:text-[#8A9A87] transition-colors cursor-pointer underline-offset-2 hover:underline"
+            >
+              隱私權政策
+            </button>
+            <button 
+              onClick={() => setIsTermsModalOpen(true)} 
+              className="hover:text-[#8A9A87] transition-colors cursor-pointer underline-offset-2 hover:underline"
+            >
+              服務條款
+            </button>
+            <button 
+              onClick={() => setIsContactModalOpen(true)} 
+              className="hover:text-[#8A9A87] transition-colors cursor-pointer underline-offset-2 hover:underline"
+            >
+              聯絡我們
+            </button>
           </div>
         </div>
       </footer>
@@ -772,6 +790,326 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
               >
                 儲存
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 隱私權政策彈出視窗 */}
+      {isPrivacyModalOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setIsPrivacyModalOpen(false)}
+        >
+          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h3 className="text-2xl font-semibold text-gray-800">隱私權政策</h3>
+              <button
+                onClick={() => setIsPrivacyModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              <div className="space-y-6 text-gray-700">
+                <div>
+                  <p className="text-sm text-gray-500 mb-4">最後更新日期：2025年1月</p>
+                  <p className="mb-4">
+                    歡迎使用「人生快照」（Check Point）服務。我們深知您的隱私對您的重要性，因此制定了這份隱私權政策，
+                    說明我們如何收集、使用、保護和處理您的個人資訊。
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">1. 資訊收集</h4>
+                  <div className="space-y-2">
+                    <p><strong>帳戶資訊：</strong>當您註冊帳戶時，我們會收集您的電子郵件地址、暱稱等基本資訊。</p>
+                    <p><strong>快照內容：</strong>您在平台上創建的所有快照內容，包括文字回答和上傳的圖片。</p>
+                    <p><strong>使用資訊：</strong>為了改善服務品質，我們可能收集您的使用行為數據（匿名化處理）。</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">2. 資訊使用</h4>
+                  <div className="space-y-2">
+                    <p>• 提供核心服務功能（快照創建、儲存、回顾）</p>
+                    <p>• 發送服務相關通知（如快照提醒郵件）</p>
+                    <p>• 改善平台功能和使用者體驗</p>
+                    <p>• 確保平台安全性和防範濫用</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">3. 資訊保護</h4>
+                  <div className="space-y-2">
+                    <p><strong>加密保護：</strong>您的所有快照內容都經過端到端加密處理。</p>
+                    <p><strong>訪問控制：</strong>只有您本人能夠查看和管理您的快照內容。</p>
+                    <p><strong>安全措施：</strong>我們採用業界標準的安全技術保護您的資料。</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">4. 資訊分享</h4>
+                  <p>
+                    我們絕不會將您的個人快照內容分享給第三方。除非：
+                  </p>
+                  <div className="space-y-2 mt-2">
+                    <p>• 獲得您的明確同意</p>
+                    <p>• 法律要求或法院命令</p>
+                    <p>• 保護我們或其他用戶的權利和安全</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">5. 您的權利</h4>
+                  <div className="space-y-2">
+                    <p>• 隨時查看、修改或刪除您的個人資訊</p>
+                    <p>• 導出您的所有快照資料</p>
+                    <p>• 停用或刪除您的帳戶</p>
+                    <p>• 拒絕接收行銷郵件（服務通知除外）</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">6. Cookie 使用</h4>
+                  <p>
+                    我們使用必要的 Cookie 來維持您的登入狀態和提供基本功能。
+                    您可以通過瀏覽器設定管理 Cookie 偏好。
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">7. 政策更新</h4>
+                  <p>
+                    我們可能會不定期更新此隱私權政策。重大變更時，我們會通過電子郵件或平台通知您。
+                    繼續使用服務即表示您同意更新後的政策。
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-sm">
+                    如果您對我們的隱私權政策有任何疑問，請隨時聯繫我們：checkpoint1709@gmail.com
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 服務條款彈出視窗 */}
+      {isTermsModalOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setIsTermsModalOpen(false)}
+        >
+          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h3 className="text-2xl font-semibold text-gray-800">服務條款</h3>
+              <button
+                onClick={() => setIsTermsModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              <div className="space-y-6 text-gray-700">
+                <div>
+                  <p className="text-sm text-gray-500 mb-4">最後更新日期：2025年1月</p>
+                  <p className="mb-4">
+                    歡迎使用「人生快照」（Check Point）。使用我們的服務前，請仔細閱讀以下服務條款。
+                    使用本服務即表示您同意遵守這些條款。
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">1. 服務描述</h4>
+                  <p>
+                    「人生快照」是一個個人成長記錄平台，讓用戶能夠：
+                  </p>
+                  <div className="space-y-2 mt-2">
+                    <p>• 透過問卷記錄當下的想法和感受</p>
+                    <p>• 上傳代表性照片作為視覺記憶</p>
+                    <p>• 設定未來回顧時間點</p>
+                    <p>• 查看過往的成長軌跡</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">2. 用戶責任</h4>
+                  <div className="space-y-2">
+                    <p><strong>帳戶安全：</strong>您有責任保護您的帳戶密碼，並對帳戶下的所有活動負責。</p>
+                    <p><strong>內容規範：</strong>上傳的內容不得包含違法、誹謗、騷擾或侵犯他人權利的材料。</p>
+                    <p><strong>真實資訊：</strong>提供的註冊資訊應當真實、準確且及時更新。</p>
+                    <p><strong>適當使用：</strong>不得濫用服務或嘗試干擾平台正常運作。</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">3. 智慧財產權</h4>
+                  <div className="space-y-2">
+                    <p><strong>用戶內容：</strong>您保留對上傳內容的所有權，但授予我們提供服務所需的使用權。</p>
+                    <p><strong>平台權利：</strong>本平台的設計、功能、商標等屬於我們的智慧財產權。</p>
+                    <p><strong>尊重他人：</strong>不得上傳侵犯他人著作權或其他權利的內容。</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">4. 服務可用性</h4>
+                  <p>
+                    我們致力於提供穩定的服務，但無法保證：
+                  </p>
+                  <div className="space-y-2 mt-2">
+                    <p>• 服務永不中斷或完全無錯誤</p>
+                    <p>• 所有功能在所有設備上都能完美運作</p>
+                    <p>• 第三方服務（如郵件服務）的可靠性</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">5. 免費服務</h4>
+                  <p>
+                    目前「人生快照」提供免費服務。我們保留未來引入付費功能的權利，
+                    但現有的核心功能將繼續免費提供給現有用戶。
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">6. 責任限制</h4>
+                  <div className="space-y-2">
+                    <p>在法律允許的範圍內，我們不對以下情況承擔責任：</p>
+                    <p>• 因服務中斷造成的損失</p>
+                    <p>• 用戶內容遺失或損壞</p>
+                    <p>• 第三方的行為或內容</p>
+                    <p>• 間接、偶然或後果性損害</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">7. 服務終止</h4>
+                  <div className="space-y-2">
+                    <p><strong>用戶終止：</strong>您可以隨時停用或刪除您的帳戶。</p>
+                    <p><strong>我們的權利：</strong>我們保留在用戶違反條款時暫停或終止服務的權利。</p>
+                    <p><strong>資料處理：</strong>帳戶刪除後，您的資料將根據隱私權政策進行處理。</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">8. 條款修改</h4>
+                  <p>
+                    我們可能會更新這些服務條款。重大變更時會提前通知用戶。
+                    繼續使用服務即表示同意修改後的條款。
+                  </p>
+                </div>
+
+                <div>
+                  <h4 className="text-xl font-semibold mb-3 text-gray-800">9. 適用法律</h4>
+                  <p>
+                    本服務條款受中華民國法律管轄。任何爭議將優先通過友好協商解決。
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-sm">
+                    如果您對服務條款有任何疑問，請聯繫我們：checkpoint1709@gmail.com
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 聯絡我們彈出視窗 */}
+      {isContactModalOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setIsContactModalOpen(false)}
+        >
+          <div className="bg-white rounded-lg w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
+              <h3 className="text-2xl font-semibold text-gray-800">聯絡我們</h3>
+              <button
+                onClick={() => setIsContactModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <div className="mx-auto w-16 h-16 bg-[#8A9A87] rounded-full flex items-center justify-center mb-4">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <h4 className="text-xl font-semibold text-gray-800 mb-2">我們很樂意聽到您的聲音</h4>
+                  <p className="text-gray-600">
+                    無論是使用問題、功能建議，還是單純想分享您的使用體驗，我們都非常歡迎您的來信。
+                  </p>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-6">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-10 h-10 bg-[#8A9A87] rounded-full flex items-center justify-center">
+                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h5 className="font-semibold text-gray-800">電子郵件</h5>
+                      <a 
+                        href="mailto:checkpoint1709@gmail.com" 
+                        className="text-[#8A9A87] hover:text-[#7A8A77] transition-colors font-medium"
+                      >
+                        checkpoint1709@gmail.com
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <div className="border-t border-gray-200 pt-4">
+                    <h6 className="font-medium text-gray-800 mb-2">常見聯絡原因：</h6>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>• 技術問題回報或使用協助</li>
+                      <li>• 功能建議或改善意見</li>
+                      <li>• 帳戶相關問題</li>
+                      <li>• 合作提案或媒體詢問</li>
+                      <li>• 隱私權或資料相關問題</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-blue-700">
+                        <strong>回覆時間：</strong>我們通常會在 1-2 個工作日內回覆您的來信。
+                        如果是緊急技術問題，我們會優先處理。
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <p className="text-gray-500 text-sm">
+                    感謝您選擇「人生快照」，讓我們一起記錄美好的成長時光。
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
