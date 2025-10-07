@@ -108,7 +108,13 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
 
   const handleDropdownAction = (action) => {
     setIsDropdownOpen(false);
-    onNavigate(action);
+    if (action === 'home') {
+      onNavigate('home');
+    } else if (action === 'review') {
+      onNavigate('review');
+    } else if (action === 'questionnaire') {
+      onNavigate('questionnaire');
+    }
   };
 
   const renderAnswer = (field, answer) => {
