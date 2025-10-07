@@ -10,10 +10,10 @@ const QuestionnairePage = ({ onNavigate }) => {
     const [errors, setErrors] = useState({});
 
     const questions = useMemo(() => [
-        { id: 'satisfaction', icon: icons.satisfaction, title: '關於現在的生活', fields: [{ id: 'rating', type: 'scale', label: '您覺得當前的生活方式，有符合你想要活成的樣子嗎？ (1-10分)', options: { min: 1, max: 10, minLabel: '相差甚遠', maxLabel: '非常滿意' } }, { id: 'reason', type: 'textarea', label: '如果可以，也請記錄下給予這個分數的理由。' }] },
-        { id: 'gratitude', icon: icons.gratitude, title: '感受美好的瞬間', fields: [{ id: 'grateful_events', type: 'textarea', label: '請快速記下最近發生的三件讓你心存感激/開心的小事，無論多麼微不足道。' }, { id: 'share_with', type: 'text', label: '關於這些開心的事情，會想要與誰分享呢？' }, { id: 'inspiration', type: 'textarea', label: '這些事情給你哪些影響或是啟發?' }] },
-        { id: 'focus', icon: icons.focus, title: '你所關注的世界', fields: [{ id: 'current_events', type: 'textarea', label: '最近所關注的事件或是消息?' }, { id: 'feelings', type: 'textarea', label: '這些事件或消息讓你感覺如何?' }, { id: 'actions', type: 'textarea', label: '它會促使你執行哪些行動嗎?' }] },
-        { id: 'emotion', icon: icons.emotion, title: '與情緒溫柔對話', fields: [{ id: 'emotion_event', type: 'textarea', label: '最近碰到讓你最不開心/無力/生氣的事情? 請將這個「情緒」視為一位來訪的信使。' }, { id: 'emotion_name', type: 'text', label: '如果它有名字，你會叫它什麼？' }, { id: 'unmet_needs', type: 'textarea', label: '它想告訴你，你有哪些需求沒有被滿足？' }] },
+        { id: 'satisfaction', icon: icons.satisfaction, title: '關於現在的生活', fields: [{ id: 'rating', type: 'scale', label: '在 1–10 分之間，你覺得目前的生活與理想中的自己有多接近？', options: { min: 1, max: 10, minLabel: '1 (差距很大)', maxLabel: '10 (非常接近)', midLabel: '5 (還可以)' } }, { id: 'reason', type: 'textarea', label: '你給這個分數的原因是什麼？如果能改善一點點，你希望是哪個部分？' }] },
+        { id: 'gratitude', icon: icons.gratitude, title: '感受美好的瞬間', fields: [{ id: 'grateful_events', type: 'textarea', label: '最近發生的三件讓你心存感激/開心的小事是什麼？無論多麼微不足道都可以。' }, { id: 'share_with', type: 'text', label: '關於這些開心的事情，會想要與誰分享呢？' }, { id: 'inspiration', type: 'textarea', label: '這些事情給你哪些影響或是啟發?' }] },
+        { id: 'focus', icon: icons.focus, title: '你所關注的世界', fields: [{ id: 'current_events', type: 'textarea', label: '最近讓你最關注的事件或消息是什麼？' }, { id: 'feelings', type: 'textarea', label: '這些事件或消息讓你感覺如何?' }, { id: 'actions', type: 'textarea', label: '它是否促使你想採取某些行動？是什麼行動？' }] },
+        { id: 'emotion', icon: icons.emotion, title: '與情緒溫柔對話', fields: [{ id: 'emotion_event', type: 'textarea', label: '最近一次讓你感到最不開心、無力或生氣的情境是什麼？' }, { id: 'emotion_name', type: 'text', label: '這個情緒想告訴你什麼？背後有哪些需求沒有被滿足？' }, { id: 'unmet_needs', type: 'textarea', label: '你想要／已經怎麼做來回應這個情緒？' }] },
         { id: 'relations', icon: icons.relations, title: '你與身邊的連結', fields: [{ id: 'family', type: 'textarea', label: '關於家庭，你現在有什麼看法或感受？' }, { id: 'friends', type: 'textarea', label: '關於朋友，你現在有什麼看法或感受？' }, { id: 'love', type: 'textarea', label: '關於愛情，你現在有什麼看法或感受？' }] },
         { id: 'career', icon: icons.career, title: '工作與事業中的你', fields: [{ id: 'challenge', type: 'textarea', label: '請描述一個近期的挑戰。暫時不論結果，請專注於你在應對這個挑戰時，展現出了哪些過去未曾發現的『力量』或『特質』？' }, { id: 'new_understanding', type: 'textarea', label: '這個挑戰如何讓你對自己的能力有了新的認識？' }] },
         { id: 'desire', icon: icons.desire, title: '探索內心的渴望', fields: [{ id: 'dream', type: 'textarea', label: '拋開現實限制，如果你知道自己絕對不會失敗，你最想去嘗試的一件事是什麼？' }, { id: 'goal', type: 'textarea', label: '將它拆解成一個具體的、三個月內可實現的「目標」。這個目標是什麼？完成它的第一步又是什麼？' }] },
@@ -113,14 +113,37 @@ const QuestionnairePage = ({ onNavigate }) => {
                                 {field.type === 'textarea' && <textarea rows="5" value={answers[field.id] || ''} onChange={e => handleAnswerChange(field.id, e.target.value)} className={`textarea-field ${errors[field.id] ? 'border-red-400 focus:border-red-500' : ''}`} />}
                                 {field.type === 'scale' && (
                                     <div>
-                                        <div className="flex justify-between items-center gap-1 md:gap-2 flex-wrap">
-                                            {Array.from({ length: field.options.max }, (_, i) => i + 1).map(num => (
-                                                <button key={num} onClick={() => handleAnswerChange(field.id, num)} className={`w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-full transition text-sm ${answers[field.id] === num ? 'bg-[#8A9A87] text-white' : 'bg-gray-200 hover:bg-gray-300'}`}>{num}</button>
-                                            ))}
+                                        {/* 桌面端：一排顯示 */}
+                                        <div className="hidden md:block">
+                                            <div className="flex justify-between items-center gap-2">
+                                                {Array.from({ length: field.options.max }, (_, i) => i + 1).map(num => (
+                                                    <button key={num} onClick={() => handleAnswerChange(field.id, num)} className={`w-10 h-10 flex items-center justify-center rounded-full transition text-sm ${answers[field.id] === num ? 'bg-[#8A9A87] text-white' : 'bg-gray-200 hover:bg-gray-300'}`}>{num}</button>
+                                                ))}
+                                            </div>
                                         </div>
-                                        <div className="flex justify-between text-sm text-gray-500 mt-1">
-                                            <span>{field.options.minLabel}</span>
-                                            <span>{field.options.maxLabel}</span>
+                                        
+                                        {/* 手機端：兩排顯示 */}
+                                        <div className="md:hidden space-y-3">
+                                            {/* 第一排：1-5 */}
+                                            <div className="flex justify-between items-center gap-2">
+                                                {Array.from({ length: 5 }, (_, i) => i + 1).map(num => (
+                                                    <button key={num} onClick={() => handleAnswerChange(field.id, num)} className={`w-10 h-10 flex items-center justify-center rounded-full transition text-sm ${answers[field.id] === num ? 'bg-[#8A9A87] text-white' : 'bg-gray-200 hover:bg-gray-300'}`}>{num}</button>
+                                                ))}
+                                            </div>
+                                            {/* 第二排：6-10 */}
+                                            <div className="flex justify-between items-center gap-2">
+                                                {Array.from({ length: 5 }, (_, i) => i + 6).map(num => (
+                                                    <button key={num} onClick={() => handleAnswerChange(field.id, num)} className={`w-10 h-10 flex items-center justify-center rounded-full transition text-sm ${answers[field.id] === num ? 'bg-[#8A9A87] text-white' : 'bg-gray-200 hover:bg-gray-300'}`}>{num}</button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="flex justify-between text-xs md:text-sm text-gray-500 mt-3 px-1">
+                                            <span className="text-left flex-1">{field.options.minLabel}</span>
+                                            {field.options.midLabel && (
+                                                <span className="text-center flex-1">{field.options.midLabel}</span>
+                                            )}
+                                            <span className="text-right flex-1">{field.options.maxLabel}</span>
                                         </div>
                                     </div>
                                 )}
