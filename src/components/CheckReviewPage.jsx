@@ -99,6 +99,28 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
     return () => { mounted = false; };
   }, [questionnaireData]);
 
+  // 處理下拉選單外部點擊關閉
+  useEffect(() => {
+    const handleDocumentClick = (e) => {
+      if (isDropdownOpen) {
+        // 檢查點擊是否在下拉選單或選單按鈕外部
+        const dropdownElement = document.querySelector('[data-dropdown-menu]');
+        const menuButton = document.querySelector('[data-menu-button]');
+        
+        if (dropdownElement && menuButton && 
+            !dropdownElement.contains(e.target) && 
+            !menuButton.contains(e.target)) {
+          setIsDropdownOpen(false);
+        }
+      }
+    };
+
+    document.addEventListener('click', handleDocumentClick);
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+    };
+  }, [isDropdownOpen]);
+
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -215,6 +237,7 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="p-2 rounded-full bg-[#8A9A87] text-white hover:bg-[#7A8A77] transition-colors"
               aria-label="選單"
+              data-menu-button
             >
               <svg 
                 className="w-5 h-5" 
@@ -226,9 +249,13 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
               </svg>
             </button>
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-30">
+              <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-30" data-dropdown-menu>
                 <button 
-                  onClick={() => handleDropdownAction('home')}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleDropdownAction('home');
+                  }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -237,7 +264,11 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
                   返回首頁
                 </button>
                 <button 
-                  onClick={() => handleDropdownAction('review')}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleDropdownAction('review');
+                  }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,7 +277,11 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
                   返回列表
                 </button>
                 <button 
-                  onClick={() => handleDropdownAction('questionnaire')}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleDropdownAction('questionnaire');
+                  }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -281,13 +316,7 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
         </div>
       </header>
 
-      {/* Backdrop to close dropdown when clicking outside */}
-      {isDropdownOpen && (
-        <div 
-          className="fixed inset-0 z-20" 
-          onClick={() => setIsDropdownOpen(false)}
-        ></div>
-      )}
+      {/* 不再使用背景遮罩，改用文檔點擊監聽 */}
 
       {/* Main Content */}
       <main className="container mx-auto px-4 md:px-6 py-6 md:py-8 max-w-4xl">
