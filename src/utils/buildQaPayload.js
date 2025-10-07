@@ -31,17 +31,21 @@ export function buildQaPayload(answers = {}) {
         unmet_needs: answers.unmet_needs ?? ''
       },
       relations: {
+        overall_perspective: answers.overall_perspective ?? '',
         family: answers.family ?? '',
         friends: answers.friends ?? '',
         love: answers.love ?? ''
       },
       career: {
-        challenge: answers.challenge ?? '',
-        new_understanding: answers.new_understanding ?? ''
+        challenge_description: answers.challenge_description ?? '',
+        discovered_strengths: answers.discovered_strengths ?? '',
+        changed_perspective: answers.changed_perspective ?? ''
       },
       desire: {
-        dream: answers.dream ?? '',
-        goal: answers.goal ?? ''
+        unrestricted_dream: answers.unrestricted_dream ?? '',
+        three_month_goal: answers.three_month_goal ?? '',
+        first_step: answers.first_step ?? '',
+        action_willingness: answers.action_willingness ?? null
       },
       reflection: {
         forgiveness: answers.forgiveness ?? '',
