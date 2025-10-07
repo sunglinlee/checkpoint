@@ -835,7 +835,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
                 <div>
                   <h4 className="text-xl font-semibold mb-3 text-gray-800">2. 資訊使用</h4>
                   <div className="space-y-2">
-                    <p>• 提供核心服務功能（快照創建、儲存、回顾）</p>
+                    <p>• 提供核心服務功能（快照創建、儲存、回顧）</p>
                     <p>• 發送服務相關通知（如快照提醒郵件）</p>
                     <p>• 改善平台功能和使用者體驗</p>
                     <p>• 確保平台安全性和防範濫用</p>
@@ -1097,7 +1097,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
                     </div>
                     <div className="ml-3">
                       <p className="text-sm text-blue-700">
-                        <strong>回覆時間：</strong>我們通常會在 1-2 個工作日內回覆您的來信。
+                        <strong>回覆時間：</strong>我們通常會在 7 個工作日內回覆您的來信。
                         如果是緊急技術問題，我們會優先處理。
                       </p>
                     </div>
