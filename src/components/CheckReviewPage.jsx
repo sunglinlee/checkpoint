@@ -226,7 +226,7 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
               </svg>
             </button>
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
+              <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-30">
                 <button 
                   onClick={() => handleDropdownAction('home')}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
@@ -284,7 +284,7 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
       {/* Backdrop to close dropdown when clicking outside */}
       {isDropdownOpen && (
         <div 
-          className="fixed inset-0 z-10" 
+          className="fixed inset-0 z-20" 
           onClick={() => setIsDropdownOpen(false)}
         ></div>
       )}
