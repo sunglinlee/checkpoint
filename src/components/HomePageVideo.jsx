@@ -21,7 +21,7 @@ const HomePageVideo = () => {
     };
   }, []);
 
-  const playlistId = "PLL0Ft_-5NHD5JflxZ8TJ7tCwQxiJnAjxx";
+  const playlistId = "PLXTpd8LzMojaghltIZItNP46qGecx15au";
   const src = `https://www.youtube.com/embed/videoseries?list=${playlistId}&autoplay=1&mute=1`;
 
   return (
