@@ -345,7 +345,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
     <div className="w-full bg-[#FDFCF9] text-[#3D4A4D]">
       {toast.visible && (
         toast.position === 'center' ? (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          <div className="fixed inset-0 z-[70] flex items-center justify-center">
             <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]" onClick={() => setToast(prev => ({ ...prev, visible: false }))} />
             <div className={`relative mx-6 w-full max-w-sm rounded-2xl shadow-2xl transition-all duration-300 ${toast.variant === 'glass' ? 'bg-white/80 backdrop-blur-md border border-white/60' : 'bg-white border border-gray-200'} p-5`}>
               <div className="flex items-start gap-3">
@@ -371,7 +371,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
             </div>
           </div>
         ) : (
-          <div className="fixed top-6 inset-x-0 z-[100] flex justify-center px-4">
+          <div className="fixed top-6 inset-x-0 z-[70] flex justify-center px-4">
             <div className={`flex items-start gap-3 rounded-lg shadow-lg border px-4 py-3 w-full max-w-md transition-all duration-300 ${toast.type === 'success' ? 'bg-white border-green-200' : 'bg-white border-red-200'}`}>
               <div className={`mt-0.5 flex h-6 w-6 items-center justify-center rounded-full ${toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`}>
                 <svg className="h-4 w-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
@@ -396,7 +396,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
         )
       )}
       {/* Header */}
-      <header className="py-2 md:py-4 px-4 md:px-12 flex flex-col sm:flex-row justify-between items-start sm:items-center sticky top-0 bg-white/80 backdrop-blur-sm z-[9999] border-b border-gray-200/50 gap-2 sm:gap-4">
+      <header className="py-2 md:py-4 px-4 md:px-12 flex flex-col sm:flex-row justify-between items-start sm:items-center sticky top-0 bg-white/80 backdrop-blur-sm z-50 border-b border-gray-200/50 gap-2 sm:gap-4">
         <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }} className="flex-shrink-0">
           <Logo />
         </a>
@@ -420,7 +420,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
               
               {/* 下拉選單 */}
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-[10000]">
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-[60]">
                   <button
                     onClick={handleNicknameChange}
                     className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-2"
@@ -696,7 +696,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
 
       {/* 暱稱修改彈出視窗 */}
       {isNicknameModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-[9999] pt-20">
           <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
             <h3 className="text-xl font-semibold mb-4 text-gray-800">修改暱稱</h3>
             <div className="mb-4">
@@ -733,7 +733,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
 
       {/* 密碼修改彈出視窗 */}
       {isPasswordModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-[9999] pt-20">
           <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
             <h3 className="text-xl font-semibold mb-4 text-gray-800">修改密碼</h3>
             <div className="space-y-4">
@@ -798,10 +798,10 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
       {/* 隱私權政策彈出視窗 */}
       {isPrivacyModalOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-[9999] p-4 pt-20"
           onClick={() => setIsPrivacyModalOpen(false)}
         >
-          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[calc(100vh-6rem)] overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center p-6 border-b border-gray-200">
               <h3 className="text-2xl font-semibold text-gray-800">隱私權政策</h3>
               <button
@@ -903,10 +903,10 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
       {/* 服務條款彈出視窗 */}
       {isTermsModalOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-[9999] p-4 pt-20"
           onClick={() => setIsTermsModalOpen(false)}
         >
-          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg w-full max-w-4xl max-h-[calc(100vh-6rem)] overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center p-6 border-b border-gray-200">
               <h3 className="text-2xl font-semibold text-gray-800">服務條款</h3>
               <button
@@ -1029,10 +1029,10 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
       {/* 聯絡我們彈出視窗 */}
       {isContactModalOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-[9999] p-4 pt-20"
           onClick={() => setIsContactModalOpen(false)}
         >
-          <div className="bg-white rounded-lg w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-lg w-full max-w-2xl max-h-[calc(100vh-6rem)] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex justify-between items-center p-6 border-b border-gray-200">
               <h3 className="text-2xl font-semibold text-gray-800">聯絡我們</h3>
               <button
