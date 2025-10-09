@@ -734,3 +734,171 @@ A: 快照標題有兩個來源：
 1. **優先使用**: 用戶在第9題中填寫的 `snapshot_title`（"為這個快照取個名字吧"）
 2. **自動生成**: 如果用戶沒有填寫標題，系統會從 `current_thoughts` 的前幾個字自動生成標題
 
+## 信箱驗證相關 API
+
+### 1. 驗證信箱
+```javascript
+import { verifyEmail } from '../api/emailVerification';
+
+const result = await verifyEmail(token, email);
+```
+
+**端點**: `POST /user/verify-email`
+**需要認證**: 否
+**參數**:
+- `token` (string): 驗證 token
+- `email` (string): 用戶 email
+
+**回應**:
+```javascript
+{
+    "statusCode": "0000",
+    "message": "信箱驗證成功",
+    "data": {
+        "email": "user@example.com",
+        "verified": true,
+        "verified_at": "2024-12-15T10:30:00Z"
+    }
+}
+```
+
+**狀態碼**:
+- `0000`: 驗證成功
+- `1001`: Token 無效或過期
+- `1002`: 用戶不存在
+- `1003`: 信箱已驗證
+- `1004`: 驗證失敗
+
+### 2. 重新發送驗證信
+```javascript
+import { resendVerificationEmail } from '../api/emailVerification';
+
+const result = await resendVerificationEmail(email);
+```
+
+**端點**: `POST /user/resend-verification`
+**需要認證**: 否
+**參數**:
+- `email` (string): 用戶 email
+
+**回應**:
+```javascript
+{
+    "statusCode": "0000",
+    "message": "驗證信已重新發送",
+    "data": {
+        "email": "user@example.com",
+        "sent_at": "2024-12-15T10:30:00Z",
+        "expires_at": "2024-12-16T10:30:00Z"
+    }
+}
+```
+
+**狀態碼**:
+- `0000`: 發送成功
+- `1001`: 用戶不存在
+- `1002`: 信箱已驗證
+- `1003`: 發送過於頻繁
+- `1004`: 發送失敗
+
+### 3. 檢查信箱驗證狀態
+```javascript
+import { checkEmailVerificationStatus } from '../api/emailVerification';
+
+const result = await checkEmailVerificationStatus(email);
+```
+
+**端點**: `GET /user/email-verification-status?email={email}`
+**需要認證**: 否
+**查詢參數**:
+- `email` (string, required): 用戶 email
+
+**回應**:
+```javascript
+{
+    "statusCode": "0000",
+    "data": {
+        "email": "user@example.com",
+        "verified": false,
+        "canResend": true,
+        "lastSentAt": "2024-12-15T10:30:00Z"
+    }
+}
+```
+
+### 4. 前端組件使用
+
+#### EmailVerificationPage 組件
+用於處理信箱驗證連結點擊後的驗證流程：
+
+```javascript
+// URL 格式
+// 成功驗證: /verify-email?token={token}&email={email}
+// 驗證失敗: /verify-email?error=invalid_token&email={email}
+
+// 自動處理 URL 參數並執行驗證
+<EmailVerificationPage onNavigate={handleNavigate} />
+```
+
+#### EmailVerificationStatus 組件
+用於在其他頁面中顯示驗證狀態提醒：
+
+```javascript
+// 在需要顯示驗證狀態的頁面中使用
+<EmailVerificationStatus 
+    user={user} 
+    onVerificationComplete={() => {
+        // 驗證完成後的處理邏輯
+    }} 
+/>
+```
+
+### 5. 輔助函數
+
+#### URL 參數解析
+```javascript
+import { parseVerificationUrl } from '../utils/emailVerificationHelper';
+
+const params = parseVerificationUrl();
+// 返回: { token, email, error, hasVerificationParams }
+```
+
+#### 生成驗證連結
+```javascript
+import { generateVerificationLink } from '../utils/emailVerificationHelper';
+
+const link = generateVerificationLink('https://yourdomain.com', token, email);
+```
+
+#### 驗證狀態管理
+```javascript
+import { 
+    saveVerificationStatus, 
+    loadVerificationStatus, 
+    clearVerificationStatus 
+} from '../utils/emailVerificationHelper';
+
+// 儲存驗證狀態
+saveVerificationStatus(email, true);
+
+// 讀取驗證狀態
+const status = loadVerificationStatus(email);
+
+// 清除驗證狀態
+clearVerificationStatus(email);
+```
+
+### 6. 信箱驗證流程
+
+1. **用戶註冊** → 系統發送驗證信
+2. **用戶點擊驗證連結** → 前端 EmailVerificationPage 處理
+3. **驗證成功** → 顯示成功訊息，可導向登入頁面
+4. **驗證失敗** → 顯示錯誤訊息，提供重新發送選項
+
+### 7. 安全性考量
+
+- **Token 過期時間**: 建議 24 小時
+- **重新發送限制**: 建議每 5 分鐘最多發送一次
+- **Token 格式**: 使用安全的隨機字串或 JWT
+- **錯誤處理**: 不洩露敏感資訊，提供用戶友好的錯誤訊息
+

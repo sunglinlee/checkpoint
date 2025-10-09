@@ -8,7 +8,10 @@ import LoginPage from './components/LoginPage.jsx';
 import ReviewPage from './components/ReviewPage.jsx';
 import CheckReviewPage from './components/CheckReviewPage.jsx';
 import MobileTestPage from './components/MobileTestPage.jsx';
+import EmailVerificationPage from './components/EmailVerificationPage.jsx';
+import EmailVerificationTestPage from './components/EmailVerificationTestPage.jsx';
 import { loadAuth, clearAuth, startTokenRefresh, stopTokenRefresh } from './api/auth';
+import { parseVerificationUrl, isVerificationUrl } from './utils/emailVerificationHelper';
 
 export default function App() {
     const [currentPage, setCurrentPage] = useState('home');
@@ -82,6 +85,10 @@ export default function App() {
                 return <CheckReviewPage onNavigate={handleNavigate} user={user} />;
             case 'mobiletest':
                 return <MobileTestPage />;
+            case 'email-verification':
+                return <EmailVerificationPage onNavigate={handleNavigate} />;
+            case 'email-verification-test':
+                return <EmailVerificationTestPage />;
             case 'home':
             default:
                 return <HomePage onNavigate={handleNavigate} user={user} onLogout={handleLogout} updateUserNickname={updateUserNickname} />;
@@ -108,6 +115,15 @@ export default function App() {
         const pageParam = urlParams.get('page');
         const snapshotId = urlParams.get('snapshot_id');
         
+        // 檢查是否為信箱驗證相關的 URL
+        if (isVerificationUrl()) {
+            const verificationParams = parseVerificationUrl();
+            if (verificationParams.hasVerificationParams) {
+                setCurrentPage('email-verification');
+                return; // 直接返回，不處理其他頁面參數
+            }
+        }
+        
         // 如果有 snapshot_id 參數，將其存到 sessionStorage 供 CheckReviewPage 使用
         if (snapshotId) {
             try {
@@ -119,7 +135,7 @@ export default function App() {
         
         if (pageParam) {
             // 支援的頁面列表
-            const validPages = ['home', 'transition', 'questionnaire', 'login', 'review', 'checkreview', 'mobiletest'];
+            const validPages = ['home', 'transition', 'questionnaire', 'login', 'review', 'checkreview', 'mobiletest', 'email-verification', 'email-verification-test'];
             if (validPages.includes(pageParam)) {
                 setCurrentPage(pageParam);
             }
