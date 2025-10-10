@@ -176,7 +176,7 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
       case '1003':
         return '此電子郵件已使用其他認證方式註冊';
       case '1004':
-        return '認證方式不匹配';
+        return '信箱尚未驗證，請至信箱完成驗證後再嘗試登入';
       default:
         return '操作失敗，請稍後再試';
     }
@@ -208,11 +208,30 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
       
       // 只有狀態碼 "0000" 才允許登入成功
       if (statusCode !== '0000') {
+        // 若為信箱未驗證，導向驗證頁可重新發送驗證信
+        if (statusCode === '1004') {
+          try {
+            const url = new URL(window.location);
+            url.searchParams.set('email', payload.email);
+            url.searchParams.set('error', 'not_verified');
+            window.history.pushState({}, '', url);
+          } catch {}
+          onNavigate('email-verification');
+          return;
+        }
         const errorMsg = getStatusCodeMessage(statusCode);
         setErrorMessage(errorMsg);
         return;
       }
 
+      // 註冊成功：不自動登入，導回首頁提示用戶先完成信箱驗證
+      if (!isLogin) {
+        showToast('註冊成功，請至信箱完成驗證後再登入', 'success');
+        onNavigate('home');
+        return;
+      }
+
+      // 登入成功：持久化並導回首頁
       const token = response.token || response.accessToken || response.data?.token;
       const responseUser = response.user || response.data?.user || response.data || {};
       const resolvedEmail = responseUser.email || formData.email;
@@ -225,7 +244,6 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
       };
 
       persistAuth(token, user);
-      // 啟動背景 refresh（每 30 分鐘）
       if (user?.email) {
         stopTokenRefresh();
         startTokenRefresh(user.email);
@@ -236,6 +254,16 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
       // 處理 HTTP 錯誤或其他異常
       const statusCode = error?.data?.statusCode || error?.data?.code;
       if (statusCode) {
+        if (statusCode === '1004') {
+          try {
+            const url = new URL(window.location);
+            url.searchParams.set('email', formData.email.trim());
+            url.searchParams.set('error', 'not_verified');
+            window.history.pushState({}, '', url);
+          } catch {}
+          onNavigate('email-verification');
+          return;
+        }
         const errorMsg = getStatusCodeMessage(statusCode);
         setErrorMessage(errorMsg);
       } else {
