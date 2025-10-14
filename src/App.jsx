@@ -10,7 +10,6 @@ import CheckReviewPage from './components/CheckReviewPage.jsx';
 import MobileTestPage from './components/MobileTestPage.jsx';
 import EmailVerificationPage from './components/EmailVerificationPage.jsx';
 import EmailVerificationTestPage from './components/EmailVerificationTestPage.jsx';
-import RefreshTokenTestPage from './components/RefreshTokenTestPage.jsx';
 import { loadAuth, clearAuth, startTokenRefresh, stopTokenRefresh } from './api/auth';
 import { parseVerificationUrl, isVerificationUrl } from './utils/emailVerificationHelper';
 
@@ -90,8 +89,6 @@ export default function App() {
                 return <EmailVerificationPage onNavigate={handleNavigate} />;
             case 'email-verification-test':
                 return <EmailVerificationTestPage />;
-            case 'refresh-token-test':
-                return <RefreshTokenTestPage onNavigate={handleNavigate} />;
             case 'home':
             default:
                 return <HomePage onNavigate={handleNavigate} user={user} onLogout={handleLogout} updateUserNickname={updateUserNickname} />;
@@ -138,7 +135,7 @@ export default function App() {
         
         if (pageParam) {
             // 支援的頁面列表
-            const validPages = ['home', 'transition', 'questionnaire', 'login', 'review', 'checkreview', 'mobiletest', 'email-verification', 'email-verification-test', 'refresh-token-test'];
+            const validPages = ['home', 'transition', 'questionnaire', 'login', 'review', 'checkreview', 'mobiletest', 'email-verification', 'email-verification-test'];
             if (validPages.includes(pageParam)) {
                 setCurrentPage(pageParam);
             }
