@@ -17,12 +17,12 @@ export function startTokenRefresh(email) {
     const runRefresh = async () => {
         try {
             const result = await refreshToken(email);
-            const newToken = result?.token || result?.accessToken || result?.data?.token;
-            const userRaw = window.localStorage.getItem('authUser');
-            const user = userRaw ? JSON.parse(userRaw) : null;
-            if (newToken) {
-                persistAuth(newToken, user);
-            }
+            // 後端只回傳成功訊息字串，不回傳新的 token
+            // 這裡可以記錄刷新成功的日誌
+            console.log('Token refresh result:', result);
+            
+            // 由於後端不回傳新 token，我們保持現有的認證狀態
+            // 後端會在 cache 中延長 token 的有效期
         } catch (error) {
             // 若刷新失敗（例如 401），可視需求清除登入
             if (error?.status === 401 || error?.status === 403) {
@@ -30,6 +30,7 @@ export function startTokenRefresh(email) {
                 stopTokenRefresh();
             }
             // 其他錯誤暫不打斷排程
+            console.error('Token refresh failed:', error);
         }
     };
 
@@ -299,7 +300,7 @@ export async function testAllAPIs() {
         // 測試刷新 token
         console.log('測試刷新 token...');
         const refreshResult = await refreshToken('test@example.com');
-        console.log('刷新 token 結果:', refreshResult);
+        console.log('刷新 token 結果:', refreshResult); // 後端回傳: "Token refreshed successfully"
         
         // 測試登出
         console.log('測試登出...');
