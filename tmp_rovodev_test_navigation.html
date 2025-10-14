@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>RefreshToken 測試導航</title>
+</head>
+<body>
+    <h1>RefreshToken 測試頁面導航</h1>
+    <p>請點擊以下連結測試導航：</p>
+    
+    <h2>方法 1: 直接 URL</h2>
+    <p>在瀏覽器中輸入以下 URL：</p>
+    <code>http://localhost:3000?page=refresh-token-test</code>
+    
+    <h2>方法 2: JavaScript 導航</h2>
+    <p>在瀏覽器 F12 Console 中執行：</p>
+    <code>window.location.href = window.location.origin + '?page=refresh-token-test'</code>
+    
+    <h2>方法 3: 檢查當前頁面狀態</h2>
+    <p>在 F12 Console 中檢查：</p>
+    <code>console.log('Current URL:', window.location.href);</code>
+    <code>console.log('Current page param:', new URLSearchParams(window.location.search).get('page'));</code>
+    
+    <button onclick="testNavigation()">測試導航</button>
+    
+    <script>
+        function testNavigation() {
+            const currentUrl = window.location.href;
+            const newUrl = window.location.origin + window.location.pathname + '?page=refresh-token-test';
+            console.log('當前 URL:', currentUrl);
+            console.log('目標 URL:', newUrl);
+            window.location.href = newUrl;
+        }
+    </script>
+</body>
+</html>
