@@ -77,7 +77,11 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
       text: "朋友也許會背叛你，但數學不會，數學不會就是不會",
       author: "摩根·費里曼·梅友獎鍋"
     },
-    {}
+    {
+      id: 12,
+      text: "我是一個很普通的人，但我的普通是因為我是一個很普通的人",
+      author: "普通的人"
+    }
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -577,7 +581,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
                 <span className="text-3xl font-bold text-[#8A9A87]">2</span>
               </div>
               <h3 className="text-xl font-semibold mb-2">此刻印記</h3>
-              <p className="text-gray-600">上傳一張最能代表當下的照片，為這段記憶留下獨特的視覺標記。</p>
+              <p className="text-gray-600">記錄下此刻人生的切片，為這段記憶留下最真實的感受。</p>
             </div>
             <div className="text-center p-6">
               <div className="flex items-center justify-center w-16 h-16 mx-auto bg-white rounded-full shadow-md mb-4 border border-gray-100">
