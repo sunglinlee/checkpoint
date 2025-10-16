@@ -28,15 +28,19 @@ export default function App() {
         
         // 更新 URL 參數
         const url = new URL(window.location);
+        
+        // 如果正在離開驗證頁面，清除所有驗證相關參數
+        if (currentPage === 'email-verification') {
+            url.searchParams.delete('token');
+            url.searchParams.delete('email');
+            url.searchParams.delete('error');
+        }
+        
         if (page !== 'home') {
             url.searchParams.set('page', page);
         } else {
             url.searchParams.delete('page');
             url.searchParams.delete('snapshot_id'); // 回到首頁時清除 snapshot_id
-            // 回到首頁時一併清除驗證相關殘留參數
-            url.searchParams.delete('token');
-            url.searchParams.delete('email');
-            url.searchParams.delete('error');
         }
         window.history.pushState({}, '', url);
         
@@ -125,17 +129,6 @@ export default function App() {
             if (verificationParams.hasVerificationParams) {
                 setCurrentPage('email-verification');
 
-                // 清除驗證參數，避免重新整理時再次以驗證連結載入
-                try {
-                    const url = new URL(window.location.href);
-                    url.searchParams.delete('token');
-                    url.searchParams.delete('email');
-                    url.searchParams.delete('error');
-                    url.searchParams.set('page', 'email-verification');
-                    window.history.replaceState({}, '', url);
-                } catch (e) {
-                    // 忽略清理 URL 失敗
-                }
 
                 return; // 直接返回，不處理其他頁面參數
             }

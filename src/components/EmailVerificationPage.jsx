@@ -109,12 +109,33 @@ export default function EmailVerificationPage({ onNavigate }) {
         }
     };
 
+    const clearVerificationParamsAndNavigate = (page) => {
+        // 清除 URL 中的驗證相關參數
+        const url = new URL(window.location);
+        url.searchParams.delete('token');
+        url.searchParams.delete('email');
+        url.searchParams.delete('error');
+        
+        // 如果要導航到首頁，也清除 page 參數
+        if (page === 'home') {
+            url.searchParams.delete('page');
+        } else {
+            url.searchParams.set('page', page);
+        }
+        
+        // 更新 URL 但不重新加載頁面
+        window.history.replaceState({}, '', url);
+        
+        // 然後進行導航
+        onNavigate(page);
+    };
+
     const handleGoToLogin = () => {
-        onNavigate('login');
+        clearVerificationParamsAndNavigate('login');
     };
 
     const handleGoToHome = () => {
-        onNavigate('home');
+        clearVerificationParamsAndNavigate('home');
     };
 
     const renderContent = () => {
@@ -215,11 +236,11 @@ export default function EmailVerificationPage({ onNavigate }) {
         <div className="min-h-screen bg-[#FDFCF9] flex flex-col">
             {/* Header */}
             <header className="py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-200/50">
-                <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }}>
+                <a href="#" onClick={e => { e.preventDefault(); handleGoToHome(); }}>
                     <Logo />
                 </a>
                 <button 
-                    onClick={() => onNavigate('home')}
+                    onClick={handleGoToHome}
                     className="text-[#5C6B68] hover:text-[#8A9A87] transition-colors"
                 >
                     返回首頁
