@@ -925,7 +925,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
               <div className="space-y-6 text-gray-700">
                 <div>
-                  <p className="text-sm text-gray-500 mb-4">最後更新日期：2025年1月</p>
+                  <p className="text-sm text-gray-500 mb-4">最後更新日期：2025年10月</p>
                   <p className="mb-4">
                     歡迎使用「人生快照」（Check Point）。使用我們的服務前，請仔細閱讀以下服務條款。
                     使用本服務即表示您同意遵守這些條款。
