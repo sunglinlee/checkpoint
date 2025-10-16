@@ -16,6 +16,23 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // 問卷題目說明文字
+  const getQuestionDescription = (index) => {
+    const descriptions = [
+      "這就像是幫自己照照鏡子。別急著評價好壞，只要誠實看看「我現在過得像我想要的樣子嗎？」。誠實地回答，不必苛求完美，因為意識到差距，本身就是成長的第一步。",
+      "當我們有意識地記錄生活中的小確幸，它們會逐漸放大，讓生活更有力量。有時候幸福藏在最不起眼的細節裡。這一題是想邀請你停下來，回想那些讓你微笑的瞬間。",
+      "我們所關注的世界事件，往往反映了我們的價值觀與內在需求。可以幫助覺察外在訊息如何影響我們的內心。",
+      "情緒是來訪的信使，它們不是敵人，有時候，情緒只是想被你聽見。別急著壓下來，請試著理解「它想告訴我什麼」。",
+      "我們的生活品質，往往來自與人際關係的互動。更全面的檢視自己與家庭、朋友、愛情的連結，覺察其中的支持與需求。",
+      "挑戰能幫助我們看到自己未曾發現的力量。以不同的視角察覺自己在事業上的成長。",
+      "這一題是給夢想一點空間。先別管現實的限制，純粹想想：「如果我可以，我最想做什麼？」",
+      "回顧過去能帶來釋懷，展望未來能帶來希望。與過去的自己和解，並給未來的自己鼓勵。",
+      "記錄此刻的心情與想法，為這個時空快照添加個人標記。",
+      "設定下次收到提醒的時間，延續這份自我對話的旅程。"
+    ];
+    return descriptions[index] || `第 ${index + 1} 部分`;
+  };
+
   // 使用與 QuestionnairePage 相同的問題結構
   const questions = useMemo(() => [
     { id: 'satisfaction', icon: icons.satisfaction, title: '關於現在的生活', fields: [{ id: 'rating', type: 'scale', label: '您覺得當前的生活方式，有符合你想要活成的樣子嗎？ (1-10分)', options: { min: 1, max: 10, minLabel: '相差甚遠', maxLabel: '非常滿意' } }, { id: 'reason', type: 'textarea', label: '如果可以，也請記錄下給予這個分數的理由。' }] },
@@ -352,7 +369,9 @@ const CheckReviewPage = ({ onNavigate, user, questionnaireData }) => {
                       </div>
                       <div>
                         <h2 className="text-xl font-bold text-[#5C6B68]">{question.title}</h2>
-                        <p className="text-sm text-gray-500">第 {index + 1} 部分</p>
+                        <p className="text-sm text-gray-500 italic leading-relaxed">
+                            {getQuestionDescription(index)}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">

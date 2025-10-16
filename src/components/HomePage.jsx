@@ -25,17 +25,17 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
     {
       id: 1,
       text: "起初只是想找個地方寫寫東西，沒想到每一次的回顧，都讓我看見自己驚人的成長。那些三個月前還在煩惱的事，現在看來都雲淡風輕了。這就像是送給未來自己的一份禮物。",
-      author: "Sandy"
+      author: "匿名"
     },
     {
       id: 2,
       text: "身為一個媽媽，我常常忙到忘了照顧自己的內心。這個平台讓我重新找回與自己對話的時間，每一次的記錄都像是一次心靈的洗滌。",
-      author: "Annie"
+      author: "小米"
     },
     {
       id: 3,
       text: "剛開始使用時還有些懷疑，但隨著時間推移，我發現自己變得更加了解自己。那些重複出現的情緒和想法，都透過這個過程得到了梳理。",
-      author: "Vicky"
+      author: "阿霖"
     },
     {
       id: 4,
@@ -45,7 +45,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
     {
       id: 5,
       text: "在忙碌的生活中，這個平台成了我與自己對話的專屬空間。每一次的記錄都讓我更清楚地認識自己，也更有勇氣面對未來的挑戰。",
-      author: "Kevin"
+      author: "匿名"
     },
     {
       id: 6,
@@ -55,12 +55,12 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
     {
       id: 7,
       text: "小孩愛ㄘ已購買。",
-      author: "阿斯"
+      author: "阿樂"
     },
     {
       id: 8,
-      text: "尻。",
-      author: "伩AKA湖口大屌哥"
+      text: "棒。",
+      author: "湖口大文哥"
     },
     {
       id: 9,
@@ -820,7 +820,7 @@ const HomePage = ({ onNavigate, user, onLogout, updateUserNickname }) => {
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
               <div className="space-y-6 text-gray-700">
                 <div>
-                  <p className="text-sm text-gray-500 mb-4">最後更新日期：2025年1月</p>
+                  <p className="text-sm text-gray-500 mb-4">最後更新日期：2025年10月</p>
                   <p className="mb-4">
                     歡迎使用「人生快照」（Check Point）服務。我們深知您的隱私對您的重要性，因此制定了這份隱私權政策，
                     說明我們如何收集、使用、保護和處理您的個人資訊。
