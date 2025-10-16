@@ -103,8 +103,23 @@ export default function App() {
         }
     };
 
-    // 處理瀏覽器歷史記錄變化的函數
-    const handlePopState = () => {
+
+    // 初始頁面設置的 useEffect
+    useEffect(() => {
+        const { user: loadedUser } = loadAuth();
+        console.log('App 載入時從 localStorage 讀取的用戶資料:', loadedUser);
+        
+        // 設置載入的用戶資料
+        setUser(loadedUser);
+        
+        if (loadedUser?.email) {
+            stopTokenRefresh();
+            startTokenRefresh(loadedUser.email);
+        } else {
+            stopTokenRefresh();
+        }
+
+        // 檢查 URL 參數並設置對應的頁面
         const urlParams = new URLSearchParams(window.location.search);
         const pageParam = urlParams.get('page');
         const snapshotId = urlParams.get('snapshot_id');
@@ -133,39 +148,72 @@ export default function App() {
             if (validPages.includes(pageParam)) {
                 setCurrentPage(pageParam);
             }
-        } else {
-            setCurrentPage('home');
         }
-        
-        window.scrollTo(0, 0);
-    };
+    }, []); // 空依賴數組，只在組件掛載時執行一次
 
-    // App 載入後，載入用戶狀態並啟動 refresh 排程
+    // 單獨的 useEffect 處理 popstate 事件監聽
     useEffect(() => {
-        const { user: loadedUser } = loadAuth();
-        console.log('App 載入時從 localStorage 讀取的用戶資料:', loadedUser);
-        
-        // 設置載入的用戶資料
-        setUser(loadedUser);
-        
-        if (loadedUser?.email) {
-            stopTokenRefresh();
-            startTokenRefresh(loadedUser.email);
-        } else {
-            stopTokenRefresh();
-        }
-
-        // 初始頁面設置
-        handlePopState();
+        console.log('Setting up popstate event listener...');
         
         // 監聽瀏覽器歷史記錄變化
-        window.addEventListener('popstate', handlePopState);
+        const handlePopStateEvent = (event) => {
+            console.log('🚨 POPSTATE EVENT TRIGGERED! 🚨');
+            console.log('Event:', event);
+            console.log('Current URL:', window.location.href);
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const pageParam = urlParams.get('page');
+            const snapshotId = urlParams.get('snapshot_id');
+            
+            console.log('Page param from URL:', pageParam);
+            
+            // 檢查是否為信箱驗證相關的 URL
+            if (isVerificationUrl()) {
+                const verificationParams = parseVerificationUrl();
+                if (verificationParams.hasVerificationParams) {
+                    console.log('Setting page to email-verification');
+                    setCurrentPage('email-verification');
+                    return;
+                }
+            }
+            
+            // 如果有 snapshot_id 參數，將其存到 sessionStorage 供 CheckReviewPage 使用
+            if (snapshotId) {
+                try {
+                    window.sessionStorage.setItem('selectedSnapshotId', snapshotId);
+                } catch (error) {
+                    console.warn('無法設置 sessionStorage:', error);
+                }
+            }
+            
+            if (pageParam) {
+                // 支援的頁面列表
+                const validPages = ['home', 'transition', 'questionnaire', 'login', 'review', 'checkreview', 'mobiletest', 'email-verification', 'email-verification-test'];
+                if (validPages.includes(pageParam)) {
+                    console.log(`Setting page to: ${pageParam}`);
+                    setCurrentPage(pageParam);
+                } else {
+                    console.log(`Invalid page param: ${pageParam}, setting to home`);
+                    setCurrentPage('home');
+                }
+            } else {
+                console.log('No page param, setting to home');
+                setCurrentPage('home');
+            }
+            
+            window.scrollTo(0, 0);
+            console.log('Page change completed');
+        };
+        
+        window.addEventListener('popstate', handlePopStateEvent);
+        console.log('Popstate event listener added successfully');
         
         // 清理函數，移除事件監聽器
         return () => {
-            window.removeEventListener('popstate', handlePopState);
+            console.log('Removing popstate event listener...');
+            window.removeEventListener('popstate', handlePopStateEvent);
         };
-    }, []); // 空依賴數組，只在組件掛載時執行一次
+    }, []); // 空依賴數組，確保只設置一次
 
     return (
         //<GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "1032893971305-nqrk0r231cmb010bjmkbvsnlgqfnq129.apps.googleusercontent.com"}>
