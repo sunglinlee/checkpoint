@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { verifyEmail, resendVerificationEmail } from '../api/emailVerification';
 
+const Logo = () => (
+  <div className="flex items-center gap-2">
+    <img src="https://storage.googleapis.com/checkpoint_frontend/logo/LOGO.png" alt="Check Point Logo" className="h-12 w-auto" />
+    <img src="https://storage.googleapis.com/checkpoint_frontend/logo/LOGO_H1.png" alt="Company Name" className="h-10 w-auto" />
+  </div>
+);
+
 export default function EmailVerificationPage({ onNavigate }) {
     const [verificationStatus, setVerificationStatus] = useState('loading'); // loading, success, error, expired
     const [message, setMessage] = useState('');
@@ -115,27 +122,34 @@ export default function EmailVerificationPage({ onNavigate }) {
             case 'loading':
                 return (
                     <div className="text-center">
-                        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                        <p className="text-lg text-gray-600">{message}</p>
+                        <div className="w-16 h-16 mx-auto mb-6">
+                            <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#8A9A87]/20 border-t-[#8A9A87]"></div>
+                        </div>
+                        <h2 className="text-2xl font-bold text-[#3D4A4D] mb-4">正在驗證信箱</h2>
+                        <p className="text-gray-600">{message}</p>
                     </div>
                 );
 
             case 'success':
                 return (
                     <div className="text-center">
-                        <div className="text-green-500 text-6xl mb-4">✓</div>
-                        <h2 className="text-2xl font-bold text-green-600 mb-4">驗證成功！</h2>
-                        <p className="text-lg text-gray-600 mb-6">{message}</p>
-                        <div className="space-y-3">
+                        <div className="w-20 h-20 bg-[#8A9A87] rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <h2 className="text-3xl font-bold text-[#3D4A4D] mb-4">驗證成功！</h2>
+                        <p className="text-gray-600 mb-8 leading-relaxed">{message}</p>
+                        <div className="space-y-4">
                             <button
                                 onClick={handleGoToLogin}
-                                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
+                                className="w-full bg-[#8A9A87] hover:bg-[#7A8A77] text-white font-semibold py-3 px-6 rounded-lg transition-colors focus:ring-2 focus:ring-[#8A9A87] focus:ring-offset-2"
                             >
                                 前往登入
                             </button>
                             <button
                                 onClick={handleGoToHome}
-                                className="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
+                                className="w-full bg-gray-100 hover:bg-gray-200 text-[#3D4A4D] font-semibold py-3 px-6 rounded-lg transition-colors"
                             >
                                 回到首頁
                             </button>
@@ -146,37 +160,41 @@ export default function EmailVerificationPage({ onNavigate }) {
             case 'error':
                 return (
                     <div className="text-center">
-                        <div className="text-red-500 text-6xl mb-4">✗</div>
-                        <h2 className="text-2xl font-bold text-red-600 mb-4">驗證失敗</h2>
+                        <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </div>
+                        <h2 className="text-3xl font-bold text-[#3D4A4D] mb-4">驗證失敗</h2>
                         <p className="text-lg text-gray-600 mb-6">{message}</p>
                         
                         {email && (
-                            <div className="mb-6">
+                            <div className="mb-8">
                                 <button
                                     onClick={handleResendVerification}
                                     disabled={isResending}
-                                    className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
+                                    className="w-full bg-[#8A9A87] hover:bg-[#7A8A77] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors focus:ring-2 focus:ring-[#8A9A87] focus:ring-offset-2"
                                 >
                                     {isResending ? '發送中...' : '重新發送驗證信'}
                                 </button>
                                 {resendMessage && (
-                                    <p className={`mt-2 text-sm ${resendMessage.includes('已重新發送') ? 'text-green-600' : 'text-red-600'}`}>
-                                        {resendMessage}
-                                    </p>
+                                    <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <p className="text-sm text-blue-800">{resendMessage}</p>
+                                    </div>
                                 )}
                             </div>
                         )}
                         
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             <button
                                 onClick={handleGoToLogin}
-                                className="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg transition duration-200"
+                                className="w-full bg-[#8A9A87] hover:bg-[#7A8A77] text-white font-semibold py-3 px-6 rounded-lg transition-colors focus:ring-2 focus:ring-[#8A9A87] focus:ring-offset-2"
                             >
                                 前往登入
                             </button>
                             <button
                                 onClick={handleGoToHome}
-                                className="w-full bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-3 px-6 rounded-lg transition duration-200"
+                                className="w-full bg-gray-100 hover:bg-gray-200 text-[#3D4A4D] font-semibold py-3 px-6 rounded-lg transition-colors"
                             >
                                 回到首頁
                             </button>
@@ -194,25 +212,33 @@ export default function EmailVerificationPage({ onNavigate }) {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-                <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
-                        信箱驗證
-                    </h1>
-                    <p className="text-center text-gray-600">
-                        請完成信箱驗證以啟用您的帳號
-                    </p>
+        <div className="min-h-screen bg-[#FDFCF9] flex flex-col">
+            {/* Header */}
+            <header className="py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-200/50">
+                <a href="#" onClick={e => { e.preventDefault(); onNavigate('home'); }}>
+                    <Logo />
+                </a>
+                <button 
+                    onClick={() => onNavigate('home')}
+                    className="text-[#5C6B68] hover:text-[#8A9A87] transition-colors"
+                >
+                    返回首頁
+                </button>
+            </header>
+
+            {/* Main Content */}
+            <main className="flex-1 flex items-center justify-center px-6 py-12">
+                <div className="w-full max-w-md">
+                    <div className="bg-white rounded-2xl shadow-lg p-8">
+                        <div className="text-center mb-8">
+                            <h1 className="text-2xl font-bold text-[#3D4A4D] mb-2">信箱驗證</h1>
+                            <p className="text-gray-600">請稍候，我們正在處理您的驗證請求</p>
+                        </div>
+                        
+                        {renderContent()}
+                    </div>
                 </div>
-                
-                {renderContent()}
-                
-                <div className="mt-8 text-center">
-                    <p className="text-sm text-gray-500">
-                        如有任何問題，請聯繫客服支援
-                    </p>
-                </div>
-            </div>
+            </main>
         </div>
     );
 }

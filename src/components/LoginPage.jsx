@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import { loginUser, registerUser, mailLogin, logoutUser, refreshToken, persistAuth, startTokenRefresh, stopTokenRefresh, forgetPassword } from '../api/auth';
+import EmailVerificationModal from './EmailVerificationModal';
 
 const Logo = () => (
   <div className="flex items-center gap-2">
@@ -151,12 +152,20 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success', position: 'center', variant: 'glass' });
+  const [showEmailVerificationModal, setShowEmailVerificationModal] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
 
   const showToast = (message, type = 'success') => {
     setToast({ visible: true, message, type, position: 'center', variant: 'glass' });
     setTimeout(() => {
       setToast(prev => ({ ...prev, visible: false }));
     }, 2600);
+  };
+
+  const handleCloseEmailVerificationModal = () => {
+    setShowEmailVerificationModal(false);
+    setRegisteredEmail('');
+    onNavigate('home');
   };
 
   const handleInputChange = (e) => {
@@ -224,10 +233,10 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
         return;
       }
 
-      // 註冊成功：不自動登入，導回首頁提示用戶先完成信箱驗證
+      // 註冊成功：不自動登入，顯示信箱驗證彈窗
       if (!isLogin) {
-        showToast('註冊成功，請至信箱完成驗證後再登入', 'success');
-        onNavigate('home');
+        setRegisteredEmail(payload.email);
+        setShowEmailVerificationModal(true);
         return;
       }
 
@@ -595,6 +604,13 @@ const LoginPage = ({ onNavigate, setUser, updateUserNickname }) => {
         isOpen={showForgotPassword}
         onClose={() => setShowForgotPassword(false)}
         showToast={showToast}
+      />
+
+      {/* 信箱驗證彈窗 */}
+      <EmailVerificationModal
+        isOpen={showEmailVerificationModal}
+        onClose={handleCloseEmailVerificationModal}
+        userEmail={registeredEmail}
       />
     </div>
   );
