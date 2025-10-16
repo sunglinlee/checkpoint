@@ -24,13 +24,12 @@ export default function App() {
                 Tone.Transport.pause();
              }
         }
-        setCurrentPage(page);
         
         // 更新 URL 參數
         const url = new URL(window.location);
         
-        // 如果正在離開驗證頁面，清除所有驗證相關參數
-        if (currentPage === 'email-verification') {
+        // 如果正在離開驗證頁面且不是剛進入驗證頁面，清除所有驗證相關參數
+        if (currentPage === 'email-verification' && page !== 'email-verification') {
             url.searchParams.delete('token');
             url.searchParams.delete('email');
             url.searchParams.delete('error');
@@ -44,6 +43,7 @@ export default function App() {
         }
         window.history.pushState({}, '', url);
         
+        setCurrentPage(page);
         window.scrollTo(0, 0);
     };
 
@@ -128,8 +128,10 @@ export default function App() {
             const verificationParams = parseVerificationUrl();
             if (verificationParams.hasVerificationParams) {
                 setCurrentPage('email-verification');
-
-
+                // 更新 URL 以包含 page 參數，但保留驗證參數
+                const url = new URL(window.location);
+                url.searchParams.set('page', 'email-verification');
+                window.history.replaceState({}, '', url);
                 return; // 直接返回，不處理其他頁面參數
             }
         }
