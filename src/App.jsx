@@ -153,25 +153,34 @@ export default function App() {
 
     // 單獨的 useEffect 處理 popstate 事件監聽
     useEffect(() => {
-        console.log('Setting up popstate event listener...');
+        if (typeof console !== 'undefined') {
+            console.log('Setting up popstate event listener...');
+        }
         
         // 監聽瀏覽器歷史記錄變化
         const handlePopStateEvent = (event) => {
-            console.log('🚨 POPSTATE EVENT TRIGGERED! 🚨');
-            console.log('Event:', event);
-            console.log('Current URL:', window.location.href);
+            // 強制顯示調試信息，即使在生產環境
+            if (typeof console !== 'undefined') {
+                console.log('🚨 POPSTATE EVENT TRIGGERED! 🚨');
+                console.log('Event:', event);
+                console.log('Current URL:', window.location.href);
+            }
             
             const urlParams = new URLSearchParams(window.location.search);
             const pageParam = urlParams.get('page');
             const snapshotId = urlParams.get('snapshot_id');
             
-            console.log('Page param from URL:', pageParam);
+            if (typeof console !== 'undefined') {
+                console.log('Page param from URL:', pageParam);
+            }
             
             // 檢查是否為信箱驗證相關的 URL
             if (isVerificationUrl()) {
                 const verificationParams = parseVerificationUrl();
                 if (verificationParams.hasVerificationParams) {
-                    console.log('Setting page to email-verification');
+                    if (typeof console !== 'undefined') {
+                        console.log('Setting page to email-verification');
+                    }
                     setCurrentPage('email-verification');
                     return;
                 }
@@ -182,7 +191,9 @@ export default function App() {
                 try {
                     window.sessionStorage.setItem('selectedSnapshotId', snapshotId);
                 } catch (error) {
-                    console.warn('無法設置 sessionStorage:', error);
+                    if (typeof console !== 'undefined') {
+                        console.warn('無法設置 sessionStorage:', error);
+                    }
                 }
             }
             
@@ -190,27 +201,54 @@ export default function App() {
                 // 支援的頁面列表
                 const validPages = ['home', 'transition', 'questionnaire', 'login', 'review', 'checkreview', 'mobiletest', 'email-verification', 'email-verification-test'];
                 if (validPages.includes(pageParam)) {
-                    console.log(`Setting page to: ${pageParam}`);
+                    if (typeof console !== 'undefined') {
+                        console.log(`Setting page to: ${pageParam}`);
+                    }
                     setCurrentPage(pageParam);
                 } else {
-                    console.log(`Invalid page param: ${pageParam}, setting to home`);
+                    if (typeof console !== 'undefined') {
+                        console.log(`Invalid page param: ${pageParam}, setting to home`);
+                    }
                     setCurrentPage('home');
                 }
             } else {
-                console.log('No page param, setting to home');
+                if (typeof console !== 'undefined') {
+                    console.log('No page param, setting to home');
+                }
                 setCurrentPage('home');
             }
             
-            window.scrollTo(0, 0);
-            console.log('Page change completed');
+            // 強制頁面更新和滾動
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 0);
+            
+            if (typeof console !== 'undefined') {
+                console.log('Page change completed');
+            }
         };
         
         window.addEventListener('popstate', handlePopStateEvent);
-        console.log('Popstate event listener added successfully');
+        if (typeof console !== 'undefined') {
+            console.log('Popstate event listener added successfully');
+        }
+        
+        // 額外檢查：確保事件監聽器正確設置
+        if (typeof window !== 'undefined' && window.addEventListener) {
+            // 強制刷新當前狀態，確保路由同步
+            setTimeout(() => {
+                if (typeof console !== 'undefined') {
+                    console.log('Force checking current route state...');
+                }
+                handlePopStateEvent(new Event('popstate'));
+            }, 100);
+        }
         
         // 清理函數，移除事件監聽器
         return () => {
-            console.log('Removing popstate event listener...');
+            if (typeof console !== 'undefined') {
+                console.log('Removing popstate event listener...');
+            }
             window.removeEventListener('popstate', handlePopStateEvent);
         };
     }, []); // 空依賴數組，確保只設置一次
