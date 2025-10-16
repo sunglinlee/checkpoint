@@ -120,6 +120,19 @@ export default function App() {
             const verificationParams = parseVerificationUrl();
             if (verificationParams.hasVerificationParams) {
                 setCurrentPage('email-verification');
+
+                // 清除驗證參數，避免重新整理時再次以驗證連結載入
+                try {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('token');
+                    url.searchParams.delete('email');
+                    url.searchParams.delete('error');
+                    url.searchParams.set('page', 'email-verification');
+                    window.history.replaceState({}, '', url);
+                } catch (e) {
+                    // 忽略清理 URL 失敗
+                }
+
                 return; // 直接返回，不處理其他頁面參數
             }
         }
