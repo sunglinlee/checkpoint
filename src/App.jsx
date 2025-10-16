@@ -128,10 +128,7 @@ export default function App() {
             const verificationParams = parseVerificationUrl();
             if (verificationParams.hasVerificationParams) {
                 setCurrentPage('email-verification');
-                // 更新 URL 以包含 page 參數，但保留驗證參數
-                const url = new URL(window.location);
-                url.searchParams.set('page', 'email-verification');
-                window.history.replaceState({}, '', url);
+                // 不要立即修改 URL，讓 EmailVerificationPage 處理驗證後再決定是否修改
                 return; // 直接返回，不處理其他頁面參數
             }
         }
