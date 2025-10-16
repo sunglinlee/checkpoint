@@ -33,6 +33,10 @@ export default function App() {
         } else {
             url.searchParams.delete('page');
             url.searchParams.delete('snapshot_id'); // 回到首頁時清除 snapshot_id
+            // 回到首頁時一併清除驗證相關殘留參數
+            url.searchParams.delete('token');
+            url.searchParams.delete('email');
+            url.searchParams.delete('error');
         }
         window.history.pushState({}, '', url);
         
